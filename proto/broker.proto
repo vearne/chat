@@ -1,0 +1,62 @@
+syntax = "proto3";
+import "logic.proto";
+package proto;
+
+// The Customer sercie definition
+service Broker {
+    rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse);
+    rpc Match (MatchRequest) returns (MatchResponse);
+    rpc SendMsg (SendMsgRequest) returns (SendMsgResponse);
+    rpc Logout (LogoutRequest) returns (LogoutResponse);
+
+    // 给客户端推送数据的双向流
+    rpc PushMsgDialogue (PushRequest) returns (stream PushDialogue);
+    rpc PushMsgSignal (PushRequest) returns (stream PushSignal);
+
+//    rpc PushMsgDialogue (PushRequest) returns (stream PushDialogue);
+//    rpc PushMsgSignal (PushRequest) returns (stream PushSignal);
+
+    // 接收logic推送过来的数据
+    rpc ReceiveMsgDialogue (PushDialogue) returns (PushResp);
+    rpc ReceiveMsgSignal (PushSignal) returns (PushResp);
+}
+
+message PushRequest{
+    uint64 accountId = 1;
+}
+
+message PushResp {
+    CodeEnum code = 1;
+    string msg = 2;
+}
+
+message PushDialogue {
+    uint64 senderId = 1;
+    uint64 sessionId = 2;
+    uint64 receiverId = 3;
+    string content = 4;
+}
+
+
+message PushSignal {
+    SignalTypeEnum signalType = 1;
+    uint64 senderId = 2;
+    uint64 receiverId = 3;
+    uint64 sessionId = 4;
+    oneof data{
+        AccountInfo partner = 5;
+        string msgId = 6;
+    }
+}
+
+message AccountInfo{
+    uint64 accountId = 1;
+    string nickName = 2;
+}
+
+enum SignalTypeEnum {
+    PartnerExit = 0; // 聊天的对象，掉线或者登出
+    CreateSession = 1; // 创建会话
+    DeleteMsg = 2; // 删除消息
+}
+

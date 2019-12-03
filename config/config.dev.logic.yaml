@@ -1,0 +1,19 @@
+logic_dealer:
+  listen_address: ":18223"
+
+logger:
+  # 1. "info"
+  # 2. "debug"
+  # 3. "error"
+  level: "debug"
+  filepath: "/var/log/st_logic.log"
+
+mysql:
+  dsn: "st_user:40OIEuqHeQbbFE@tcp(dev1:3306)/stranger_talk?charset=utf8&loc=Asia%2FShanghai&parseTime=true"
+  max_idle_conn: 50
+  max_open_conn: 100
+  conn_max_life_secs: 600
+  # 是否启动debug模式
+  # 若开启则会打印具体的执行SQL
+  debug: true
+

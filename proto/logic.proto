@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package proto;
+
+// The Customer sercie definition
+service LogicDealer {
+    rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse);
+    rpc Match (MatchRequest) returns (MatchResponse);
+    rpc SendMsg (SendMsgRequest) returns (SendMsgResponse);
+    rpc Logout (LogoutRequest) returns (LogoutResponse);
+}
+
+enum CodeEnum {
+    C000 = 0; //
+    C001 = 1; //
+    C002 = 2; //
+    C003 = 3; //
+    C004 = 4; //No data found
+}
+
+enum StatusEnum {
+    Deleted = 0;
+    Normal = 1;
+}
+
+enum MsgTypeEnum {
+    Dialogue = 0;
+    Signal = 1;
+}
+
+message CreateAccountRequest {
+    string nickname = 1;
+    string broker = 2;
+}
+
+message CreateAccountResponse {
+    CodeEnum code = 1;
+    string msg = 2;
+    uint64 accountId = 3;
+}
+
+message MatchRequest {
+    uint64 accountId = 1;
+}
+
+message MatchResponse {
+    CodeEnum code = 1;
+    string msg = 2;
+
+    uint64 parterId = 3;
+    string parterName = 4;
+    uint64 sessionId = 5;
+}
+
+message SendMsgRequest {
+    uint64 senderId = 2;
+    uint64 sessionId = 3;
+    MsgTypeEnum msgtype = 4;
+    string content = 5;
+}
+
+message SendMsgResponse {
+    CodeEnum code = 1;
+    string msg = 2;
+}
+
+message LogoutRequest {
+    uint64 accountId = 1;
+}
+
+message LogoutResponse {
+    CodeEnum code = 1;
+    string msg = 2;
+}
