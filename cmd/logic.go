@@ -42,8 +42,10 @@ func (s *LogicServer) CreateAccount(ctx context.Context,
 	account.CreatedAt = time.Now()
 	account.ModifiedAt = account.CreatedAt
 	resource.MySQLClient.Create(&account)
+
 	var resp pb.CreateAccountResponse
 	resp.Code = pb.CodeEnum_C000
+	resp.AccountId = account.ID
 	return &resp, nil
 }
 func (s *LogicServer) Match(ctx context.Context, req *pb.MatchRequest) (*pb.MatchResponse, error) {
@@ -71,8 +73,8 @@ func (s *LogicServer) Match(ctx context.Context, req *pb.MatchRequest) (*pb.Matc
 	// 3. 给被匹配的account发送一个信令，通知他有新的会话建立
 	notifyPartnerNewSession(req.AccountId, partner.ID, session.ID)
 
-	resp.ParterId = partner.ID
-	resp.ParterName = partner.NickName
+	resp.PartnerId = partner.ID
+	resp.PartnerName = partner.NickName
 	resp.SessionId = session.ID
 	resp.Code = pb.CodeEnum_C000
 
@@ -199,7 +201,8 @@ func RunLogic(cmd *cobra.Command, args []string) {
 	go PumpDialogueToBroker()
 
 	// 3. starting
-	zlog.Info("logic dealer running...")
+	zlog.Info("logic dealer running...", zap.String("port",
+		config.GetOpts().LogicDealer.ListenAddress))
 	lis, err := net.Listen("tcp", config.GetOpts().LogicDealer.ListenAddress)
 	if err != nil {
 		zlog.Fatal("failed to listen", zap.Error(err))

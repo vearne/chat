@@ -31,3 +31,8 @@ const(
 	SystemSender = 0
 )
 
+const(
+	CmdCreateAccount = "CRT_ACCOUNT"
+	CmdMatch = "MATCH"
+)
+

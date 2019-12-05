@@ -18,6 +18,7 @@ type AppConfig struct {
 	Logger struct {
 		Level    string `mapstructure:"level"`
 		FilePath string `mapstructure:"filepath"`
+		ListenAddress string `mapstructure:"listen_address"`
 	} `mapstructure:"logger"`
 
 

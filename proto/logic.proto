@@ -47,8 +47,8 @@ message MatchResponse {
     CodeEnum code = 1;
     string msg = 2;
 
-    uint64 parterId = 3;
-    string parterName = 4;
+    uint64 partnerId = 3;
+    string partnerName = 4;
     uint64 sessionId = 5;
 }
 

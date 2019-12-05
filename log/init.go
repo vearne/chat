@@ -12,11 +12,12 @@ var DefaultLogger *zap.Logger
 
 func InitLogger() {
 	// 动态调整日志级别
-	// curl -XPUT --data '{"level":"info"}' http://localhost:19091/handle/level
+	// curl -XPUT --data '{"level":"info"}' http://localhost:19090/handle/level
 	alevel := zap.NewAtomicLevel()
 	http.HandleFunc("/handle/level", alevel.ServeHTTP)
 	go func() {
-		if err := http.ListenAndServe(":19091", nil); err != nil {
+		if err := http.ListenAndServe(config.GetOpts().Logger.ListenAddress,
+			nil); err != nil {
 			panic(err)
 		}
 	}()

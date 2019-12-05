@@ -28,7 +28,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "talk <command>",
+	Use:   "chat <command>",
 	Short: "",
 	Long:  "",
 }
@@ -57,17 +57,9 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	viper.SetDefault("RUN_MODE", "dev")
-	// broker
-	// logic
 	viper.SetDefault("ROLE", "broker")
 
-	err := viper.BindEnv("RUN_MODE")
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = viper.BindEnv("ROLE")
+	err := viper.BindEnv("ROLE")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -78,7 +70,7 @@ func initConfig() {
 
 	} else {
 		viper.AddConfigPath("config")
-		fname := fmt.Sprintf("config.%s.%s", viper.GetString("RUN_MODE"), viper.GetString("ROLE"))
+		fname := fmt.Sprintf("config.%s", viper.GetString("ROLE"))
 		viper.SetConfigName(fname)
 	}
 
