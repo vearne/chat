@@ -16,11 +16,10 @@ type AppConfig struct {
 	} `mapstructure:"logic_dealer"`
 
 	Logger struct {
-		Level    string `mapstructure:"level"`
-		FilePath string `mapstructure:"filepath"`
+		Level         string `mapstructure:"level"`
+		FilePath      string `mapstructure:"filepath"`
 		ListenAddress string `mapstructure:"listen_address"`
 	} `mapstructure:"logger"`
-
 
 	MySQLConf struct {
 		DSN             string `mapstructure:"dsn"`
@@ -33,7 +32,8 @@ type AppConfig struct {
 	} `mapstructure:"mysql"`
 
 	Broker struct {
-		ListenAddress string `mapstructure:"listen_address"`
+		WebSocketAddress string `mapstructure:"ws_address"`
+		GrpcAddress      string `mapstructure:"grpc_address"`
 	} `mapstructure:"broker"`
 }
 

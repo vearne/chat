@@ -34,5 +34,7 @@ const(
 const(
 	CmdCreateAccount = "CRT_ACCOUNT"
 	CmdMatch = "MATCH"
+	CmdDialogue = "DIALOGUE"
+	CmdPushDialogue = "PUSH_DIALOGUE"
 )
 

@@ -9,6 +9,7 @@ require (
 	github.com/jinzhu/gorm v1.9.11
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.5.0
+	github.com/vearne/worker_manager v0.0.0-20190904102932-94bcbdb15e7b
 	go.uber.org/zap v1.13.0
 	google.golang.org/grpc v1.25.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

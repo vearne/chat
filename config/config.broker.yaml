@@ -11,4 +11,5 @@ logger:
 
 # broker的配置
 broker:
-  listen_address: ":18224"
+  ws_address: ":18224"
+  grpc_address: ":18225"

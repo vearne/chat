@@ -4,18 +4,6 @@ package proto;
 
 // The Customer sercie definition
 service Broker {
-    rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse);
-    rpc Match (MatchRequest) returns (MatchResponse);
-    rpc SendMsg (SendMsgRequest) returns (SendMsgResponse);
-    rpc Logout (LogoutRequest) returns (LogoutResponse);
-
-    // 给客户端推送数据的双向流
-    rpc PushMsgDialogue (PushRequest) returns (stream PushDialogue);
-    rpc PushMsgSignal (PushRequest) returns (stream PushSignal);
-
-//    rpc PushMsgDialogue (PushRequest) returns (stream PushDialogue);
-//    rpc PushMsgSignal (PushRequest) returns (stream PushSignal);
-
     // 接收logic推送过来的数据
     rpc ReceiveMsgDialogue (PushDialogue) returns (PushResp);
     rpc ReceiveMsgSignal (PushSignal) returns (PushResp);
@@ -45,7 +33,7 @@ message PushSignal {
     uint64 sessionId = 4;
     oneof data{
         AccountInfo partner = 5;
-        string msgId = 6;
+        uint64 msgId = 6;
     }
 }
 

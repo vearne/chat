@@ -6,7 +6,7 @@ import (
 )
 
 type BizHub struct {
-	sync.Mutex
+	sync.RWMutex
 	sessionMap map[uint64]*melody.Session
 }
 
@@ -22,8 +22,8 @@ func (h *BizHub) SetSession(accountId uint64, s *melody.Session) {
 	h.sessionMap[accountId] = s
 }
 
-func (h *BizHub) GetSession(accountId uint64, s *melody.Session) *melody.Session {
-	h.Lock()
-	defer h.Unlock()
+func (h *BizHub) GetSession(accountId uint64) *melody.Session {
+	h.RLock()
+	defer h.RUnlock()
 	return h.sessionMap[accountId]
 }

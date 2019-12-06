@@ -1,20 +1,14 @@
 package cmd
 
 import (
-	"context"
-	"encoding/json"
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
-	"github.com/vearne/chat/config"
-	"github.com/vearne/chat/consts"
+	bengine "github.com/vearne/chat/broker_engine"
 	zlog "github.com/vearne/chat/log"
-	"github.com/vearne/chat/model"
-	pb "github.com/vearne/chat/proto"
-	"github.com/vearne/chat/utils"
+	manager "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"gopkg.in/olahol/melody.v1"
-	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 var brokerCmd = &cobra.Command{
@@ -24,126 +18,48 @@ var brokerCmd = &cobra.Command{
 	Run:   RunBroker,
 }
 
-var (
-	LogicClient pb.LogicDealerClient
-	Hub         *model.BizHub
-)
-
 func init() {
 	rootCmd.AddCommand(brokerCmd)
 
 }
 
 func RunBroker(cmd *cobra.Command, args []string) {
-	// init Hub
-	Hub = model.NewBizHub()
+	// 1. init some worker
+	wm := prepareAllWorker()
 
-	// logicClient
-	conn, err := grpc.Dial(config.GetOpts().LogicDealer.ListenAddress, grpc.WithInsecure())
-	if err != nil {
-		zlog.Fatal("con't connect to logic")
-	}
-	defer conn.Close()
-	LogicClient = pb.NewLogicDealerClient(conn)
+	// 2. start
+	wm.Start()
 
-	r := gin.Default()
-	m := melody.New()
+	// 3. register grace exit
+	GracefulExit(wm)
 
-	r.GET("/", func(c *gin.Context) {
-		http.ServeFile(c.Writer, c.Request, "index.html")
-	})
-
-	r.GET("/ws", func(c *gin.Context) {
-		m.HandleRequest(c.Writer, c.Request)
-	})
-
-	m.HandlePong(handlePong)
-	m.HandleConnect(func(s *melody.Session) {
-		zlog.Debug("HandleConnect")
-	})
-	m.HandleDisconnect(func(*melody.Session) {
-		zlog.Debug("HandleDisconnect")
-	})
-	m.HandleMessage(handlerMessage)
-
-	r.Run(config.GetOpts().Broker.ListenAddress)
+	// 4. block and wait
+	wm.Wait()
 
 }
 
-func handlePong(s *melody.Session) {
-
+func GracefulExit(wm *manager.WorkerManager) {
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch)
+	for sig := range ch {
+		switch sig {
+		case syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT:
+			zlog.Info("got a signal, execute stop", zap.Reflect("signal", sig))
+			wm.Stop()
+			close(ch)
+		case syscall.SIGPIPE:
+			zlog.Info("got a signal, ignore SIGPIPE", zap.Reflect("signal", sig))
+		default:
+			zlog.Info("got a signal, default", zap.Reflect("signal", sig))
+		}
+	}
 }
 
-func HandleDisconnect(s *melody.Session) {
+func prepareAllWorker() *manager.WorkerManager {
+	wm := manager.NewWorkerManager()
 
-}
+	wm.AddWorker(bengine.NewWebsocketWorker())
+	wm.AddWorker(bengine.NewGrpcWorker())
 
-func handlerMessage(s *melody.Session, data []byte) {
-	zlog.Info("handlerMessage", zap.String("msg", string(data)))
-	var cmd model.CommonCmd
-	json.Unmarshal(data, &cmd)
-	switch cmd.Cmd {
-	case consts.CmdCreateAccount:
-		HandleCrtAccount(s, data)
-	case consts.CmdMatch:
-		HandleMatch(s, data)
-	default:
-		zlog.Debug("unknow cmd", zap.String("cmd", cmd.Cmd))
-	}
-
-}
-
-func HandleMatch(s *melody.Session, data []byte) {
-	zlog.Debug("CmdMatch")
-	var cmd model.CmdMatchReq
-	json.Unmarshal(data, &cmd)
-
-	// 1. 请求
-	ctx := context.Background()
-	req := pb.MatchRequest{AccountId: cmd.AccountId}
-	resp, err := LogicClient.Match(ctx, &req)
-	if err != nil {
-		zlog.Error("LogicClient.Match", zap.Error(err))
-	}
-	var result model.CmdMatchResp
-	result.Code = int32(resp.Code)
-	result.Cmd = consts.CmdMatch
-	if resp.Code == pb.CodeEnum_C000 {
-		result.Cmd = consts.CmdMatch
-		result.PartnerId = resp.PartnerId
-		result.PartnerName = resp.PartnerName
-		result.SessionId = resp.SessionId
-	}
-	data, _ = json.Marshal(&result)
-	s.Write(data)
-}
-
-func HandleCrtAccount(s *melody.Session, data []byte) {
-	zlog.Debug("CmdCreateAccount")
-	var crt model.CmdCreateAccountReq
-	json.Unmarshal(data, &crt)
-
-	// 1. 请求
-	ip, _ := utils.GetIP()
-	broker := ip + config.GetOpts().Broker.ListenAddress
-	ctx := context.Background()
-	req := pb.CreateAccountRequest{Nickname: crt.NickName, Broker: broker}
-	resp, err := LogicClient.CreateAccount(ctx, &req)
-	if err != nil {
-		zlog.Error("LogicClient.CreateAccount", zap.Error(err))
-	}
-
-	zlog.Debug("LogicClient.CreateAccount", zap.Any("resp", resp),
-		zap.Uint64("accountId", resp.AccountId))
-	// 2 记录accountId和session的对应关系
-	Hub.SetSession(resp.AccountId, s)
-	s.Set("nickName", req.Nickname)
-	s.Set("accountId", resp.AccountId)
-	// 3. 返回给客户端
-	var result model.CmdCreateAccountResp
-	result.AccountId = resp.AccountId
-	result.NickName = req.Nickname
-	result.Cmd = consts.CmdCreateAccount
-	data, _ = json.Marshal(&result)
-	s.Write(data)
+	return wm
 }
