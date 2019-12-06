@@ -52,14 +52,32 @@ func (w *GrpcWorker) ReceiveMsgDialogue(ctx context.Context, in *pb.PushDialogue
 		SessionId: in.SessionId, Content: in.Content}
 	data, _ := json.Marshal(&req)
 	session.Write(data)
-	return nil, nil
+
+	// result
+	resp := pb.PushResp{Code: pb.CodeEnum_C000}
+	return &resp, nil
 }
 
 func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*pb.PushResp, error) {
+	zlog.Info("ReceiveMsgSignal", zap.Uint64("senderId", in.SenderId),
+		zap.Uint64("sessionId", in.SessionId), zap.String("signalType",
+			pb.SignalTypeEnum_name[int32(in.SignalType)]))
+	var resp *pb.PushResp
 	switch in.SignalType {
 	case pb.SignalTypeEnum_NewSession:
 		zlog.Debug("NewSession")
-		in.GetPartner()
+		req := model.CmdPushSignalReq{Cmd: consts.CmdPushSignal, SenderId: in.SenderId,
+			SignalType: pb.SignalTypeEnum_name[int32(in.SignalType)],
+			SessionId:  in.SessionId, ReceiverId: in.ReceiverId, Data: in.GetPartner()}
+
+		session := Hub.GetSession(in.ReceiverId)
+		data, _ := json.Marshal(&req)
+		session.Write(data)
+
+		// result
+		// result
+		resp = &pb.PushResp{Code: pb.CodeEnum_C000}
+
 	case pb.SignalTypeEnum_PartnerExit:
 		zlog.Debug("PartnerExit")
 	case pb.SignalTypeEnum_DeleteMsg:
@@ -68,5 +86,6 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 		zlog.Error("unknow SignalType", zap.Int32("SignalType", int32(in.SignalType)))
 	}
 
-	return nil, nil
+	// result
+	return resp, nil
 }

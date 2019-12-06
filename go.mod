@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.5.0
 	github.com/golang/protobuf v1.3.2
 	github.com/jinzhu/gorm v1.9.11
+	github.com/json-iterator/go v1.1.7
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.5.0
 	github.com/vearne/worker_manager v0.0.0-20190904102932-94bcbdb15e7b

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/json-iterator/go"
 	"github.com/spf13/cobra"
 	"github.com/vearne/chat/config"
 	"github.com/vearne/chat/consts"
@@ -175,12 +176,31 @@ func notifyPartnerNewSession(senderId, receiverId, sessionId uint64) {
 
 	var sender model.Account
 	resource.MySQLClient.Where("id = ?", senderId).First(&sender)
+
 	msg.Data = &pb.PushSignal_Partner{Partner: &pb.AccountInfo{
-		AccountId: senderId,
+		AccountId: sender.ID,
 		NickName:  sender.NickName,
 	}}
-
 	resource.WaitToBrokerSignalChan <- &msg
+	zlog.Debug("notifyPartnerNewSession, 1.send signal to broker")
+
+	// 存入数据库
+	// outbox
+	outMsg := model.OutBox{SenderId: senderId, SessionId: sessionId}
+	outMsg.Status = consts.OutBoxStatusNormal
+	outMsg.MsgType = int(pb.MsgTypeEnum_Signal)
+	outMsg.Content = pb.SignalTypeEnum_name[int32(msg.SignalType)]
+	outMsg.CreatedAt = time.Now()
+	outMsg.ModifiedAt = outMsg.CreatedAt
+
+	resource.MySQLClient.Create(&outMsg)
+	// inbox
+	inMsg := model.InBox{}
+	inMsg.SenderId = senderId
+	inMsg.MsgId = outMsg.ID
+	inMsg.ReceverId = receiverId
+	resource.MySQLClient.Create(&inMsg)
+	zlog.Debug("notifyPartnerNewSession, 2.save to database")
 }
 
 func SendPartnerMsg(senderId, receiverId, sessionId uint64, content string) {
@@ -195,6 +215,8 @@ func SendPartnerMsg(senderId, receiverId, sessionId uint64, content string) {
 func RunLogic(cmd *cobra.Command, args []string) {
 	// 1. init resource
 	resource.InitLogicResource()
+
+	fmt.Println("logic starting ... ")
 
 	// 2. 负责向broker推送
 	go PumpSignalToBroker()
@@ -231,7 +253,17 @@ func PumpSignalToBroker() {
 			}
 			resource.BrokerMap[account.Broker] = client
 		}
-		client.ReceiveMsgSignal(context.Background(), msg)
+		str, _ := jsoniter.MarshalToString(msg)
+		zlog.Debug("----2---", zap.String("msg", str))
+
+		resp, err := client.ReceiveMsgSignal(context.Background(), msg)
+		if err != nil {
+			zlog.Error("PumpSignalToBroker", zap.Error(err))
+			return
+		}
+		zlog.Info("PumpSignalToBroker", zap.Int32("code", int32(resp.Code)),
+			zap.Uint64("ReceiverId", msg.ReceiverId),
+			zap.String("signalType", pb.SignalTypeEnum_name[int32(msg.SignalType)]))
 	}
 }
 
@@ -250,7 +282,14 @@ func PumpDialogueToBroker() {
 			}
 			resource.BrokerMap[account.Broker] = client
 		}
-		client.ReceiveMsgDialogue(context.Background(), msg)
+		resp, err := client.ReceiveMsgDialogue(context.Background(), msg)
+		if err != nil {
+			zlog.Error("PumpDialogueToBroker", zap.Error(err))
+			return
+		}
+		zlog.Info("PumpDialogueToBroker", zap.Int32("code", int32(resp.Code)),
+			zap.Uint64("ReceiverId", msg.ReceiverId),
+			zap.String("content", msg.Content))
 	}
 }
 
@@ -260,7 +299,7 @@ func CreateBrokerClient(broker string) (pb.BrokerClient, error) {
 		zlog.Error("con't connect to logic", zap.String("broker", broker))
 		return nil, fmt.Errorf("con't connect to logic:%v", broker)
 	}
-	defer conn.Close()
+	//defer conn.Close()
 	client := pb.NewBrokerClient(conn)
 	return client, nil
 }

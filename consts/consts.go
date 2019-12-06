@@ -30,4 +30,5 @@ const (
 	CmdMatch         = "MATCH"
 	CmdDialogue      = "DIALOGUE"
 	CmdPushDialogue  = "PUSH_DIALOGUE"
+	CmdPushSignal    = "PUSH_SIGNAL"
 )

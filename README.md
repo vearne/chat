@@ -65,13 +65,125 @@ grpc
 ### 5. 发号器
 实现session内部msgId唯一
 
-- [ ] broker
-    - [ ] map并发安全
-    - [ ] 触发Ping和处理Ping操作
-    - [ ] 接收客户端的ACK消息
+## 通讯协议
+### 1. 创建用户
+#### request
+```
+{
+	"cmd": "CRT_ACCOUNT",
+	"nickName": "XXXX"
+}
+```
+#### response
+```
+{
+	"cmd": "CRT_ACCOUNT",
+	"nickName": "XXXX",
+	"accountId": 1111
+}
+```
 
-- [ ] logic
-    - [ ] 测试
+### 2. 请求匹配
+#### request
+```
+{
+	"cmd": "MATCH",
+	"accountId": 1111
+}
+```
+#### response
+```
+{
+	"cmd": "MATCH",
+	"partnerId": 1111,
+	"partnerName": "xxxx",
+	"sessionId": 10000
+	"code": 0
+}
+```
+### 3.发送消息
+发送方是client
+#### request
+```
+{
+	"cmd": "DIALOGUE",
+    "senderId": 1111,
+    "sessionId": 10000,
+    "content": "hello world"
+}
+```
+#### response
+```
+{
+	"code": 0
+}
+```
+### 4. 推送消息
+发送方是broker
+#### request
+```
+{
+	"cmd": "PUSH_DIALOGUE",
+    "senderId": 1111,
+    "sessionId": 10000,
+    "content": "hello world"
+}
+```
+#### response
+```
+{
+	"code": 0
+}
+```
+### 5. 推送信令
+发送方是broker
+
+#### 5.1 有新会话
+#### request
+```
+{
+	"cmd": "PUSH_SIGNAL",
+	"signalType: "NewSession"
+    "senderId": 1111,
+    "sessionId": 10000,
+    "receiverId": 12000,
+    "data":{
+        "accountId":  100,
+        "nickName": "zhangsan"
+    }
+}
+```
+#### 5.2 用户退出或掉线
+```
+{
+	"cmd": "PUSH_SIGNAL",
+	"signalType: "PartnerExit"
+    "senderId": 1111,
+    "sessionId": 10000,
+    "receiverId": 12000,
+    "data":{
+        "accountId":  1000,
+    }
+}
+```
+
+
+#### response
+```
+{
+	"code": 0
+}
+```
+
+
+
+### 1. 判断用户已经下线，或者连接断开
+2种情况， 
+1. 用户刷新
+2. 用户关闭连接
+ 
+### 2. 多用户同时聊天
+ 
 
     
  
