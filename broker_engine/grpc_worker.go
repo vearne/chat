@@ -44,18 +44,29 @@ func (w *GrpcWorker) Stop() {
 }
 
 func (w *GrpcWorker) ReceiveMsgDialogue(ctx context.Context, in *pb.PushDialogue) (*pb.PushResp, error) {
-	zlog.Debug("ReceiveMsgDialogue",  zap.Uint64("senderId", in.SenderId),
+	zlog.Debug("ReceiveMsgDialogue", zap.Uint64("senderId", in.SenderId),
 		zap.Uint64("sessionId", in.SessionId), zap.String("content", in.Content))
 
 	session := Hub.GetSession(in.ReceiverId)
-	req := model.CmdPushDialogueReq{Cmd:consts.CmdPushDialogue, SenderId:in.SenderId,
-		SessionId:in.SessionId, Content:in.Content}
+	req := model.CmdPushDialogueReq{Cmd: consts.CmdPushDialogue, SenderId: in.SenderId,
+		SessionId: in.SessionId, Content: in.Content}
 	data, _ := json.Marshal(&req)
 	session.Write(data)
 	return nil, nil
 }
 
-func (w *GrpcWorker) ReceiveMsgSignal(context.Context, *pb.PushSignal) (*pb.PushResp, error) {
+func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*pb.PushResp, error) {
+	switch in.SignalType {
+	case pb.SignalTypeEnum_NewSession:
+		zlog.Debug("NewSession")
+		in.GetPartner()
+	case pb.SignalTypeEnum_PartnerExit:
+		zlog.Debug("PartnerExit")
+	case pb.SignalTypeEnum_DeleteMsg:
+		zlog.Debug("DeleteMsg")
+	default:
+		zlog.Error("unknow SignalType", zap.Int32("SignalType", int32(in.SignalType)))
+	}
 
 	return nil, nil
 }

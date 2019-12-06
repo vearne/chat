@@ -167,7 +167,7 @@ func notifyPartnerExit(senderId, receiverId, sessionId uint64) {
 func notifyPartnerNewSession(senderId, receiverId, sessionId uint64) {
 	//resource.WaitToBrokerSignalChan <- &
 	msg := pb.PushSignal{
-		SignalType: pb.SignalTypeEnum_CreateSession,
+		SignalType: pb.SignalTypeEnum_NewSession,
 		SenderId:   senderId,
 		SessionId:  sessionId,
 		ReceiverId: receiverId,

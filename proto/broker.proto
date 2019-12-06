@@ -34,6 +34,7 @@ message PushSignal {
     oneof data{
         AccountInfo partner = 5;
         uint64 msgId = 6;
+        uint64 accountId = 7;
     }
 }
 
@@ -44,7 +45,7 @@ message AccountInfo{
 
 enum SignalTypeEnum {
     PartnerExit = 0; // 聊天的对象，掉线或者登出
-    CreateSession = 1; // 创建会话
+    NewSession = 1; // 创建会话
     DeleteMsg = 2; // 删除消息
 }
 

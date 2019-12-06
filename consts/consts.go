@@ -1,40 +1,33 @@
 package consts
 
-const(
+const (
 	AccountStatusCreated = iota
 	AccountStatusInUse
 	AccountStatusDestroyed
 )
-const(
+const (
 	SessionStatusCreated = iota
 	SessionStatusInUse
 	SessionStatusDestroyed
 )
 
-const(
+const (
 	OutBoxStatusNormal = iota
 	OutBoxStatusDeleted
 )
 
-const(
+const (
 	InBoxStatusCreated = iota
 	InBoxStatusDelivered
 )
 
 const (
-	frameTypeResponse int32 = 0
-	frameTypeError    int32 = 1
-	frameTypeMessage  int32 = 2
-)
-
-const(
 	SystemSender = 0
 )
 
-const(
+const (
 	CmdCreateAccount = "CRT_ACCOUNT"
-	CmdMatch = "MATCH"
-	CmdDialogue = "DIALOGUE"
-	CmdPushDialogue = "PUSH_DIALOGUE"
+	CmdMatch         = "MATCH"
+	CmdDialogue      = "DIALOGUE"
+	CmdPushDialogue  = "PUSH_DIALOGUE"
 )
-

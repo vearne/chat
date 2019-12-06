@@ -25,29 +25,43 @@ type CmdMatchResp struct {
 	PartnerId   uint64 `json:"partnerId,omitempty"`
 	PartnerName string `json:"partnerName,omitempty"`
 	SessionId   uint64 `json:"sessionId,omitempty"`
-	Code        int32 `json:"code"`
+	Code        int32  `json:"code"`
 }
 
 type CmdDialogueReq struct {
 	Cmd       string `json:"cmd"`
-	SenderId uint64 `json:"senderId"`
+	SenderId  uint64 `json:"senderId"`
 	SessionId uint64 `json:"sessionId"`
 	Content   string `json:"content"`
 }
 
 type CmdDialogueResp struct {
-	Cmd       string `json:"cmd"`
-	Code        int32 `json:"code"`
+	Cmd  string `json:"cmd"`
+	Code int32  `json:"code"`
 }
 
 type CmdPushDialogueReq struct {
 	Cmd       string `json:"cmd"`
-	SenderId uint64 `json:"senderId"`
+	SenderId  uint64 `json:"senderId"`
 	SessionId uint64 `json:"sessionId"`
 	Content   string `json:"content"`
 }
 
 type CmdPushDialogueResp struct {
-	Cmd       string `json:"cmd"`
-	Code        int32 `json:"code"`
+	Cmd  string `json:"cmd"`
+	Code int32  `json:"code"`
+}
+
+type CmdPushSignalReq struct {
+	Cmd        string      `json:"cmd"`
+	SenderId   uint64      `json:"senderId"`
+	SessionId  uint64      `json:"sessionId"`
+	ReceiverId uint64      `json:"receiverId"`
+	SignalType string      `json:"signalType"`
+	Data       interface{} `json:"data"`
+}
+
+type CmdPushSignalResp struct {
+	Cmd  string `json:"cmd"`
+	Code int32  `json:"code"`
 }
