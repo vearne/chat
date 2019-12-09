@@ -54,6 +54,14 @@ func (w *GrpcWorker) ReceiveMsgDialogue(ctx context.Context, in *pb.PushDialogue
 			SessionId: in.SessionId, Content: in.Content}
 		data, _ := json.Marshal(&req)
 		session.Write(data)
+	} else {
+		zlog.Info("Receiver offline", zap.Uint64("receiverId", in.ReceiverId))
+		req := pb.LogoutRequest{AccountId: in.ReceiverId}
+		_, err := resource.LogicClient.Logout(context.Background(), &req)
+		if err != nil {
+			zlog.Error("LogicClient.Logout", zap.Error(err))
+
+		}
 	}
 
 	// result

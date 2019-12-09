@@ -18,4 +18,4 @@ broker:
 # 超过maxWait就认为Client已经掉线
 ping:
   interval: "500ms"
-  maxWait: "3s"
+  maxWait: "2s"

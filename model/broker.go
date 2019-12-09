@@ -54,7 +54,7 @@ func (h *BizHub) SetLastPong(accountId uint64, t time.Time) {
 func (h *BizHub) GetAllClient() []*Client {
 	h.RLock()
 	defer h.RUnlock()
-	res := make([]*Client, len(h.clientMap))
+	res := make([]*Client, 0, len(h.clientMap))
 	for _, v := range h.clientMap {
 		res = append(res, v)
 	}

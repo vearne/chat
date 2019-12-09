@@ -75,6 +75,8 @@ func (worker *WebsocketWorker) Stop() {
 
 func HandleDisconnect(s *melody.Session) {
 	accountId, _ := s.Get("accountId")
+	zlog.Info("HandleDisconnect", zap.Uint64("accountId", accountId.(uint64)))
+
 	ExecuteLogout(accountId.(uint64))
 	s.Close()
 }
@@ -87,15 +89,17 @@ func HandlePong(s *melody.Session, data []byte) {
 }
 
 func handlerMessage(s *melody.Session, data []byte) {
-	zlog.Info("handlerMessage", zap.String("msg", string(data)))
 	var cmd model.CommonCmd
 	json.Unmarshal(data, &cmd)
 	switch cmd.Cmd {
 	case consts.CmdCreateAccount:
+		zlog.Info("handlerMessage", zap.String("msg", string(data)))
 		HandleCrtAccount(s, data)
 	case consts.CmdMatch:
+		zlog.Info("handlerMessage", zap.String("msg", string(data)))
 		HandleMatch(s, data)
 	case consts.CmdDialogue:
+		zlog.Info("handlerMessage", zap.String("msg", string(data)))
 		HandleDialogue(s, data)
 	case consts.CmdPong:
 		HandlePong(s, data)

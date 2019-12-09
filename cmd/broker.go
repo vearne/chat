@@ -66,7 +66,7 @@ func prepareAllWorker() *manager.WorkerManager {
 
 	wm.AddWorker(bengine.NewWebsocketWorker())
 	wm.AddWorker(bengine.NewGrpcWorker())
-	//wm.AddWorker(bengine.NewPingWorker())
+	wm.AddWorker(bengine.NewPingWorker())
 
 	return wm
 }
