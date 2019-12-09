@@ -158,7 +158,8 @@ grpc
 {
 	"cmd": "PUSH_SIGNAL",
 	"signalType: "PartnerExit"
-    "senderId": 1111,
+	// 都是由系统发出
+    "senderId": 0,
     "sessionId": 10000,
     "receiverId": 12000,
     "data":{
@@ -174,18 +175,25 @@ grpc
 	"code": 0
 }
 ```
+### 6. PING
+由broker发起
+#### request
+```
+{
+	"cmd": "PING",
+	"accountId": 12000
+}
+```
+#### response
+```
+{
+	"cmd": "PONG"
+	"accountId": 12000
+}
+```
 
 
 
-### 1. 判断用户已经下线，或者连接断开
-2种情况， 
-1. 用户刷新
-2. 用户关闭连接
- 
-### 2. 多用户同时聊天
-### 3. ping和pong的处理
-### 4. 消息到达的ack机制
- 
 
     
  
