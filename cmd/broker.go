@@ -26,6 +26,8 @@ func init() {
 
 func RunBroker(cmd *cobra.Command, args []string) {
 	// init resource
+	initConfig("broker")
+	zlog.InitLogger()
 	resource.InitBrokerResource()
 
 	// 1. init some worker
@@ -64,6 +66,7 @@ func prepareAllWorker() *manager.WorkerManager {
 
 	wm.AddWorker(bengine.NewWebsocketWorker())
 	wm.AddWorker(bengine.NewGrpcWorker())
+	//wm.AddWorker(bengine.NewPingWorker())
 
 	return wm
 }

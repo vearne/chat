@@ -191,7 +191,9 @@ func ExecuteLogout(accountId uint64) {
 	resp, err := resource.LogicClient.Logout(context.Background(), &req)
 	if err != nil {
 		zlog.Error("LogicClient.Logout", zap.Error(err))
+		return
 	}
-	zlog.Info("LogicClient.Logout", zap.Int32("code", int32(resp.Code)))
+	zlog.Info("LogicClient.Logout", zap.Uint64("accountId", accountId),
+		zap.Int32("code", int32(resp.Code)))
 
 }

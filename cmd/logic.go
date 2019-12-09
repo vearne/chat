@@ -101,11 +101,11 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 
 	} else {
 		// 由系统产生一条消息，来替代用户发出的消息
-		// 告诉会话的参与者，接收人已经退出了
+		// 消息的接收人已经退出了
 		partner := model.SessionAccount{}
 		resource.MySQLClient.Where("session_id = ? and account_id != ?",
-			outMsg.SessionId, req.SenderId).First(&partner)
-		notifyPartnerExit(consts.SystemSender, partner.AccountId, partner.SessionId)
+			req.SessionId, req.SenderId).First(&partner)
+		notifyPartnerExit(req.SenderId, partner.SessionId, partner.AccountId)
 	}
 
 	// push
@@ -133,7 +133,7 @@ func (s *LogicServer) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.Lo
 		var sa model.SessionAccount
 		resource.MySQLClient.Where("session_id = ? and account_id != ?", item.SessionId,
 			req.AccountId).First(&sa)
-		notifyPartnerExit(consts.SystemSender, sa.AccountId, item.SessionId)
+		notifyPartnerExit(sa.AccountId, item.SessionId, req.AccountId)
 	}
 
 	var resp pb.LogoutResponse
@@ -141,21 +141,22 @@ func (s *LogicServer) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.Lo
 	return &resp, nil
 }
 
-func notifyPartnerExit(senderId, receiverId, sessionId uint64) {
+func notifyPartnerExit(receiverId, sessionId uint64, exiterId uint64) {
 	resource.WaitToBrokerSignalChan <- &pb.PushSignal{
 		SignalType: pb.SignalTypeEnum_PartnerExit,
-		SenderId:   senderId,
+		SenderId:   consts.SystemSender,
 		SessionId:  sessionId,
 		ReceiverId: receiverId,
+		Data:       &pb.PushSignal_AccountId{AccountId: exiterId},
 	}
 	zlog.Debug("notifyPartnerExit, 1.send signal to broker")
 	// 存入数据库
 	// outbox
-	outMsg := dao.CreateOutMsg(pb.MsgTypeEnum_Signal, senderId, sessionId,
+	outMsg := dao.CreateOutMsg(pb.MsgTypeEnum_Signal, consts.SystemSender, sessionId,
 		pb.SignalTypeEnum_name[int32(pb.SignalTypeEnum_PartnerExit)])
 
 	// inbox
-	dao.CreateInMsg(senderId, outMsg.ID, receiverId)
+	dao.CreateInMsg(consts.SystemSender, outMsg.ID, receiverId)
 	zlog.Debug("notifyPartnerExit, 2.save to database")
 }
 
@@ -199,6 +200,8 @@ func SendPartnerMsg(senderId, receiverId, sessionId uint64, content string) {
 
 func RunLogic(cmd *cobra.Command, args []string) {
 	// 1. init resource
+	initConfig("logic")
+	zlog.InitLogger()
 	resource.InitLogicResource()
 
 	fmt.Println("logic starting ... ")

@@ -19,7 +19,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vearne/chat/config"
-	zlog "github.com/vearne/chat/log"
 	"log"
 	"os"
 )
@@ -43,7 +42,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig, zlog.InitLogger)
+	//cobra.OnInitialize(initConfig, zlog.InitLogger)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -56,21 +55,14 @@ func init() {
 }
 
 // initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	viper.SetDefault("ROLE", "broker")
-
-	err := viper.BindEnv("ROLE")
-	if err != nil {
-		fmt.Println(err)
-	}
-
+func initConfig(role string) {
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 
 	} else {
 		viper.AddConfigPath("config")
-		fname := fmt.Sprintf("config.%s", viper.GetString("ROLE"))
+		fname := fmt.Sprintf("config.%s", role)
 		viper.SetConfigName(fname)
 	}
 

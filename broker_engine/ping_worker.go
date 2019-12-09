@@ -1,13 +1,11 @@
 package broker_engine
 
 import (
-	"context"
-	"github.com/gin-gonic/gin/internal/json"
+	"encoding/json"
 	"github.com/vearne/chat/config"
 	"github.com/vearne/chat/consts"
 	zlog "github.com/vearne/chat/log"
 	"github.com/vearne/chat/model"
-	pb "github.com/vearne/chat/proto"
 	"github.com/vearne/chat/resource"
 	"go.uber.org/zap"
 	"time"
@@ -24,8 +22,9 @@ func NewPingWorker() *PingWorker {
 	return &worker
 }
 
-func (w *PingWorker) start() {
-	zlog.Info("[start]PingWorker")
+func (w *PingWorker) Start() {
+	zlog.Info("[start]PingWorker", zap.Duration("Interval", config.GetOpts().Ping.Interval),
+		zap.Duration("MaxWait", config.GetOpts().Ping.MaxWait))
 	ch := time.Tick(config.GetOpts().Ping.Interval)
 
 	for w.RunningFlag {
@@ -51,7 +50,7 @@ func (w *PingWorker) start() {
 	w.ExitedFlag = true
 }
 
-func (w *PingWorker) stop() {
+func (w *PingWorker) Stop() {
 	zlog.Info("PingWorker exit...")
 	w.RunningFlag = false
 	close(w.ExitChan)

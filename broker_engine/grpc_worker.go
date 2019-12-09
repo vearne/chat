@@ -83,6 +83,31 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 
 	case pb.SignalTypeEnum_PartnerExit:
 		zlog.Debug("PartnerExit")
+		/*
+		   {
+		   	"cmd": "PUSH_SIGNAL",
+		   	"signalType: "PartnerExit"
+		       "senderId": 1111,
+		       "sessionId": 10000,
+		       "receiverId": 12000,
+		       "data":{
+		           "accountId":  1000,
+		       }
+		   }
+		*/
+		req := model.CmdPushSignalReq{Cmd: consts.CmdPushSignal, SenderId: in.SenderId,
+			SignalType: pb.SignalTypeEnum_name[int32(in.SignalType)],
+			SessionId:  in.SessionId, ReceiverId: in.ReceiverId,
+			Data: map[string]uint64{"accountId": in.GetAccountId()}}
+
+		session, ok := resource.Hub.GetSession(in.ReceiverId)
+		if ok {
+			data, _ := json.Marshal(&req)
+			session.Write(data)
+		}
+		// result
+		resp = &pb.PushResp{Code: pb.CodeEnum_C000}
+
 	case pb.SignalTypeEnum_DeleteMsg:
 		zlog.Debug("DeleteMsg")
 	default:
