@@ -13,3 +13,9 @@ logger:
 broker:
   ws_address: ":18224"
   grpc_address: ":18225"
+
+# 用Ping检查Client是否退出或者掉线
+# 超过maxWait就认为Client已经掉线
+ping:
+  interval: "500ms"
+  maxWait: "3s"

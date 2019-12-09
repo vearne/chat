@@ -8,6 +8,7 @@ import (
 	zlog "github.com/vearne/chat/log"
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
+	"github.com/vearne/chat/resource"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -47,11 +48,13 @@ func (w *GrpcWorker) ReceiveMsgDialogue(ctx context.Context, in *pb.PushDialogue
 	zlog.Debug("ReceiveMsgDialogue", zap.Uint64("senderId", in.SenderId),
 		zap.Uint64("sessionId", in.SessionId), zap.String("content", in.Content))
 
-	session := Hub.GetSession(in.ReceiverId)
-	req := model.CmdPushDialogueReq{Cmd: consts.CmdPushDialogue, SenderId: in.SenderId,
-		SessionId: in.SessionId, Content: in.Content}
-	data, _ := json.Marshal(&req)
-	session.Write(data)
+	session, ok := resource.Hub.GetSession(in.ReceiverId)
+	if ok {
+		req := model.CmdPushDialogueReq{Cmd: consts.CmdPushDialogue, SenderId: in.SenderId,
+			SessionId: in.SessionId, Content: in.Content}
+		data, _ := json.Marshal(&req)
+		session.Write(data)
+	}
 
 	// result
 	resp := pb.PushResp{Code: pb.CodeEnum_C000}
@@ -70,11 +73,11 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 			SignalType: pb.SignalTypeEnum_name[int32(in.SignalType)],
 			SessionId:  in.SessionId, ReceiverId: in.ReceiverId, Data: in.GetPartner()}
 
-		session := Hub.GetSession(in.ReceiverId)
-		data, _ := json.Marshal(&req)
-		session.Write(data)
-
-		// result
+		session, ok := resource.Hub.GetSession(in.ReceiverId)
+		if ok {
+			data, _ := json.Marshal(&req)
+			session.Write(data)
+		}
 		// result
 		resp = &pb.PushResp{Code: pb.CodeEnum_C000}
 

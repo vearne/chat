@@ -52,10 +52,10 @@ func (OutBox) TableName() string {
 }
 
 type InBox struct {
-	ID        uint64 `gorm:"column:id" json:"id"`
-	SenderId  uint64 `gorm:"column:sender_id" json:"sender_id"`
-	MsgId     uint64 `gorm:"column:msg_id" json:"msg_id"`
-	ReceverId uint64 `gorm:"column:recever_id" json:"recever_id"`
+	ID         uint64 `gorm:"column:id" json:"id"`
+	SenderId   uint64 `gorm:"column:sender_id" json:"sender_id"`
+	MsgId      uint64 `gorm:"column:msg_id" json:"msg_id"`
+	ReceiverId uint64 `gorm:"column:receiver_id" json:"receiver_id"`
 }
 
 func (InBox) TableName() string {

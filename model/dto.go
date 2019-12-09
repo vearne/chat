@@ -65,3 +65,27 @@ type CmdPushSignalResp struct {
 	Cmd  string `json:"cmd"`
 	Code int32  `json:"code"`
 }
+
+// 由broker发出
+/*
+	{
+	"cmd": "PING",
+	"accountId": 12000
+	}
+*/
+type CmdPingReq struct {
+	Cmd       string `json:"cmd"`
+	AccountId uint64 `json:"accountId"`
+}
+
+// 由Client发出
+/*
+	{
+		"cmd": "PONG"
+		"accountId": 12000
+	}
+*/
+type CmdPingResp struct {
+	Cmd       string `json:"cmd"`
+	AccountId uint64 `json:"accountId"`
+}

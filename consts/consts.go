@@ -31,4 +31,6 @@ const (
 	CmdDialogue      = "DIALOGUE"
 	CmdPushDialogue  = "PUSH_DIALOGUE"
 	CmdPushSignal    = "PUSH_SIGNAL"
+	CmdPing          = "PING"
+	CmdPong          = "PONG"
 )

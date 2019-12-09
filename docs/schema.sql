@@ -46,8 +46,8 @@ CREATE TABLE `inbox` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `sender_id` bigint unsigned DEFAULT NULL,
   `msg_id` bigint unsigned DEFAULT NULL,
-  `recever_id` bigint unsigned DEFAULT NULL,
+  `receiver_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
-ALTER TABLE inbox ADD index idx_recever (`recever_id`);
+ALTER TABLE inbox ADD index idx_receiver (`receiver_id`);

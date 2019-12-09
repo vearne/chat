@@ -87,37 +87,27 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 	// 比如 1) 用户主动退出会话 2)用户掉线退出会话 3)删除某条消息
 
 	// 1. 存储在发件箱
-	outMsg := model.OutBox{SenderId: req.SenderId, SessionId: req.SessionId}
-	outMsg.Status = consts.OutBoxStatusNormal
-	outMsg.MsgType = int(req.Msgtype)
-	outMsg.Content = req.Content
-	outMsg.CreatedAt = time.Now()
-	outMsg.ModifiedAt = outMsg.CreatedAt
+	outMsg := dao.CreateOutMsg(req.Msgtype, req.SenderId, req.SessionId, req.Content)
 
-	resource.MySQLClient.Create(&outMsg)
+	// 判断一下会话的状态，收件人是否退出等情况
+	session := dao.GetSession(req.SessionId)
 	// 2. 存储在收件箱
-	partners := make([]model.SessionAccount, 0)
-	resource.MySQLClient.Where("session_id = ?", outMsg.SessionId).Find(&partners)
-	for _, partner := range partners {
-		inMsg := model.InBox{}
-		inMsg.SenderId = req.SenderId
-		inMsg.MsgId = outMsg.ID
-		inMsg.ReceverId = partner.AccountId
-		resource.MySQLClient.Create(&inMsg)
+	if session.Status == consts.SessionStatusInUse {
+		partner := model.SessionAccount{}
+		resource.MySQLClient.Where("session_id = ? and account_id != ?",
+			outMsg.SessionId, req.SenderId).First(&partner)
+		dao.CreateInMsg(req.SenderId, outMsg.ID, partner.AccountId)
+		SendPartnerMsg(req.SenderId, partner.AccountId, req.SessionId, req.Content)
+
+	} else {
+		// 由系统产生一条消息，来替代用户发出的消息
+		// 告诉会话的参与者，接收人已经退出了
+		partner := model.SessionAccount{}
+		resource.MySQLClient.Where("session_id = ? and account_id != ?",
+			outMsg.SessionId, req.SenderId).First(&partner)
+		notifyPartnerExit(consts.SystemSender, partner.AccountId, partner.SessionId)
 	}
 
-	// 3. 推送给对应的broker
-	if req.Msgtype == pb.MsgTypeEnum_Signal {
-		// 删除消息
-	} else {
-		// 异步处理
-		var sas []model.SessionAccount
-		resource.MySQLClient.Where("session_id = ? and account_id != ?", req.SessionId,
-			req.SenderId).Find(&sas)
-		for _, sa := range sas {
-			SendPartnerMsg(req.SenderId, sa.AccountId, req.SessionId, req.Content)
-		}
-	}
 	// push
 	resp := pb.SendMsgResponse{Code: pb.CodeEnum_C000}
 	return &resp, nil
@@ -137,18 +127,13 @@ func (s *LogicServer) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.Lo
 		resource.MySQLClient.Model(&model.Session{}).Where("id = ?", item.SessionId).Updates(map[string]interface{}{
 			"status":      consts.SessionStatusDestroyed,
 			"modified_at": time.Now()})
+
 		// notify parnter
-
-		var s model.Session
-		resource.MySQLClient.Where("id = ?", item.ID).First(&s)
-
 		// 通知这些会话的参与者，会话即将销毁
-		var sas []model.SessionAccount
+		var sa model.SessionAccount
 		resource.MySQLClient.Where("session_id = ? and account_id != ?", item.SessionId,
-			item.AccountId).Find(&sas)
-		for _, sa := range sas {
-			notifyPartnerExit(consts.SystemSender, sa.AccountId, s.ID)
-		}
+			req.AccountId).First(&sa)
+		notifyPartnerExit(consts.SystemSender, sa.AccountId, item.SessionId)
 	}
 
 	var resp pb.LogoutResponse
@@ -163,6 +148,15 @@ func notifyPartnerExit(senderId, receiverId, sessionId uint64) {
 		SessionId:  sessionId,
 		ReceiverId: receiverId,
 	}
+	zlog.Debug("notifyPartnerExit, 1.send signal to broker")
+	// 存入数据库
+	// outbox
+	outMsg := dao.CreateOutMsg(pb.MsgTypeEnum_Signal, senderId, sessionId,
+		pb.SignalTypeEnum_name[int32(pb.SignalTypeEnum_PartnerExit)])
+
+	// inbox
+	dao.CreateInMsg(senderId, outMsg.ID, receiverId)
+	zlog.Debug("notifyPartnerExit, 2.save to database")
 }
 
 func notifyPartnerNewSession(senderId, receiverId, sessionId uint64) {
@@ -186,20 +180,11 @@ func notifyPartnerNewSession(senderId, receiverId, sessionId uint64) {
 
 	// 存入数据库
 	// outbox
-	outMsg := model.OutBox{SenderId: senderId, SessionId: sessionId}
-	outMsg.Status = consts.OutBoxStatusNormal
-	outMsg.MsgType = int(pb.MsgTypeEnum_Signal)
-	outMsg.Content = pb.SignalTypeEnum_name[int32(msg.SignalType)]
-	outMsg.CreatedAt = time.Now()
-	outMsg.ModifiedAt = outMsg.CreatedAt
+	outMsg := dao.CreateOutMsg(pb.MsgTypeEnum_Signal, senderId, sessionId,
+		pb.SignalTypeEnum_name[int32(pb.SignalTypeEnum_NewSession)])
 
-	resource.MySQLClient.Create(&outMsg)
 	// inbox
-	inMsg := model.InBox{}
-	inMsg.SenderId = senderId
-	inMsg.MsgId = outMsg.ID
-	inMsg.ReceverId = receiverId
-	resource.MySQLClient.Create(&inMsg)
+	dao.CreateInMsg(senderId, outMsg.ID, receiverId)
 	zlog.Debug("notifyPartnerNewSession, 2.save to database")
 }
 

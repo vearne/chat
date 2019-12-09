@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	bengine "github.com/vearne/chat/broker_engine"
 	zlog "github.com/vearne/chat/log"
+	"github.com/vearne/chat/resource"
 	manager "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
 	"os"
@@ -24,6 +25,9 @@ func init() {
 }
 
 func RunBroker(cmd *cobra.Command, args []string) {
+	// init resource
+	resource.InitBrokerResource()
+
 	// 1. init some worker
 	wm := prepareAllWorker()
 

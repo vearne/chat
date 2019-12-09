@@ -5,6 +5,7 @@ import (
 	"log"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 var initOnce sync.Once
@@ -35,6 +36,10 @@ type AppConfig struct {
 		WebSocketAddress string `mapstructure:"ws_address"`
 		GrpcAddress      string `mapstructure:"grpc_address"`
 	} `mapstructure:"broker"`
+	Ping struct {
+		Interval time.Duration `mapstructure:"interval"`
+		MaxWait  time.Duration `mapstructure:"maxWait"`
+	} `mapstructure:"ping"`
 }
 
 func InitConfig() error {

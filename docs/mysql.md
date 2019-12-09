@@ -43,4 +43,4 @@
 |id|int|主键||
 |sender_id|int|发出者ID||
 |msg_id|int|消息ID||
-|recever_id|int|接收者ID||
+|receiver_id|int|接收者ID||

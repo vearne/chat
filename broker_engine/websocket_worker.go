@@ -9,18 +9,12 @@ import (
 	zlog "github.com/vearne/chat/log"
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
+	"github.com/vearne/chat/resource"
 	"github.com/vearne/chat/utils"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"gopkg.in/olahol/melody.v1"
 	"net/http"
 	"time"
-)
-
-var (
-	LogicClient pb.LogicDealerClient
-	Hub         *model.BizHub
-	Conn        *grpc.ClientConn
 )
 
 type WebsocketWorker struct {
@@ -29,17 +23,6 @@ type WebsocketWorker struct {
 
 func NewWebsocketWorker() *WebsocketWorker {
 	zlog.Info("[init]WebServer")
-	// init Hub
-	Hub = model.NewBizHub()
-	var err error
-
-	// logicClient
-	Conn, err = grpc.Dial(config.GetOpts().LogicDealer.ListenAddress, grpc.WithInsecure())
-	if err != nil {
-		zlog.Fatal("con't connect to logic")
-	}
-	LogicClient = pb.NewLogicDealerClient(Conn)
-
 	worker := &WebsocketWorker{}
 	worker.Server = &http.Server{
 		Addr:           config.GetOpts().Broker.WebSocketAddress,
@@ -68,19 +51,17 @@ func createGinEngine() *gin.Engine {
 		m.HandleRequest(c.Writer, c.Request)
 	})
 
-	m.HandlePong(handlePong)
+	//m.HandlePong(handlePong)
 	m.HandleConnect(func(s *melody.Session) {
 		zlog.Debug("HandleConnect")
 	})
-	m.HandleDisconnect(func(*melody.Session) {
-		zlog.Debug("HandleDisconnect")
-	})
+	m.HandleDisconnect(HandleDisconnect)
 	m.HandleMessage(handlerMessage)
 	return r
 }
 
 func (worker *WebsocketWorker) Stop() {
-	defer Conn.Close()
+	//defer Conn.Close()
 
 	cxt, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -92,12 +73,17 @@ func (worker *WebsocketWorker) Stop() {
 	zlog.Info("[end]WebsocketWorker exit")
 }
 
-func handlePong(s *melody.Session) {
-
+func HandleDisconnect(s *melody.Session) {
+	accountId, _ := s.Get("accountId")
+	ExecuteLogout(accountId.(uint64))
+	s.Close()
 }
 
-func HandleDisconnect(s *melody.Session) {
-
+func HandlePong(s *melody.Session, data []byte) {
+	zlog.Debug("CmdPong")
+	var cmd model.CmdPingResp
+	json.Unmarshal(data, &cmd)
+	resource.Hub.SetLastPong(cmd.AccountId, time.Now())
 }
 
 func handlerMessage(s *melody.Session, data []byte) {
@@ -111,6 +97,8 @@ func handlerMessage(s *melody.Session, data []byte) {
 		HandleMatch(s, data)
 	case consts.CmdDialogue:
 		HandleDialogue(s, data)
+	case consts.CmdPong:
+		HandlePong(s, data)
 	default:
 		zlog.Debug("unknow cmd", zap.String("cmd", cmd.Cmd))
 	}
@@ -126,7 +114,7 @@ func HandleDialogue(s *melody.Session, data []byte) {
 	req := pb.SendMsgRequest{SenderId: cmd.SenderId, SessionId: cmd.SessionId,
 		Msgtype: pb.MsgTypeEnum_Dialogue, Content: cmd.Content}
 
-	resp, err := LogicClient.SendMsg(ctx, &req)
+	resp, err := resource.LogicClient.SendMsg(ctx, &req)
 	if err != nil {
 		zlog.Error("LogicClient.HandleDialogue", zap.Error(err))
 	}
@@ -145,7 +133,7 @@ func HandleMatch(s *melody.Session, data []byte) {
 	// 1. 请求
 	ctx := context.Background()
 	req := pb.MatchRequest{AccountId: cmd.AccountId}
-	resp, err := LogicClient.Match(ctx, &req)
+	resp, err := resource.LogicClient.Match(ctx, &req)
 	if err != nil {
 		zlog.Error("LogicClient.Match", zap.Error(err))
 	}
@@ -172,7 +160,7 @@ func HandleCrtAccount(s *melody.Session, data []byte) {
 	broker := ip + config.GetOpts().Broker.GrpcAddress
 	ctx := context.Background()
 	req := pb.CreateAccountRequest{Nickname: cmd.NickName, Broker: broker}
-	resp, err := LogicClient.CreateAccount(ctx, &req)
+	resp, err := resource.LogicClient.CreateAccount(ctx, &req)
 	if err != nil {
 		zlog.Error("LogicClient.CreateAccount", zap.Error(err))
 	}
@@ -180,9 +168,9 @@ func HandleCrtAccount(s *melody.Session, data []byte) {
 	zlog.Debug("LogicClient.CreateAccount", zap.Any("resp", resp),
 		zap.Uint64("accountId", resp.AccountId))
 	// 2 记录accountId和session的对应关系
-	Hub.SetSession(resp.AccountId, s)
-	s.Set("nickName", req.Nickname)
+	resource.Hub.SetClient(req.Nickname, resp.AccountId, s)
 	s.Set("accountId", resp.AccountId)
+
 	// 3. 返回给客户端
 	var result model.CmdCreateAccountResp
 	result.AccountId = resp.AccountId
@@ -190,4 +178,20 @@ func HandleCrtAccount(s *melody.Session, data []byte) {
 	result.Cmd = cmd.Cmd
 	data, _ = json.Marshal(&result)
 	s.Write(data)
+}
+
+func ExecuteLogout(accountId uint64) {
+	// 1. 修改本地状态
+	// melody 会清理它的hub
+	// 我们只需要清理我们自己的
+	resource.Hub.RemoveClient(accountId)
+
+	// 2. 通知其他人
+	req := pb.LogoutRequest{AccountId: accountId}
+	resp, err := resource.LogicClient.Logout(context.Background(), &req)
+	if err != nil {
+		zlog.Error("LogicClient.Logout", zap.Error(err))
+	}
+	zlog.Info("LogicClient.Logout", zap.Int32("code", int32(resp.Code)))
+
 }

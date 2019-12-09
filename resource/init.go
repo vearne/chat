@@ -5,11 +5,14 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/vearne/chat/config"
 	zlog "github.com/vearne/chat/log"
+	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"time"
 )
 
+// -------logic-------
 var (
 	MySQLClient *gorm.DB
 )
@@ -23,12 +26,11 @@ var (
 	BrokerMap map[string]pb.BrokerClient
 )
 
+// ------broker-------
 var (
-	// accountId -> chan
-	// 信令
-	CientSigChanMap map[uint64]chan *pb.PushSignal
-	// 对话
-	CientDiaChanMap map[uint64]chan *pb.PushDialogue
+	LogicClient pb.LogicDealerClient
+	Hub         *model.BizHub
+	Conn        *grpc.ClientConn
 )
 
 func InitMySQL() {
@@ -65,10 +67,14 @@ func InitLogicrMap() {
 }
 
 func InitBrokerResource() {
-	InitBrokerMap()
-}
+	// init Hub
+	Hub = model.NewBizHub()
+	var err error
 
-func InitBrokerMap() {
-	CientSigChanMap = make(map[uint64]chan *pb.PushSignal, 10)
-	CientDiaChanMap = make(map[uint64]chan *pb.PushDialogue, 10)
+	// logicClient
+	Conn, err = grpc.Dial(config.GetOpts().LogicDealer.ListenAddress, grpc.WithInsecure())
+	if err != nil {
+		zlog.Fatal("con't connect to logic")
+	}
+	LogicClient = pb.NewLogicDealerClient(Conn)
 }
