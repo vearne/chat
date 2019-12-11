@@ -23,7 +23,7 @@ var (
 )
 
 var (
-	BrokerMap map[string]pb.BrokerClient
+	BrokerHub *model.BrokerHub
 )
 
 // ------broker-------
@@ -59,11 +59,11 @@ func InitLogicChan() {
 func InitLogicResource() {
 	InitLogicChan()
 	InitMySQL()
-	InitLogicrMap()
+	InitBrokerHub()
 }
 
-func InitLogicrMap() {
-	BrokerMap = make(map[string]pb.BrokerClient, 10)
+func InitBrokerHub() {
+	BrokerHub = model.NewBrokerHub()
 }
 
 func InitBrokerResource() {

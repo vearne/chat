@@ -31,7 +31,7 @@ func RunBroker(cmd *cobra.Command, args []string) {
 	resource.InitBrokerResource()
 
 	// 1. init some worker
-	wm := prepareAllWorker()
+	wm := prepareBrokerWorker()
 
 	// 2. start
 	wm.Start()
@@ -61,7 +61,7 @@ func GracefulExit(wm *manager.WorkerManager) {
 	}
 }
 
-func prepareAllWorker() *manager.WorkerManager {
+func prepareBrokerWorker() *manager.WorkerManager {
 	wm := manager.NewWorkerManager()
 
 	wm.AddWorker(bengine.NewWebsocketWorker())

@@ -6,7 +6,7 @@ logger:
   # 2. "debug"
   # 3. "error"
   level: "debug"
-  filepath: "/var/log/st_logic.log"
+  filepath: "/var/log/chat_logic.log"
   listen_address: ":19092"
 
 mysql:
