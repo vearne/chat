@@ -84,6 +84,7 @@ grpc
 ```
 
 ### 2. 请求匹配
+发送方是client
 #### request
 ```
 {
@@ -106,7 +107,9 @@ grpc
 #### request
 ```
 {
+    
 	"cmd": "DIALOGUE",
+	"msgId": 20000, // 新增
     "senderId": 1111,
     "sessionId": 10000,
     "content": "hello world"
@@ -115,6 +118,7 @@ grpc
 #### response
 ```
 {
+    "msgId": 20000, // 新增
 	"code": 0
 }
 ```
@@ -124,17 +128,15 @@ grpc
 ```
 {
 	"cmd": "PUSH_DIALOGUE",
+	"msgId": 20000, // 新增
     "senderId": 1111,
     "sessionId": 10000,
     "content": "hello world"
 }
 ```
 #### response
-```
-{
-	"code": 0
-}
-```
+无
+
 ### 5. 推送信令
 发送方是broker
 
@@ -153,6 +155,9 @@ grpc
     }
 }
 ```
+#### response
+无
+
 #### 5.2 用户退出或掉线
 ```
 {
