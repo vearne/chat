@@ -202,12 +202,12 @@ env GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o chat
 ### start
 **broker**
 ```
-./chat --config config.broker.yaml
+./chat broker --config config.broker.yaml
 
 ```
 **logic**
 ```
-./chat --config config.logic.yaml
+./chat logic --config config.logic.yaml
 
 ```
 
