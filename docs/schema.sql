@@ -51,3 +51,14 @@ CREATE TABLE `inbox` (
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 ALTER TABLE inbox ADD index idx_receiver (`receiver_id`);
+
+-- 2019-12-13
+CREATE TABLE `view_ack` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `session_id` bigint unsigned DEFAULT NULL,
+  `account_id` bigint unsigned DEFAULT NULL,
+  `msg_id` bigint unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+
+ALTER TABLE view_ack ADD index idx_view_ack (`session_id`, `account_id`);
