@@ -50,7 +50,8 @@ func (w *GrpcWorker) ReceiveMsgDialogue(ctx context.Context, in *pb.PushDialogue
 
 	session, ok := resource.Hub.GetSession(in.ReceiverId)
 	if ok {
-		req := model.CmdPushDialogueReq{Cmd: consts.CmdPushDialogue, SenderId: in.SenderId,
+		req := model.CmdPushDialogueReq{Cmd: consts.CmdPushDialogue,
+			SenderId: in.SenderId, MsgId: in.MsgId,
 			SessionId: in.SessionId, Content: in.Content}
 		data, _ := json.Marshal(&req)
 		session.Write(data)
@@ -74,6 +75,9 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 		zap.Uint64("sessionId", in.SessionId), zap.String("signalType",
 			pb.SignalTypeEnum_name[int32(in.SignalType)]))
 	var resp *pb.PushResp
+	// result
+	resp = &pb.PushResp{Code: pb.CodeEnum_C000}
+
 	switch in.SignalType {
 	case pb.SignalTypeEnum_NewSession:
 		zlog.Debug("NewSession")
@@ -86,8 +90,6 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 			data, _ := json.Marshal(&req)
 			session.Write(data)
 		}
-		// result
-		resp = &pb.PushResp{Code: pb.CodeEnum_C000}
 
 	case pb.SignalTypeEnum_PartnerExit:
 		zlog.Debug("PartnerExit")
@@ -113,11 +115,23 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 			data, _ := json.Marshal(&req)
 			session.Write(data)
 		}
-		// result
-		resp = &pb.PushResp{Code: pb.CodeEnum_C000}
 
 	case pb.SignalTypeEnum_DeleteMsg:
 		zlog.Debug("DeleteMsg")
+
+	case pb.SignalTypeEnum_ViewedAck:
+		zlog.Debug("ViewedAck")
+		req := model.CmdPushViewedAckReq{
+			Cmd:       consts.CmdPushViewedAck,
+			SessionId: in.SessionId,
+			AccountId: in.SenderId,
+			MsgId:     in.GetMsgId(),
+		}
+		session, ok := resource.Hub.GetSession(in.ReceiverId)
+		if ok {
+			data, _ := json.Marshal(&req)
+			session.Write(data)
+		}
 	default:
 		zlog.Error("unknow SignalType", zap.Int32("SignalType", int32(in.SignalType)))
 	}

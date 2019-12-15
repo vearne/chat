@@ -23,6 +23,7 @@ message PushDialogue {
     uint64 sessionId = 2;
     uint64 receiverId = 3;
     string content = 4;
+    uint64 msgId = 5;
 }
 
 
@@ -47,5 +48,6 @@ enum SignalTypeEnum {
     PartnerExit = 0; // 聊天的对象，掉线或者登出
     NewSession = 1; // 创建会话
     DeleteMsg = 2; // 删除消息
+    ViewedAck = 3; // 已读确认
 }
 

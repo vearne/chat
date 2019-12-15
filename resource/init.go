@@ -1,6 +1,10 @@
 package resource
 
 import (
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"google.golang.org/grpc/keepalive"
+
+	"github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/vearne/chat/config"
@@ -9,6 +13,7 @@ import (
 	pb "github.com/vearne/chat/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"time"
 )
 
@@ -72,9 +77,38 @@ func InitBrokerResource() {
 	var err error
 
 	// logicClient
-	Conn, err = grpc.Dial(config.GetOpts().LogicDealer.ListenAddress, grpc.WithInsecure())
+	addr := config.GetOpts().LogicDealer.ListenAddress
+
+	Conn, err = CreateGrpcClientConn(addr, 3, time.Second*3)
 	if err != nil {
 		zlog.Fatal("con't connect to logic")
 	}
 	LogicClient = pb.NewLogicDealerClient(Conn)
+}
+
+func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration) (*grpc.ClientConn, error) {
+	interceptors := make([]grpc.UnaryClientInterceptor, 0)
+	r := grpc_retry.UnaryClientInterceptor(
+		grpc_retry.WithCodes(
+			codes.ResourceExhausted,
+			codes.Unavailable,
+			codes.Aborted,
+			codes.Canceled,
+			codes.DeadlineExceeded,
+		),
+		grpc_retry.WithMax(maxRetryCount),
+		grpc_retry.WithPerRetryTimeout(timeout),
+	)
+
+	interceptors = append(interceptors, r)
+	dialOpts := []grpc.DialOption{
+		grpc.WithInsecure(),
+		//grpc.WithBalancerName(balancerName),
+		grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time:                time.Second * 10,
+			PermitWithoutStream: true}),
+		//grpc.WithDefaultCallOptions(grpc.WaitForReady(true)),
+		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(interceptors...)),
+	}
+	return grpc.Dial(addr, dialOpts...)
 }

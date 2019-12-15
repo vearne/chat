@@ -50,6 +50,20 @@ func (w *LogicGrpcWorker) Stop() {
 
 type LogicServer struct{}
 
+func (s *LogicServer) ViewedAck(ctx context.Context, req *pb.ViewedAckRequest) (*pb.ViewedAckResponse, error) {
+	// 在数据库中做记录
+	dao.CreatOrUpdateViewedAck(req.SessionId, req.AccountId, req.MsgId)
+
+	partner := model.SessionAccount{}
+	resource.MySQLClient.Where("session_id = ? and account_id != ?",
+		req.SessionId, req.AccountId).First(&partner)
+
+	notifyViewedAck(req.AccountId, partner.AccountId, req.SessionId, req.MsgId)
+
+	resp := pb.ViewedAckResponse{Code: pb.CodeEnum_C000}
+	return &resp, nil
+}
+
 func (s *LogicServer) CreateAccount(ctx context.Context,
 	req *pb.CreateAccountRequest) (*pb.CreateAccountResponse, error) {
 	// Broker
@@ -115,7 +129,7 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 		resource.MySQLClient.Where("session_id = ? and account_id != ?",
 			outMsg.SessionId, req.SenderId).First(&partner)
 		dao.CreateInMsg(req.SenderId, outMsg.ID, partner.AccountId)
-		SendPartnerMsg(req.SenderId, partner.AccountId, req.SessionId, req.Content)
+		SendPartnerMsg(outMsg.ID, req.SenderId, partner.AccountId, req.SessionId, req.Content)
 
 	} else {
 		// 由系统产生一条消息，来替代用户发出的消息
@@ -127,7 +141,7 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 	}
 
 	// push
-	resp := pb.SendMsgResponse{Code: pb.CodeEnum_C000}
+	resp := pb.SendMsgResponse{Code: pb.CodeEnum_C000, MsgId: outMsg.ID}
 	return &resp, nil
 }
 
@@ -207,8 +221,24 @@ func notifyPartnerNewSession(senderId, receiverId, sessionId uint64) {
 	zlog.Debug("notifyPartnerNewSession, 2.save to database")
 }
 
-func SendPartnerMsg(senderId, receiverId, sessionId uint64, content string) {
+func notifyViewedAck(senderId, receiverId, sessionId uint64, msgId uint64) {
+	msg := pb.PushSignal{
+		SignalType: pb.SignalTypeEnum_ViewedAck,
+		SenderId:   senderId,
+		SessionId:  sessionId,
+		ReceiverId: receiverId,
+		Data:       &pb.PushSignal_MsgId{MsgId: msgId},
+	}
+	resource.WaitToBrokerSignalChan <- &msg
+	zlog.Debug("notifyViewedAck", zap.Uint64("SenderId", senderId),
+		zap.Uint64("SessionId", sessionId),
+		zap.Uint64("ReceiverId", receiverId), zap.Uint64("msgId", msgId))
+
+}
+
+func SendPartnerMsg(msgId, senderId, receiverId, sessionId uint64, content string) {
 	resource.WaitToBrokerDialogueChan <- &pb.PushDialogue{
+		MsgId:      msgId,
 		SenderId:   senderId,
 		SessionId:  sessionId,
 		ReceiverId: receiverId,

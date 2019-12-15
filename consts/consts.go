@@ -33,4 +33,6 @@ const (
 	CmdPushSignal    = "PUSH_SIGNAL"
 	CmdPing          = "PING"
 	CmdPong          = "PONG"
+	CmdViewedAck     = "VIEWED_ACK"
+	CmdPushViewedAck = "PUSH_VIEWED_ACK"
 )

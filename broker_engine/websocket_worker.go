@@ -103,19 +103,45 @@ func handlerMessage(s *melody.Session, data []byte) {
 		HandleDialogue(s, data)
 	case consts.CmdPong:
 		HandlePong(s, data)
+	case consts.CmdViewedAck:
+		HandleViewedAck(s, data)
 	default:
 		zlog.Debug("unknow cmd", zap.String("cmd", cmd.Cmd))
 	}
 
 }
 
+func HandleViewedAck(s *melody.Session, data []byte) {
+	zlog.Debug("CmdViewedAck")
+	var cmd model.CmdViewedAckReq
+	json.Unmarshal(data, &cmd)
+
+	ctx := context.Background()
+	req := pb.ViewedAckRequest{
+		SessionId: cmd.SessionId,
+		AccountId: cmd.AccountId,
+		MsgId:     cmd.MsgId,
+	}
+	resp, err := resource.LogicClient.ViewedAck(ctx, &req)
+	if err != nil {
+		zlog.Error("LogicClient.ViewedAck", zap.Error(err))
+	}
+	var result model.CmdViewedAckResp
+	result.Cmd = cmd.Cmd
+	result.Code = int32(resp.Code)
+	data, _ = json.Marshal(&result)
+	s.Write(data)
+
+}
+
 func HandleDialogue(s *melody.Session, data []byte) {
-	zlog.Debug("CmdMatch")
+	zlog.Debug("CmdDialogue")
 	var cmd model.CmdDialogueReq
 	json.Unmarshal(data, &cmd)
 
 	ctx := context.Background()
-	req := pb.SendMsgRequest{SenderId: cmd.SenderId, SessionId: cmd.SessionId,
+	req := pb.SendMsgRequest{
+		SenderId: cmd.SenderId, SessionId: cmd.SessionId,
 		Msgtype: pb.MsgTypeEnum_Dialogue, Content: cmd.Content}
 
 	resp, err := resource.LogicClient.SendMsg(ctx, &req)
@@ -125,6 +151,8 @@ func HandleDialogue(s *melody.Session, data []byte) {
 	var result model.CmdDialogueResp
 	result.Cmd = cmd.Cmd
 	result.Code = int32(resp.Code)
+	result.MsgId = resp.MsgId
+	result.RequestId = cmd.RequestId
 	data, _ = json.Marshal(&result)
 	s.Write(data)
 }
