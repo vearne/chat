@@ -9,7 +9,6 @@ import (
 	"github.com/vearne/chat/resource"
 	"github.com/vearne/chat/utils"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"time"
 )
 
@@ -160,7 +159,7 @@ func pumpDialogueToBroker(msg *pb.PushDialogue) bool {
 	return true
 }
 func CreateBrokerClient(broker string) (pb.BrokerClient, error) {
-	conn, err := resource.CreateGrpcClientConn(broker, 3, time.Millisecond*100)
+	conn, err := resource.CreateGrpcClientConn(broker, 3, time.Second*3)
 	if err != nil {
 		zlog.Error("con't connect to logic", zap.String("broker", broker))
 		return nil, fmt.Errorf("con't connect to logic:%v", broker)

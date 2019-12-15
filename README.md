@@ -109,7 +109,7 @@ grpc
 {
     
 	"cmd": "DIALOGUE",
-	"msgId": 20000, // 新增
+	"requestId": "1111:20000", // 新增
     "senderId": 1111,
     "sessionId": 10000,
     "content": "hello world"
@@ -118,10 +118,14 @@ grpc
 #### response
 ```
 {
+    "cmd": "DIALOGUE",
+    "requestId": "1111:20000", // 新增
     "msgId": 20000, // 新增
 	"code": 0
 }
 ```
+
+
 ### 4. 推送消息
 发送方是broker
 #### request
@@ -175,11 +179,9 @@ grpc
 
 
 #### response
-```
-{
-	"code": 0
-}
-```
+无
+
+
 ### 6. PING
 由broker发起
 #### request
@@ -196,6 +198,38 @@ grpc
 	"accountId": 12000
 }
 ```
+### 7. VIEWED_ACK
+由Client发起
+#### request
+```
+{
+	"cmd": "VIEWED_ACK",
+	"sessionId": 1000,
+	"accountId":11000,
+	"msgId": 12000
+}
+```
+#### response
+```
+{
+	"cmd": "VIEWED_ACK",
+	"code": 0
+}
+```
+
+### 7. PUSH_VIEWED_ACK
+由broker发起
+#### request
+```
+{
+	"cmd": "PUSH_VIEWED_ACK",
+	"sessionId": 1000,
+	"accountId":11000,
+	"msgId": 12000
+}
+```
+#### response
+无
 
 
 

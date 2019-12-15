@@ -2,6 +2,8 @@ package resource
 
 import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"google.golang.org/grpc/keepalive"
+
 	"github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -12,7 +14,6 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/keepalive"
 	"time"
 )
 
@@ -78,7 +79,7 @@ func InitBrokerResource() {
 	// logicClient
 	addr := config.GetOpts().LogicDealer.ListenAddress
 
-	Conn, err = CreateGrpcClientConn(addr, 3, time.Microsecond*100)
+	Conn, err = CreateGrpcClientConn(addr, 3, time.Second*3)
 	if err != nil {
 		zlog.Fatal("con't connect to logic")
 	}

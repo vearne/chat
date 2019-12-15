@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.5.0
 	github.com/golang/protobuf v1.3.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
+	github.com/imroc/req v0.2.4
 	github.com/jinzhu/gorm v1.9.11
 	github.com/json-iterator/go v1.1.7
 	github.com/spf13/cobra v0.0.5

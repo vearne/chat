@@ -44,3 +44,13 @@
 |sender_id|int|发出者ID||
 |msg_id|int|消息ID||
 |receiver_id|int|接收者ID||
+
+
+#### view ack
+|字段|类型|说明|备注|
+|:---|:---|:---|:---|
+|id|int|主键||
+|session_id|int|会话ID||
+|account_id|int|账号ID||
+|msg_id|int|消息ID||
+|created_at|date|创建时间||

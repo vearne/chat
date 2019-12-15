@@ -58,7 +58,8 @@ CREATE TABLE `view_ack` (
   `session_id` bigint unsigned DEFAULT NULL,
   `account_id` bigint unsigned DEFAULT NULL,
   `msg_id` bigint unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
-ALTER TABLE view_ack ADD index idx_view_ack (`session_id`, `account_id`);
+ALTER TABLE view_ack ADD unique idx_view_ack (`session_id`, `account_id`);

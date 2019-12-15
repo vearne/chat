@@ -30,18 +30,22 @@ type CmdMatchResp struct {
 
 type CmdDialogueReq struct {
 	Cmd       string `json:"cmd"`
+	RequestId string `json:"requestId"`
 	SenderId  uint64 `json:"senderId"`
 	SessionId uint64 `json:"sessionId"`
 	Content   string `json:"content"`
 }
 
 type CmdDialogueResp struct {
-	Cmd  string `json:"cmd"`
-	Code int32  `json:"code"`
+	Cmd       string `json:"cmd"`
+	RequestId string `json:"requestId"`
+	MsgId     uint64 `json:"msgId"`
+	Code      int32  `json:"code"`
 }
 
 type CmdPushDialogueReq struct {
 	Cmd       string `json:"cmd"`
+	MsgId     uint64 `json:"msgId"`
 	SenderId  uint64 `json:"senderId"`
 	SessionId uint64 `json:"sessionId"`
 	Content   string `json:"content"`
@@ -88,4 +92,23 @@ type CmdPingReq struct {
 type CmdPingResp struct {
 	Cmd       string `json:"cmd"`
 	AccountId uint64 `json:"accountId"`
+}
+
+type CmdViewedAckReq struct {
+	Cmd       string `json:"cmd"`
+	SessionId uint64 `json:"sessionId"`
+	AccountId uint64 `json:"accountId"`
+	MsgId     uint64 `json:"MsgId"`
+}
+
+type CmdViewedAckResp struct {
+	Cmd  string `json:"cmd"`
+	Code int32  `json:"code"`
+}
+
+type CmdPushViewedAckReq struct {
+	Cmd       string `json:"cmd"`
+	SessionId uint64 `json:"sessionId"`
+	AccountId uint64 `json:"accountId"`
+	MsgId     uint64 `json:"msgId"`
 }
