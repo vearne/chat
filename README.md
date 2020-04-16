@@ -1,6 +1,5 @@
 # chat
 
-
 ### 1. 功能说明
 这个聊天系统被设计为陌生人自动匹配进行聊天，因此不需要注册。分为2个模块，在线体验地址 [chat.vearne.cc](http://chat.vearne.cc/)      
 
@@ -16,7 +15,7 @@
 [olahol/melody](https://github.com/olahol/melody) -- websocket框架
 [grpc/grpc-go](https://github.com/grpc/grpc-go)  -- grpc框架
 
-**架构图**![架构图](http://static.zybuluo.com/woshiaotian/3bkagkptry7v1x149s1qotbd/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202019-12-19%20%E4%B8%8A%E5%8D%8810.28.36.png)
+**架构图**![架构图](./img/arch.png)
 
 客户与接入层的通讯采用websocket + 自定义的文本协议实现。
 自定义的协议其实都是携带着各种命令的JSON字符串，很容易看懂
@@ -57,7 +56,7 @@
 具体请看wiki相关页面
 
 ### 2. 实际效果
-![屏幕快照 2019-12-19 上午10.39.19.png-86.6kB](http://static.zybuluo.com/woshiaotian/duz6wsn9ltx832sj8br77bf8/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202019-12-19%20%E4%B8%8A%E5%8D%8810.39.19.png?imageView2/2/h/500)
+![聊天](./img/chat.png)
 
 ### 3. 感谢
 >"If I have been able to see further, it was only because I stood on the shoulders of giants."   by Isaac Newton
