@@ -7,11 +7,11 @@
 
 
 #### 1.1 客户端 [github.com/vearne/chat-ui](https://github.com/vearne/chat-ui)
-客户端采用Vue开发
+客户端为HTML5，采用Vue开发    
 依赖组件 [MatheusrdSantos/vue-quick-chat](https://github.com/MatheusrdSantos/vue-quick-chat)
 
 #### 1.2 服务端 [github.com/vearne/chat](https://github.com/vearne/chat)
-采用golang开发，使用的框架
+采用golang开发，使用的框架    
 [olahol/melody](https://github.com/olahol/melody) -- websocket框架    
 [grpc/grpc-go](https://github.com/grpc/grpc-go)  -- grpc框架
 
