@@ -12,10 +12,10 @@
 
 #### 1.2 服务端 [github.com/vearne/chat](https://github.com/vearne/chat)
 采用golang开发，使用的框架
-[olahol/melody](https://github.com/olahol/melody) -- websocket框架
+[olahol/melody](https://github.com/olahol/melody) -- websocket框架    
 [grpc/grpc-go](https://github.com/grpc/grpc-go)  -- grpc框架
 
-**架构图**![架构图](./img/arch.png)
+**架构图**![架构图](https://raw.githubusercontent.com/vearne/chat/master/img/arch.png)
 
 客户与接入层的通讯采用websocket + 自定义的文本协议实现。
 自定义的协议其实都是携带着各种命令的JSON字符串，很容易看懂
@@ -56,7 +56,7 @@
 具体请看wiki相关页面
 
 ### 2. 实际效果
-![聊天](./img/chat.png)
+![聊天](https://raw.githubusercontent.com/vearne/chat/master/img/chat.png)
 
 ### 3. 感谢
 >"If I have been able to see further, it was only because I stood on the shoulders of giants."   by Isaac Newton
