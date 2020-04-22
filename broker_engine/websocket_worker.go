@@ -36,6 +36,10 @@ func NewWebsocketWorker() *WebsocketWorker {
 
 func (worker *WebsocketWorker) Start() {
 	zlog.Info("[start]WebsocketWorker")
+	// 将之前连接在此broker上的用户，都置为离线
+	zlog.Info("WebsocketWorker-ClearUserStatus")
+	ClearUserStatus()
+
 	worker.Server.ListenAndServe()
 }
 
@@ -62,6 +66,9 @@ func createGinEngine() *gin.Engine {
 
 func (worker *WebsocketWorker) Stop() {
 	//defer Conn.Close()
+	// 将之前连接在此broker上的用户，都置为离线
+	zlog.Info("WebsocketWorker-ClearUserStatus")
+	ClearUserStatus()
 
 	cxt, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -228,4 +235,16 @@ func ExecuteLogout(accountId uint64) {
 	zlog.Info("LogicClient.Logout", zap.Uint64("accountId", accountId),
 		zap.Int32("code", int32(resp.Code)))
 
+}
+
+func ClearUserStatus() {
+	ctx := context.Background()
+	ip, _ := utils.GetIP()
+	broker := ip + config.GetOpts().Broker.GrpcAddress
+	in := &pb.OnlineRequest{Broker: broker}
+	_, err := resource.LogicClient.BrokerOnline(ctx, in)
+	if err != nil {
+		zlog.Error("LogicClient.BrokerOnline", zap.Error(err))
+		return
+	}
 }

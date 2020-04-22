@@ -1,0 +1,2 @@
+# generate a Go protocol buffer package
+protoc --gofast_out=plugins=grpc:. *.proto
