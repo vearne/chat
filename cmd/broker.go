@@ -1,14 +1,10 @@
 package cmd
 
 import (
-	"context"
 	"github.com/spf13/cobra"
 	bengine "github.com/vearne/chat/broker_engine"
-	"github.com/vearne/chat/config"
 	zlog "github.com/vearne/chat/log"
-	"github.com/vearne/chat/proto"
 	"github.com/vearne/chat/resource"
-	"github.com/vearne/chat/utils"
 	manager "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
 	"os"

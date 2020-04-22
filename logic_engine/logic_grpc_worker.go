@@ -154,7 +154,7 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 }
 
 func (s *LogicServer) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
-	handlerLogout(req)
+	handlerLogout(req.AccountId)
 	var resp pb.LogoutResponse
 	resp.Code = pb.CodeEnum_C000
 	return &resp, nil
