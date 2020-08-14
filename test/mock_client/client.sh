@@ -5,6 +5,7 @@ grpcurl -import-path ../../logic -proto logic.proto list
 # describe
 grpcurl  --plaintext 127.0.0.1:18223 describe
 grpcurl  --plaintext 127.0.0.1:18223 describe logic.LogicDealer
+grpcurl  --plaintext 127.0.0.1:18223 describe proto.LogoutResponse
 
 # create account
 grpcurl --plaintext -d '{"nickname": "zhangsan","broker": "dev1:18080"}'\
