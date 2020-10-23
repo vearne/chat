@@ -46,6 +46,8 @@ func (worker *WebsocketWorker) Start() {
 func createGinEngine() *gin.Engine {
 	r := gin.Default()
 	m := melody.New()
+	m.Config.MaxMessageSize = 1024 * 10
+	m.Config.MessageBufferSize = 4 * 1024
 
 	//r.GET("/", func(c *gin.Context) {
 	//	http.ServeFile(c.Writer, c.Request, "index.html")
