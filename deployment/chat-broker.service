@@ -1,0 +1,26 @@
+[Unit]
+Description=chat-broker
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+Group=root
+PermissionsStartOnly=true
+LimitNPROC=81920
+LimitNOFILE=81920
+WorkingDirectory=/opt/chat
+ExecStart=/opt/chat/chat broker --config ./config.broker.yaml
+KillMode=process
+KillSignal=SIGTERM
+Restart=on-failure
+RestartSec=500ms
+TimeoutStartSec=3s
+TimeoutStopSec=3s
+StandardError=syslog
+StandardOutput=syslog
+SyslogIdentifier=chat-broker
+
+
+[Install]
+WantedBy=multi-user.target
