@@ -7,7 +7,7 @@ grpcurl  --plaintext 127.0.0.1:18223 describe
 grpcurl  --plaintext 127.0.0.1:18223 describe .proto.LogicDealer
 grpcurl  --plaintext 127.0.0.1:18223 describe .proto.LogoutResponse
 grpcurl  --plaintext 127.0.0.1:18223 describe .proto.LogicDealer.CreateAccount
-grpcurl  --plaintext vearne.cc:18223 describe .proto.CreateAccountRequest
+grpcurl  --plaintext 127.0.0.1:18223 describe .proto.CreateAccountRequest
 grpcurl  --plaintext 127.0.0.1:18223 describe .proto.CreateAccountResponse
 
 # create account
