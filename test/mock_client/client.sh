@@ -4,8 +4,11 @@ grpcurl -import-path ../../logic -proto logic.proto list
 
 # describe
 grpcurl  --plaintext 127.0.0.1:18223 describe
-grpcurl  --plaintext 127.0.0.1:18223 describe logic.LogicDealer
-grpcurl  --plaintext 127.0.0.1:18223 describe proto.LogoutResponse
+grpcurl  --plaintext 127.0.0.1:18223 describe .proto.LogicDealer
+grpcurl  --plaintext 127.0.0.1:18223 describe .proto.LogoutResponse
+grpcurl  --plaintext 127.0.0.1:18223 describe .proto.LogicDealer.CreateAccount
+grpcurl  --plaintext vearne.cc:18223 describe .proto.CreateAccountRequest
+grpcurl  --plaintext 127.0.0.1:18223 describe .proto.CreateAccountResponse
 
 # create account
 grpcurl --plaintext -d '{"nickname": "zhangsan","broker": "dev1:18080"}'\
