@@ -6,6 +6,7 @@
 |nickname|string|昵称|可以重复|
 |status|int|状态|0:创建 1:使用中 2:销毁|
 |broker|string|用户登录的broker信息|消息投递时，需要|
+|token|string|用户唯一性标识|重连时需要|
 |created_at|date|创建时间||
 |modified_at|date|更新时间||
 

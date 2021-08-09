@@ -7,6 +7,7 @@ type Account struct {
 	NickName   string    `gorm:"column:nickname" json:"nickname"`
 	Status     int       `gorm:"column:status" json:"status"`
 	Broker     string    `gorm:"column:broker" json:"broker"`
+	Token      string    `gorm:"column:token" json:"token"`
 	CreatedAt  time.Time `gorm:"column:created_at" json:"-"`
 	ModifiedAt time.Time `gorm:"column:modified_at" json:"-"`
 }

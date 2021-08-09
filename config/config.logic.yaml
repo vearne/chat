@@ -7,7 +7,7 @@ logger:
   # 3. "error"
   level: "debug"
   filepath: "/var/log/chat_logic.log"
-  listen_address: ":19092"
+#  listen_address: ":19092"
 
 mysql:
   dsn: "st_user:40OIEuqHeQbbFE@tcp(dev1:3306)/stranger_talk?charset=utf8&loc=Asia%2FShanghai&parseTime=true"

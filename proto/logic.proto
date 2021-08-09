@@ -60,6 +60,7 @@ message CreateAccountResponse {
     CodeEnum code = 1;
     string msg = 2;
     uint64 accountId = 3;
+    string token = 4;
 }
 
 message MatchRequest {
