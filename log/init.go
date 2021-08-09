@@ -24,7 +24,7 @@ func InitLogger() {
 
 	hook := lumberjack.Logger{
 		Filename:   config.GetOpts().Logger.FilePath,
-		MaxSize:    1024, // megabytes
+		MaxSize:    100, // megabytes
 		MaxBackups: 3,
 		MaxAge:     7,    //days
 		Compress:   true, // disabled by default
