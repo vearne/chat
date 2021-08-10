@@ -76,10 +76,12 @@ func (s *LogicServer) CreateAccount(ctx context.Context,
 	req *pb.CreateAccountRequest) (*pb.CreateAccountResponse, error) {
 	// Broker
 	// 192.168.10.100:18223
+	token := RandStringBytes(20)
 	var account model.Account
 	account.NickName = req.Nickname
 	account.Broker = req.Broker
 	account.Status = consts.AccountStatusInUse
+	account.Token = token
 	account.CreatedAt = time.Now()
 	account.ModifiedAt = account.CreatedAt
 	resource.MySQLClient.Create(&account)
@@ -87,6 +89,7 @@ func (s *LogicServer) CreateAccount(ctx context.Context,
 	var resp pb.CreateAccountResponse
 	resp.Code = pb.CodeEnum_C000
 	resp.AccountId = account.ID
+	resp.Token = token
 	return &resp, nil
 }
 func (s *LogicServer) Match(ctx context.Context, req *pb.MatchRequest) (*pb.MatchResponse, error) {

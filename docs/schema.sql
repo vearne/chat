@@ -63,3 +63,6 @@ CREATE TABLE `view_ack` (
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 ALTER TABLE view_ack ADD unique idx_view_ack (`session_id`, `account_id`);
+
+-- 2021-08-09
+ALTER TABLE account ADD column `token` varchar(50) DEFAULT '';

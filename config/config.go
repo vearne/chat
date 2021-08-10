@@ -36,6 +36,7 @@ type AppConfig struct {
 		WebSocketAddress string `mapstructure:"ws_address"`
 		GrpcAddress      string `mapstructure:"grpc_address"`
 	} `mapstructure:"broker"`
+
 	Ping struct {
 		Interval time.Duration `mapstructure:"interval"`
 		MaxWait  time.Duration `mapstructure:"maxWait"`

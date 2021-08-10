@@ -5,23 +5,12 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"net/http"
 )
 
 var DefaultLogger *zap.Logger
 
 func InitLogger() {
-	// 动态调整日志级别
-	// curl -XPUT --data '{"level":"info"}' http://localhost:19090/handle/level
 	alevel := zap.NewAtomicLevel()
-	http.HandleFunc("/handle/level", alevel.ServeHTTP)
-	go func() {
-		if err := http.ListenAndServe(config.GetOpts().Logger.ListenAddress,
-			nil); err != nil {
-			panic(err)
-		}
-	}()
-
 	hook := lumberjack.Logger{
 		Filename:   config.GetOpts().Logger.FilePath,
 		MaxSize:    100, // megabytes

@@ -4,15 +4,21 @@ type CommonCmd struct {
 	Cmd string `json:"cmd"`
 }
 
+type BaseRespCmd struct {
+	Cmd  string `json:"cmd"`
+	Code int32  `json:"code"`
+}
+
 type CmdCreateAccountReq struct {
 	Cmd      string `json:"cmd"`
 	NickName string `json:"nickName"`
 }
 
 type CmdCreateAccountResp struct {
-	Cmd       string `json:"cmd"`
+	BaseRespCmd
 	NickName  string `json:"nickName"`
 	AccountId uint64 `json:"accountId"`
+	Token     string `json:"token"`
 }
 
 type CmdMatchReq struct {
@@ -21,11 +27,10 @@ type CmdMatchReq struct {
 }
 
 type CmdMatchResp struct {
-	Cmd         string `json:"cmd"`
+	BaseRespCmd
 	PartnerId   uint64 `json:"partnerId,omitempty"`
 	PartnerName string `json:"partnerName,omitempty"`
 	SessionId   uint64 `json:"sessionId,omitempty"`
-	Code        int32  `json:"code"`
 }
 
 type CmdDialogueReq struct {
@@ -37,10 +42,9 @@ type CmdDialogueReq struct {
 }
 
 type CmdDialogueResp struct {
-	Cmd       string `json:"cmd"`
+	BaseRespCmd
 	RequestId string `json:"requestId"`
 	MsgId     uint64 `json:"msgId"`
-	Code      int32  `json:"code"`
 }
 
 type CmdPushDialogueReq struct {
@@ -52,8 +56,7 @@ type CmdPushDialogueReq struct {
 }
 
 type CmdPushDialogueResp struct {
-	Cmd  string `json:"cmd"`
-	Code int32  `json:"code"`
+	BaseRespCmd
 }
 
 type CmdPushSignalReq struct {
@@ -66,8 +69,7 @@ type CmdPushSignalReq struct {
 }
 
 type CmdPushSignalResp struct {
-	Cmd  string `json:"cmd"`
-	Code int32  `json:"code"`
+	BaseRespCmd
 }
 
 // 由broker发出
@@ -102,8 +104,7 @@ type CmdViewedAckReq struct {
 }
 
 type CmdViewedAckResp struct {
-	Cmd  string `json:"cmd"`
-	Code int32  `json:"code"`
+	BaseRespCmd
 }
 
 type CmdPushViewedAckReq struct {

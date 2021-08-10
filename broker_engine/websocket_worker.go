@@ -90,6 +90,20 @@ func HandleDisconnect(s *melody.Session) {
 	s.Close()
 }
 
+func HandlePing(s *melody.Session, data []byte) {
+	zlog.Debug("CmdPing")
+	var cmd model.CmdPingReq
+	json.Unmarshal(data, &cmd)
+	resource.Hub.SetLastPong(cmd.AccountId, time.Now())
+
+	// 返回给客户端
+	var result model.CmdPingResp
+	result.Cmd = consts.CmdPong
+	result.AccountId = cmd.AccountId
+	data, _ = json.Marshal(&result)
+	s.Write(data)
+}
+
 func HandlePong(s *melody.Session, data []byte) {
 	zlog.Debug("CmdPong")
 	var cmd model.CmdPingResp
@@ -110,6 +124,8 @@ func handlerMessage(s *melody.Session, data []byte) {
 	case consts.CmdDialogue:
 		zlog.Info("handlerMessage", zap.String("msg", string(data)))
 		HandleDialogue(s, data)
+	case consts.CmdPing:
+		HandlePing(s, data)
 	case consts.CmdPong:
 		HandlePong(s, data)
 	case consts.CmdViewedAck:
@@ -217,6 +233,7 @@ func HandleCrtAccount(s *melody.Session, data []byte) {
 	result.AccountId = resp.AccountId
 	result.NickName = req.Nickname
 	result.Cmd = cmd.Cmd
+	result.Token = resp.Token
 	data, _ = json.Marshal(&result)
 	s.Write(data)
 }

@@ -1,13 +1,17 @@
 logic_dealer:
-  listen_address: "127.0.0.1:18223"
-
+  # 自定义了resolver
+  # 在dns中 _grpclb._tcp.logic.vearne.cc -> 0 50 28223 logic1.vearne.cc
+  #        _grpclb._tcp.logic.vearne.cc -> 0 50 28224 logic2.vearne.cc
+#  listen_address: "127.0.0.1:18223"
+  listen_address: "srv://8.8.8.8/logic.vearne.cc"
+  
 logger:
   # 1. "info"
   # 2. "debug"
   # 3. "error"
   level: "debug"
   filepath: "/var/log/chat_broker.log"
-  listen_address: ":19093"
+#  listen_address: ":19093"
 
 # broker的配置
 broker:

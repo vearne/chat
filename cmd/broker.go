@@ -50,8 +50,8 @@ func GracefulExit(wm *manager.WorkerManager) {
 		switch sig {
 		case syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT:
 			zlog.Info("got a signal, execute stop", zap.Reflect("signal", sig))
-			wm.Stop()
 			close(ch)
+			wm.Stop()
 		case syscall.SIGPIPE:
 			zlog.Info("got a signal, ignore SIGPIPE", zap.Reflect("signal", sig))
 		default:

@@ -2,6 +2,7 @@ package resource
 
 import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"google.golang.org/grpc/balancer/roundrobin"
 	"google.golang.org/grpc/keepalive"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/retry"
@@ -11,6 +12,7 @@ import (
 	zlog "github.com/vearne/chat/log"
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
+	_ "github.com/vearne/chat/resolver"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -35,7 +37,6 @@ var (
 var (
 	LogicClient pb.LogicDealerClient
 	Hub         *model.BizHub
-	Conn        *grpc.ClientConn
 )
 
 func InitMySQL() {
@@ -75,15 +76,18 @@ func InitBrokerResource() {
 	// init Hub
 	Hub = model.NewBizHub()
 	var err error
+	var conn *grpc.ClientConn
 
 	// logicClient
 	addr := config.GetOpts().LogicDealer.ListenAddress
+	zlog.Info("logic addr", zap.String("addr", addr))
 
-	Conn, err = CreateGrpcClientConn(addr, 3, time.Second*3)
+	conn, err = CreateGrpcClientConn(addr, 3, time.Second*3)
 	if err != nil {
-		zlog.Fatal("con't connect to logic")
+		zlog.Fatal("con't connect to logic", zap.Error(err))
 	}
-	LogicClient = pb.NewLogicDealerClient(Conn)
+
+	LogicClient = pb.NewLogicDealerClient(conn)
 }
 
 func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration) (*grpc.ClientConn, error) {
@@ -103,6 +107,8 @@ func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration
 	interceptors = append(interceptors, r)
 	dialOpts := []grpc.DialOption{
 		grpc.WithInsecure(),
+		// 负载均衡策略
+		grpc.WithBalancerName(roundrobin.Name),
 		//grpc.WithBalancerName(balancerName),
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{
 			Time:                time.Second * 10,

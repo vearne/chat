@@ -1,2 +1,13 @@
 # generate a Go protocol buffer package
+# 1. install protobuf
+```
+brew install protobuf
+```
+# 2. Install the protoc-gen-gofast binary
+```
+go get github.com/gogo/protobuf/protoc-gen-gofast
+```
+# 3. generate a Go protocol buffer package
+```
 protoc --gofast_out=plugins=grpc:. *.proto
+```
