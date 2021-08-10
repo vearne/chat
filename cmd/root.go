@@ -19,17 +19,28 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vearne/chat/config"
+	"github.com/vearne/chat/consts"
 	"log"
 	"os"
 )
 
-var cfgFile string
+var (
+	// config file path
+	cfgFile     string
+	versionFlag bool
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "chat <command>",
-	Short: "",
-	Long:  "",
+	Use: "chat <command>",
+	Run: func(cmd *cobra.Command, args []string) {
+		if versionFlag {
+			fmt.Println("service: chat")
+			fmt.Println("Version", consts.Version)
+			fmt.Println("BuildTime", consts.BuildTime)
+			fmt.Println("GitTag", consts.GitTag)
+		}
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -42,12 +53,14 @@ func Execute() {
 }
 
 func init() {
-	//cobra.OnInitialize(initConfig, zlog.InitLogger)
-
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cars-go.yaml)")
+	flagset := rootCmd.PersistentFlags()
+	flagset.StringVar(&cfgFile, "config", "", "config file")
+
+	// build info
+	flagset.BoolVarP(&versionFlag, "version", "v", false, "Show version")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
