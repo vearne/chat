@@ -2,6 +2,7 @@ package resource
 
 import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"google.golang.org/grpc/balancer/roundrobin"
 	"google.golang.org/grpc/keepalive"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/retry"
@@ -11,9 +12,9 @@ import (
 	zlog "github.com/vearne/chat/log"
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
+	_ "github.com/vearne/chat/resolver"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	_ "google.golang.org/grpc/balancer/grpclb"
 	"google.golang.org/grpc/codes"
 	"time"
 )
@@ -107,7 +108,7 @@ func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration
 	dialOpts := []grpc.DialOption{
 		grpc.WithInsecure(),
 		// 负载均衡策略
-		grpc.WithBalancerName("grpclb"),
+		grpc.WithBalancerName(roundrobin.Name),
 		//grpc.WithBalancerName(balancerName),
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{
 			Time:                time.Second * 10,
