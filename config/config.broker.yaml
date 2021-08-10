@@ -1,5 +1,5 @@
 logic_dealer:
-  listen_address: "127.0.0.1:18223"
+  listen_address: "dns://8.8.8.8/logic.vearne.cc"
 
 logger:
   # 1. "info"
