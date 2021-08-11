@@ -35,4 +35,5 @@ const (
 	CmdPong          = "PONG"
 	CmdViewedAck     = "VIEWED_ACK"
 	CmdPushViewedAck = "PUSH_VIEWED_ACK"
+	CmdReConnect     = "RECONNECT"
 )

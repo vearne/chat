@@ -130,10 +130,40 @@ func handlerMessage(s *melody.Session, data []byte) {
 		HandlePong(s, data)
 	case consts.CmdViewedAck:
 		HandleViewedAck(s, data)
+	case consts.CmdReConnect:
+		HandleReConnect(s, data)
 	default:
 		zlog.Debug("unknow cmd", zap.String("cmd", cmd.Cmd))
 	}
 
+}
+
+func HandleReConnect(s *melody.Session, data []byte) {
+	zlog.Debug("CmdReConnect")
+	var cmd model.CmdReConnectReq
+	json.Unmarshal(data, &cmd)
+	ctx := context.Background()
+	req := pb.ReConnectRequest{
+		AccountId: cmd.AccountId,
+		Token:     cmd.Token,
+	}
+	resp, err := resource.LogicClient.Reconnect(ctx, &req)
+	if err != nil {
+		zlog.Error("LogicClient.Reconnect", zap.Error(err))
+	}
+	// 重新登录成功
+	if resp.Code == pb.CodeEnum_C000 {
+		zlog.Debug("LogicClient.Reconnect", zap.Any("resp", resp),
+			zap.Uint64("accountId", resp.AccountId))
+		// 2 记录accountId和session的对应关系
+		resource.Hub.SetClient(resp.Nickname, resp.AccountId, s)
+		s.Set("accountId", resp.AccountId)
+	}
+	var result model.CmdReConnectResp
+	result.Cmd = cmd.Cmd
+	result.Code = int32(resp.Code)
+	data, _ = json.Marshal(&result)
+	s.Write(data)
 }
 
 func HandleViewedAck(s *melody.Session, data []byte) {

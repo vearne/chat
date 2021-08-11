@@ -16,6 +16,8 @@ import (
 	"time"
 )
 
+const TokenLen = 30
+
 type LogicGrpcWorker struct {
 	server *grpc.Server
 }
@@ -50,6 +52,22 @@ func (w *LogicGrpcWorker) Stop() {
 
 type LogicServer struct{}
 
+func (s *LogicServer) Reconnect(ctx context.Context, in *pb.ReConnectRequest) (*pb.ReConnectResponse, error) {
+	var size int
+	resource.MySQLClient.Model(&model.Account{}).Where("id = ? and token = ?",
+		in.AccountId, in.Token).Count(&size)
+
+	out := &pb.ReConnectResponse{}
+	if size >= 0 {
+		// 确实存在的用户
+		resource.MySQLClient.Model(&model.Account{}).Update("status", consts.AccountStatusInUse)
+		out.Code = pb.CodeEnum_C000
+	} else {
+		out.Code = pb.CodeEnum_C004
+	}
+	return out, nil
+}
+
 func (s *LogicServer) BrokerOnline(cxt context.Context, in *pb.OnlineRequest) (*pb.OnlineResponse, error) {
 	//in.Broker
 	ClearUserStatus(in.Broker)
@@ -76,7 +94,7 @@ func (s *LogicServer) CreateAccount(ctx context.Context,
 	req *pb.CreateAccountRequest) (*pb.CreateAccountResponse, error) {
 	// Broker
 	// 192.168.10.100:18223
-	token := RandStringBytes(20)
+	token := RandStringBytes(TokenLen)
 	var account model.Account
 	account.NickName = req.Nickname
 	account.Broker = req.Broker

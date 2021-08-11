@@ -66,3 +66,7 @@ ALTER TABLE view_ack ADD unique idx_view_ack (`session_id`, `account_id`);
 
 -- 2021-08-09
 ALTER TABLE account ADD column `token` varchar(50) DEFAULT '';
+
+-- 2021-08-11
+ALTER TABLE account modify `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE account modify `modified_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;

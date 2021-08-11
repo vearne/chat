@@ -113,3 +113,13 @@ type CmdPushViewedAckReq struct {
 	AccountId uint64 `json:"accountId"`
 	MsgId     uint64 `json:"msgId"`
 }
+
+type CmdReConnectReq struct {
+	Cmd       string `json:"cmd"`
+	AccountId uint64 `json:"accountId"`
+	Token     string `json:"token"`
+}
+
+type CmdReConnectResp struct {
+	BaseRespCmd
+}

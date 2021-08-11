@@ -10,7 +10,7 @@ service LogicDealer {
     rpc Logout (LogoutRequest) returns (LogoutResponse);
     rpc ViewedAck(ViewedAckRequest) returns(ViewedAckResponse);
     rpc BrokerOnline(OnlineRequest) returns(OnlineResponse);
-
+    rpc Reconnect(ReConnectRequest) returns(ReConnectResponse);
 }
 
 message ViewedAckRequest {
@@ -26,11 +26,11 @@ message ViewedAckResponse {
 }
 
 enum CodeEnum {
-    C000 = 0; //
+    C000 = 0; // success
     C001 = 1; //
     C002 = 2; //
     C003 = 3; //
-    C004 = 4; //No data found
+    C004 = 4; // No data found
 }
 
 enum StatusEnum {
@@ -96,4 +96,16 @@ message LogoutRequest {
 message LogoutResponse {
     CodeEnum code = 1;
     string msg = 2;
+}
+
+message ReConnectRequest {
+    uint64 accountId = 1;
+    string token = 2;
+}
+
+message ReConnectResponse {
+    CodeEnum code = 1;
+    string msg = 2;
+    uint64 accountId = 3;
+    string nickname = 4;
 }
