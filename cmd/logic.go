@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/vearne/chat/config"
 	zlog "github.com/vearne/chat/log"
 	lengine "github.com/vearne/chat/logic_engine"
 	"github.com/vearne/chat/resource"
@@ -23,7 +24,10 @@ func init() {
 func RunLogic(cmd *cobra.Command, args []string) {
 	// 1. init resource
 	initConfig("logic")
+	config.InitLogicConfig()
+
 	zlog.InitLogger()
+
 	resource.InitLogicResource()
 
 	fmt.Println("logic starting ... ")
@@ -46,6 +50,7 @@ func prepareLogicWorker() *manager.WorkerManager {
 	wm.AddWorker(lengine.NewLogicGrpcWorker())
 	wm.AddWorker(lengine.NewPumpSignalLoopWorker())
 	wm.AddWorker(lengine.NewPumpDialogueLoopWorker(1, 5))
+	wm.AddWorker(lengine.NewBrokerChecker())
 
 	return wm
 }

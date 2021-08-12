@@ -39,3 +39,19 @@ func (h *BrokerHub) Size() int {
 	defer h.RUnlock()
 	return len(h.brokerMap)
 }
+
+func (h *BrokerHub) GetBrokerList() []BrokerInfo {
+	h.RLock()
+	defer h.RUnlock()
+	ans := make([]BrokerInfo, 0, len(h.brokerMap))
+	for addr, client := range h.brokerMap {
+		ans = append(ans, BrokerInfo{Addr: addr, Client: client})
+	}
+	return ans
+}
+
+func (h *BrokerHub) RemoveBroker(brokerAddr string) {
+	h.Lock()
+	defer h.Unlock()
+	delete(h.brokerMap, brokerAddr)
+}

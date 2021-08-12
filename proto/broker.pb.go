@@ -57,6 +57,108 @@ func (SignalTypeEnum) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_f209535e190f2bed, []int{0}
 }
 
+type HealthCheckReq struct {
+	Asker                string   `protobuf:"bytes,1,opt,name=asker,proto3" json:"asker,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *HealthCheckReq) Reset()         { *m = HealthCheckReq{} }
+func (m *HealthCheckReq) String() string { return proto.CompactTextString(m) }
+func (*HealthCheckReq) ProtoMessage()    {}
+func (*HealthCheckReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f209535e190f2bed, []int{0}
+}
+func (m *HealthCheckReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *HealthCheckReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_HealthCheckReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *HealthCheckReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_HealthCheckReq.Merge(m, src)
+}
+func (m *HealthCheckReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *HealthCheckReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_HealthCheckReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_HealthCheckReq proto.InternalMessageInfo
+
+func (m *HealthCheckReq) GetAsker() string {
+	if m != nil {
+		return m.Asker
+	}
+	return ""
+}
+
+type HealthCheckResp struct {
+	Code                 CodeEnum `protobuf:"varint,1,opt,name=code,proto3,enum=proto.CodeEnum" json:"code,omitempty"`
+	Msg                  string   `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *HealthCheckResp) Reset()         { *m = HealthCheckResp{} }
+func (m *HealthCheckResp) String() string { return proto.CompactTextString(m) }
+func (*HealthCheckResp) ProtoMessage()    {}
+func (*HealthCheckResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f209535e190f2bed, []int{1}
+}
+func (m *HealthCheckResp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *HealthCheckResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_HealthCheckResp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *HealthCheckResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_HealthCheckResp.Merge(m, src)
+}
+func (m *HealthCheckResp) XXX_Size() int {
+	return m.Size()
+}
+func (m *HealthCheckResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_HealthCheckResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_HealthCheckResp proto.InternalMessageInfo
+
+func (m *HealthCheckResp) GetCode() CodeEnum {
+	if m != nil {
+		return m.Code
+	}
+	return CodeEnum_C000
+}
+
+func (m *HealthCheckResp) GetMsg() string {
+	if m != nil {
+		return m.Msg
+	}
+	return ""
+}
+
 type PushRequest struct {
 	AccountId            uint64   `protobuf:"varint,1,opt,name=accountId,proto3" json:"accountId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -68,7 +170,7 @@ func (m *PushRequest) Reset()         { *m = PushRequest{} }
 func (m *PushRequest) String() string { return proto.CompactTextString(m) }
 func (*PushRequest) ProtoMessage()    {}
 func (*PushRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f209535e190f2bed, []int{0}
+	return fileDescriptor_f209535e190f2bed, []int{2}
 }
 func (m *PushRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -116,7 +218,7 @@ func (m *PushResp) Reset()         { *m = PushResp{} }
 func (m *PushResp) String() string { return proto.CompactTextString(m) }
 func (*PushResp) ProtoMessage()    {}
 func (*PushResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f209535e190f2bed, []int{1}
+	return fileDescriptor_f209535e190f2bed, []int{3}
 }
 func (m *PushResp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -174,7 +276,7 @@ func (m *PushDialogue) Reset()         { *m = PushDialogue{} }
 func (m *PushDialogue) String() string { return proto.CompactTextString(m) }
 func (*PushDialogue) ProtoMessage()    {}
 func (*PushDialogue) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f209535e190f2bed, []int{2}
+	return fileDescriptor_f209535e190f2bed, []int{4}
 }
 func (m *PushDialogue) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -257,7 +359,7 @@ func (m *PushSignal) Reset()         { *m = PushSignal{} }
 func (m *PushSignal) String() string { return proto.CompactTextString(m) }
 func (*PushSignal) ProtoMessage()    {}
 func (*PushSignal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f209535e190f2bed, []int{3}
+	return fileDescriptor_f209535e190f2bed, []int{5}
 }
 func (m *PushSignal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -383,7 +485,7 @@ func (m *AccountInfo) Reset()         { *m = AccountInfo{} }
 func (m *AccountInfo) String() string { return proto.CompactTextString(m) }
 func (*AccountInfo) ProtoMessage()    {}
 func (*AccountInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f209535e190f2bed, []int{4}
+	return fileDescriptor_f209535e190f2bed, []int{6}
 }
 func (m *AccountInfo) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -428,6 +530,8 @@ func (m *AccountInfo) GetNickName() string {
 
 func init() {
 	proto.RegisterEnum("proto.SignalTypeEnum", SignalTypeEnum_name, SignalTypeEnum_value)
+	proto.RegisterType((*HealthCheckReq)(nil), "proto.HealthCheckReq")
+	proto.RegisterType((*HealthCheckResp)(nil), "proto.HealthCheckResp")
 	proto.RegisterType((*PushRequest)(nil), "proto.PushRequest")
 	proto.RegisterType((*PushResp)(nil), "proto.PushResp")
 	proto.RegisterType((*PushDialogue)(nil), "proto.PushDialogue")
@@ -438,37 +542,40 @@ func init() {
 func init() { proto.RegisterFile("broker.proto", fileDescriptor_f209535e190f2bed) }
 
 var fileDescriptor_f209535e190f2bed = []byte{
-	// 468 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x52, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0x8e, 0x13, 0x27, 0x69, 0xc6, 0x25, 0x31, 0xc3, 0x8f, 0xac, 0x08, 0x59, 0x95, 0xb9, 0x54,
-	0x20, 0xe5, 0x10, 0x04, 0x07, 0x6e, 0x09, 0xad, 0x68, 0x0e, 0x2d, 0x95, 0x83, 0xb8, 0xbb, 0xf6,
-	0x60, 0xac, 0x24, 0xbb, 0xc1, 0xbb, 0xa6, 0x20, 0xf1, 0x0a, 0xdc, 0xfb, 0x48, 0x1c, 0x79, 0x04,
-	0x14, 0x5e, 0x04, 0x79, 0x77, 0xe3, 0x38, 0x45, 0xa2, 0x27, 0xef, 0x7c, 0xf3, 0xcd, 0xf8, 0xfb,
-	0x66, 0x06, 0x0e, 0xaf, 0x72, 0xbe, 0xa0, 0x7c, 0xb4, 0xce, 0xb9, 0xe4, 0xd8, 0x56, 0x9f, 0xa1,
-	0xb3, 0xe4, 0x69, 0x16, 0x6b, 0x2c, 0x78, 0x0e, 0xce, 0x65, 0x21, 0x3e, 0x85, 0xf4, 0xb9, 0x20,
-	0x21, 0xf1, 0x09, 0xf4, 0xa2, 0x38, 0xe6, 0x05, 0x93, 0xb3, 0xc4, 0xb3, 0x8e, 0xac, 0x63, 0x3b,
-	0xdc, 0x01, 0xc1, 0x04, 0x0e, 0x34, 0x59, 0xac, 0xf1, 0x29, 0xd8, 0x31, 0x4f, 0x48, 0x91, 0xfa,
-	0xe3, 0x81, 0x6e, 0x37, 0x7a, 0xc3, 0x13, 0x3a, 0x65, 0xc5, 0x2a, 0x54, 0x49, 0x74, 0xa1, 0xb5,
-	0x12, 0xa9, 0xd7, 0x3c, 0xb2, 0x8e, 0x7b, 0x61, 0xf9, 0x0c, 0x6e, 0x2c, 0x38, 0x2c, 0x7b, 0x9c,
-	0x64, 0xd1, 0x92, 0xa7, 0x05, 0xe1, 0x10, 0x0e, 0x04, 0xb1, 0x84, 0xf2, 0xea, 0x87, 0x55, 0x5c,
-	0xaa, 0x11, 0x24, 0x44, 0xc6, 0xd9, 0x2c, 0x51, 0x4d, 0xec, 0x70, 0x07, 0xa0, 0x0f, 0x90, 0x53,
-	0x4c, 0xd9, 0x17, 0x55, 0xdb, 0x52, 0xe9, 0x1a, 0x82, 0x1e, 0x74, 0x63, 0xce, 0x24, 0x31, 0xe9,
-	0xd9, 0x4a, 0xc0, 0x36, 0xc4, 0x87, 0xd0, 0x5e, 0x89, 0x74, 0x96, 0x78, 0x6d, 0x55, 0xa4, 0x83,
-	0xe0, 0x47, 0x13, 0xa0, 0x94, 0x36, 0xcf, 0x52, 0x16, 0x2d, 0xf1, 0x25, 0x80, 0x50, 0xaf, 0xf7,
-	0xdf, 0xd6, 0x5b, 0x9b, 0x8f, 0x8c, 0xcd, 0x79, 0x95, 0x50, 0x66, 0x6b, 0xc4, 0x3d, 0x3f, 0xcd,
-	0x5b, 0x7e, 0xee, 0x52, 0xbc, 0xe7, 0xd7, 0xbe, 0xed, 0x77, 0x04, 0xdd, 0x75, 0x94, 0x4b, 0x46,
-	0xb9, 0xd2, 0xed, 0x8c, 0xd1, 0xa8, 0x99, 0x98, 0x05, 0xb1, 0x8f, 0xfc, 0xac, 0x11, 0x6e, 0x49,
-	0xf8, 0x78, 0xeb, 0xb2, 0x53, 0x76, 0x3a, 0x6b, 0x18, 0x9f, 0xe8, 0xd7, 0x77, 0xdc, 0x35, 0xb9,
-	0x1d, 0x34, 0xed, 0x80, 0x9d, 0x44, 0x32, 0x0a, 0xde, 0x82, 0x53, 0xeb, 0xfc, 0xff, 0xd3, 0x28,
-	0x6d, 0xb3, 0x2c, 0x5e, 0x5c, 0x44, 0x2b, 0x32, 0xeb, 0xae, 0xe2, 0x67, 0xef, 0xa0, 0xbf, 0x3f,
-	0x30, 0x1c, 0x80, 0x73, 0xa9, 0x55, 0x9e, 0x7e, 0xcd, 0xa4, 0xdb, 0xc0, 0x3e, 0xc0, 0x05, 0x5d,
-	0xcf, 0xb5, 0x57, 0xd7, 0xc2, 0x7b, 0xd0, 0x3b, 0xa1, 0x25, 0x49, 0x3a, 0x17, 0xa9, 0xdb, 0x2c,
-	0xc3, 0x0f, 0x19, 0x5d, 0x53, 0x32, 0x89, 0x17, 0x6e, 0x6b, 0xfc, 0x1d, 0x3a, 0x53, 0x75, 0xd8,
-	0xf8, 0x1a, 0x30, 0xd4, 0xf3, 0x3b, 0x17, 0x69, 0x75, 0x53, 0x0f, 0xcc, 0x60, 0xea, 0x87, 0x36,
-	0x1c, 0xd4, 0x40, 0x75, 0xc1, 0xaf, 0xc0, 0xdd, 0xd5, 0x9a, 0xa5, 0xdf, 0xaf, 0x91, 0x34, 0xf4,
-	0x4f, 0xdd, 0xd4, 0xfd, 0xb9, 0xf1, 0xad, 0x5f, 0x1b, 0xdf, 0xfa, 0xbd, 0xf1, 0xad, 0x9b, 0x3f,
-	0x7e, 0xe3, 0xaa, 0xa3, 0x18, 0x2f, 0xfe, 0x06, 0x00, 0x00, 0xff, 0xff, 0xcf, 0x6f, 0xdf, 0x5b,
-	0x6f, 0x03, 0x00, 0x00,
+	// 517 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0x8e, 0x13, 0x27, 0x69, 0xc6, 0x25, 0x31, 0x0b, 0x54, 0x56, 0x84, 0x2c, 0x64, 0x24, 0x84,
+	0x40, 0xca, 0x21, 0x08, 0x0e, 0x88, 0x4b, 0xd2, 0x56, 0x24, 0x87, 0x96, 0xca, 0x41, 0xdc, 0x5d,
+	0x7b, 0x70, 0x2c, 0x3b, 0xbb, 0xae, 0x77, 0x4d, 0xe1, 0x21, 0xb8, 0xf7, 0x59, 0x78, 0x02, 0x8e,
+	0x3c, 0x02, 0x0a, 0x2f, 0x82, 0xbc, 0xfe, 0x89, 0x1d, 0x10, 0x48, 0x3d, 0xd9, 0xf3, 0xed, 0xcc,
+	0xb7, 0xdf, 0x37, 0x33, 0x0b, 0x87, 0x97, 0x09, 0x0b, 0x31, 0x99, 0xc4, 0x09, 0x13, 0x8c, 0x74,
+	0xe5, 0x67, 0xac, 0x45, 0xcc, 0x0f, 0xdc, 0x1c, 0xb3, 0x9e, 0xc0, 0x70, 0x81, 0x4e, 0x24, 0xd6,
+	0xc7, 0x6b, 0x74, 0x43, 0x1b, 0xaf, 0xc8, 0x7d, 0xe8, 0x3a, 0x3c, 0xc4, 0xc4, 0x50, 0x1e, 0x29,
+	0x4f, 0x07, 0x76, 0x1e, 0x58, 0x0b, 0x18, 0x35, 0xf2, 0x78, 0x4c, 0x1e, 0x83, 0xea, 0x32, 0x0f,
+	0x65, 0xde, 0x70, 0x3a, 0xca, 0x09, 0x27, 0xc7, 0xcc, 0xc3, 0x53, 0x9a, 0x6e, 0x6c, 0x79, 0x48,
+	0x74, 0xe8, 0x6c, 0xb8, 0x6f, 0xb4, 0x25, 0x57, 0xf6, 0x6b, 0x3d, 0x07, 0xed, 0x22, 0xe5, 0x6b,
+	0x1b, 0xaf, 0x52, 0xe4, 0x82, 0x3c, 0x84, 0x81, 0xe3, 0xba, 0x2c, 0xa5, 0x62, 0xe9, 0x49, 0x2a,
+	0xd5, 0xde, 0x01, 0xd6, 0x0c, 0x0e, 0xf2, 0xe4, 0xdb, 0xdf, 0x77, 0xa3, 0xc0, 0x61, 0xc6, 0x71,
+	0x12, 0x38, 0x11, 0xf3, 0x53, 0x24, 0x63, 0x38, 0xe0, 0x48, 0x3d, 0x4c, 0xaa, 0x0b, 0xab, 0x38,
+	0x53, 0xc3, 0x91, 0xf3, 0x80, 0xd1, 0xa5, 0x27, 0x49, 0x54, 0x7b, 0x07, 0x10, 0x13, 0x20, 0x41,
+	0x17, 0x83, 0x4f, 0xb2, 0xb6, 0x23, 0x8f, 0x6b, 0x08, 0x31, 0xa0, 0xef, 0x32, 0x2a, 0x90, 0x0a,
+	0x43, 0x95, 0x02, 0xca, 0x30, 0x6b, 0xea, 0x86, 0xfb, 0x4b, 0xcf, 0xe8, 0xca, 0xa2, 0x3c, 0xb0,
+	0xbe, 0xb6, 0x01, 0x32, 0x69, 0xab, 0xc0, 0xa7, 0x4e, 0x44, 0x5e, 0x02, 0x70, 0xf9, 0xf7, 0xfe,
+	0x4b, 0x5c, 0xda, 0x7c, 0x50, 0xd8, 0x5c, 0x55, 0x07, 0xd2, 0x6c, 0x2d, 0xb1, 0xe1, 0xa7, 0xbd,
+	0xe7, 0xe7, 0x7f, 0x8a, 0x1b, 0x7e, 0xd5, 0x7d, 0xbf, 0x13, 0xe8, 0xc7, 0x4e, 0x22, 0x28, 0x26,
+	0x52, 0xb7, 0x36, 0x25, 0x85, 0x9a, 0x59, 0x31, 0x20, 0xfa, 0x91, 0x2d, 0x5a, 0x76, 0x99, 0x44,
+	0x8e, 0x4a, 0x97, 0xbd, 0x8c, 0x69, 0xd1, 0x2a, 0x7c, 0x12, 0xb3, 0x3e, 0xe3, 0x7e, 0x71, 0xb6,
+	0x83, 0xe6, 0x3d, 0x50, 0x3d, 0x47, 0x38, 0xd6, 0x5b, 0xd0, 0x6a, 0xcc, 0xff, 0x5e, 0x8d, 0xcc,
+	0x36, 0x0d, 0xdc, 0xf0, 0xdc, 0xd9, 0x60, 0x31, 0xee, 0x2a, 0x7e, 0xf6, 0x0e, 0x86, 0xcd, 0x86,
+	0x91, 0x11, 0x68, 0x17, 0xb9, 0xca, 0xd3, 0xcf, 0x81, 0xd0, 0x5b, 0x64, 0x08, 0x70, 0x8e, 0xd7,
+	0xab, 0xdc, 0xab, 0xae, 0x90, 0x3b, 0x30, 0x38, 0xc1, 0x08, 0x05, 0x9e, 0x71, 0x5f, 0x6f, 0x67,
+	0xe1, 0x87, 0x00, 0xaf, 0xd1, 0x9b, 0xb9, 0xa1, 0xde, 0x99, 0x7e, 0x53, 0xa0, 0x37, 0x97, 0x6f,
+	0x89, 0xbc, 0x06, 0x62, 0xe7, 0x0d, 0x3c, 0xe3, 0x7e, 0xb5, 0x54, 0xf7, 0x8a, 0xce, 0xd4, 0x37,
+	0x6d, 0x3c, 0xaa, 0x81, 0x72, 0x85, 0x5f, 0x81, 0xbe, 0xab, 0x2d, 0xa6, 0x7e, 0xb7, 0x96, 0x94,
+	0x43, 0x7f, 0xd6, 0xbd, 0x01, 0xad, 0xf6, 0xfa, 0x48, 0xb9, 0x14, 0xcd, 0x97, 0x3b, 0x3e, 0xfa,
+	0x1b, 0xcc, 0xe3, 0xb9, 0xfe, 0x7d, 0x6b, 0x2a, 0x3f, 0xb6, 0xa6, 0xf2, 0x73, 0x6b, 0x2a, 0x37,
+	0xbf, 0xcc, 0xd6, 0x65, 0x4f, 0x26, 0xbe, 0xf8, 0x1d, 0x00, 0x00, 0xff, 0xff, 0xbf, 0x96, 0x3e,
+	0xd6, 0x20, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -486,6 +593,7 @@ type BrokerClient interface {
 	// 接收logic推送过来的数据
 	ReceiveMsgDialogue(ctx context.Context, in *PushDialogue, opts ...grpc.CallOption) (*PushResp, error)
 	ReceiveMsgSignal(ctx context.Context, in *PushSignal, opts ...grpc.CallOption) (*PushResp, error)
+	HealthCheck(ctx context.Context, in *HealthCheckReq, opts ...grpc.CallOption) (*HealthCheckResp, error)
 }
 
 type brokerClient struct {
@@ -514,11 +622,21 @@ func (c *brokerClient) ReceiveMsgSignal(ctx context.Context, in *PushSignal, opt
 	return out, nil
 }
 
+func (c *brokerClient) HealthCheck(ctx context.Context, in *HealthCheckReq, opts ...grpc.CallOption) (*HealthCheckResp, error) {
+	out := new(HealthCheckResp)
+	err := c.cc.Invoke(ctx, "/proto.Broker/HealthCheck", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BrokerServer is the server API for Broker service.
 type BrokerServer interface {
 	// 接收logic推送过来的数据
 	ReceiveMsgDialogue(context.Context, *PushDialogue) (*PushResp, error)
 	ReceiveMsgSignal(context.Context, *PushSignal) (*PushResp, error)
+	HealthCheck(context.Context, *HealthCheckReq) (*HealthCheckResp, error)
 }
 
 // UnimplementedBrokerServer can be embedded to have forward compatible implementations.
@@ -530,6 +648,9 @@ func (*UnimplementedBrokerServer) ReceiveMsgDialogue(ctx context.Context, req *P
 }
 func (*UnimplementedBrokerServer) ReceiveMsgSignal(ctx context.Context, req *PushSignal) (*PushResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReceiveMsgSignal not implemented")
+}
+func (*UnimplementedBrokerServer) HealthCheck(ctx context.Context, req *HealthCheckReq) (*HealthCheckResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
 }
 
 func RegisterBrokerServer(s *grpc.Server, srv BrokerServer) {
@@ -572,6 +693,24 @@ func _Broker_ReceiveMsgSignal_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Broker_HealthCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealthCheckReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BrokerServer).HealthCheck(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Broker/HealthCheck",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BrokerServer).HealthCheck(ctx, req.(*HealthCheckReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Broker_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.Broker",
 	HandlerType: (*BrokerServer)(nil),
@@ -584,9 +723,86 @@ var _Broker_serviceDesc = grpc.ServiceDesc{
 			MethodName: "ReceiveMsgSignal",
 			Handler:    _Broker_ReceiveMsgSignal_Handler,
 		},
+		{
+			MethodName: "HealthCheck",
+			Handler:    _Broker_HealthCheck_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "broker.proto",
+}
+
+func (m *HealthCheckReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *HealthCheckReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *HealthCheckReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.Asker) > 0 {
+		i -= len(m.Asker)
+		copy(dAtA[i:], m.Asker)
+		i = encodeVarintBroker(dAtA, i, uint64(len(m.Asker)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *HealthCheckResp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *HealthCheckResp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *HealthCheckResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.Msg) > 0 {
+		i -= len(m.Msg)
+		copy(dAtA[i:], m.Msg)
+		i = encodeVarintBroker(dAtA, i, uint64(len(m.Msg)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Code != 0 {
+		i = encodeVarintBroker(dAtA, i, uint64(m.Code))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *PushRequest) Marshal() (dAtA []byte, err error) {
@@ -865,6 +1081,41 @@ func encodeVarintBroker(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *HealthCheckReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Asker)
+	if l > 0 {
+		n += 1 + l + sovBroker(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *HealthCheckResp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Code != 0 {
+		n += 1 + sovBroker(uint64(m.Code))
+	}
+	l = len(m.Msg)
+	if l > 0 {
+		n += 1 + l + sovBroker(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
 func (m *PushRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1008,6 +1259,191 @@ func sovBroker(x uint64) (n int) {
 }
 func sozBroker(x uint64) (n int) {
 	return sovBroker(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *HealthCheckReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowBroker
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: HealthCheckReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: HealthCheckReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Asker", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBroker
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthBroker
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthBroker
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Asker = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipBroker(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthBroker
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *HealthCheckResp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowBroker
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: HealthCheckResp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: HealthCheckResp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Code", wireType)
+			}
+			m.Code = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBroker
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Code |= CodeEnum(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Msg", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBroker
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthBroker
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthBroker
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Msg = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipBroker(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthBroker
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *PushRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)

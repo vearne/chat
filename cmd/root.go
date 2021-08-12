@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vearne/chat/config"
 	"github.com/vearne/chat/consts"
 	"log"
 	"os"
@@ -87,5 +86,4 @@ func initConfig(role string) {
 	} else {
 		log.Println("can't find config file", err)
 	}
-	config.InitConfig()
 }

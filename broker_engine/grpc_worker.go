@@ -44,6 +44,11 @@ func (w *GrpcWorker) Stop() {
 	w.server.Stop()
 }
 
+func (w *GrpcWorker) HealthCheck(ctx context.Context, req *pb.HealthCheckReq) (*pb.HealthCheckResp, error) {
+	ans := &pb.HealthCheckResp{Code: pb.CodeEnum_C000}
+	return ans, nil
+}
+
 func (w *GrpcWorker) ReceiveMsgDialogue(ctx context.Context, in *pb.PushDialogue) (*pb.PushResp, error) {
 	zlog.Debug("ReceiveMsgDialogue", zap.Uint64("senderId", in.SenderId),
 		zap.Uint64("sessionId", in.SessionId), zap.String("content", in.Content))

@@ -7,6 +7,16 @@ service Broker {
     // 接收logic推送过来的数据
     rpc ReceiveMsgDialogue (PushDialogue) returns (PushResp);
     rpc ReceiveMsgSignal (PushSignal) returns (PushResp);
+    rpc HealthCheck (HealthCheckReq) returns (HealthCheckResp);
+}
+
+message HealthCheckReq{
+    string asker = 1;
+}
+
+message HealthCheckResp{
+     CodeEnum code = 1;
+     string msg = 2;
 }
 
 message PushRequest{

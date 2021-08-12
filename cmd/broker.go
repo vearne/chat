@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	bengine "github.com/vearne/chat/broker_engine"
+	"github.com/vearne/chat/config"
 	zlog "github.com/vearne/chat/log"
 	"github.com/vearne/chat/resource"
 	manager "github.com/vearne/worker_manager"
@@ -27,6 +28,8 @@ func init() {
 func RunBroker(cmd *cobra.Command, args []string) {
 	// init resource
 	initConfig("broker")
+	config.InitBrokerConfig()
+
 	zlog.InitLogger()
 	resource.InitBrokerResource()
 

@@ -1,5 +1,7 @@
 package model
 
+import pb "github.com/vearne/chat/proto"
+
 type CommonCmd struct {
 	Cmd string `json:"cmd"`
 }
@@ -122,4 +124,9 @@ type CmdReConnectReq struct {
 
 type CmdReConnectResp struct {
 	BaseRespCmd
+}
+
+type BrokerInfo struct {
+	Addr   string
+	Client pb.BrokerClient
 }

@@ -41,7 +41,7 @@ var (
 
 func InitMySQL() {
 	zlog.Info("Init MySQL")
-	mysqlConf := config.GetOpts().MySQLConf
+	mysqlConf := config.GetLogicOpts().MySQLConf
 	mysqldb, err := gorm.Open("mysql", mysqlConf.DSN)
 	if err != nil {
 		zlog.Error("initialize_db error", zap.Error(err))
@@ -79,7 +79,7 @@ func InitBrokerResource() {
 	var conn *grpc.ClientConn
 
 	// logicClient
-	addr := config.GetOpts().LogicDealer.ListenAddress
+	addr := config.GetBrokerOpts().LogicDealer.Address
 	zlog.Info("logic addr", zap.String("addr", addr))
 
 	conn, err = CreateGrpcClientConn(addr, 3, time.Second*3)
