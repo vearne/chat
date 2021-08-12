@@ -25,7 +25,7 @@ func NewWebsocketWorker() *WebsocketWorker {
 	zlog.Info("[init]WebServer")
 	worker := &WebsocketWorker{}
 	worker.Server = &http.Server{
-		Addr:           config.GetOpts().Broker.WebSocketAddress,
+		Addr:           config.GetBrokerOpts().Broker.WebSocketAddress,
 		Handler:        createGinEngine(),
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
@@ -244,7 +244,7 @@ func HandleCrtAccount(s *melody.Session, data []byte) {
 
 	// 1. 请求
 	ip, _ := utils.GetIP()
-	broker := ip + config.GetOpts().Broker.GrpcAddress
+	broker := ip + config.GetBrokerOpts().Broker.GrpcAddress
 	ctx := context.Background()
 	req := pb.CreateAccountRequest{Nickname: cmd.NickName, Broker: broker}
 	resp, err := resource.LogicClient.CreateAccount(ctx, &req)
@@ -289,7 +289,7 @@ func ExecuteLogout(accountId uint64) {
 func ClearUserStatus() {
 	ctx := context.Background()
 	ip, _ := utils.GetIP()
-	broker := ip + config.GetOpts().Broker.GrpcAddress
+	broker := ip + config.GetBrokerOpts().Broker.GrpcAddress
 	in := &pb.OnlineRequest{Broker: broker}
 	_, err := resource.LogicClient.BrokerOnline(ctx, in)
 	if err != nil {

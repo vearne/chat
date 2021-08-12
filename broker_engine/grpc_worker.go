@@ -31,7 +31,7 @@ func NewGrpcWorker() *GrpcWorker {
 }
 
 func (w *GrpcWorker) Start() {
-	lis, err := net.Listen("tcp", config.GetOpts().Broker.GrpcAddress)
+	lis, err := net.Listen("tcp", config.GetBrokerOpts().Broker.GrpcAddress)
 	if err != nil {
 		zlog.Fatal("failed to listen", zap.Error(err))
 	}

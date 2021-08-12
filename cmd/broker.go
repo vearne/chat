@@ -30,7 +30,8 @@ func RunBroker(cmd *cobra.Command, args []string) {
 	initConfig("broker")
 	config.InitBrokerConfig()
 
-	zlog.InitLogger()
+	logConfig := config.GetBrokerOpts().Logger
+	zlog.InitLogger(&logConfig)
 	resource.InitBrokerResource()
 
 	// 1. init some worker

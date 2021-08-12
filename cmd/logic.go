@@ -26,7 +26,8 @@ func RunLogic(cmd *cobra.Command, args []string) {
 	initConfig("logic")
 	config.InitLogicConfig()
 
-	zlog.InitLogger()
+	logConfig := config.GetLogicOpts().Logger
+	zlog.InitLogger(&logConfig)
 
 	resource.InitLogicResource()
 

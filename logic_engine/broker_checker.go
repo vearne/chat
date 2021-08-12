@@ -64,7 +64,7 @@ func (worker *BrokerChecker) checkBroker() {
 	brokerList := resource.BrokerHub.GetBrokerList()
 	for _, broker := range brokerList {
 		ip, _ := utils.GetIP()
-		logicID := ip + config.GetOpts().LogicDealer.ListenAddress
+		logicID := ip + config.GetLogicOpts().LogicDealer.ListenAddress
 		in := pb.HealthCheckReq{Asker: logicID}
 		resp, err := broker.Client.HealthCheck(context.Background(), &in)
 		if err != nil {

@@ -12,11 +12,7 @@ var initOnce sync.Once
 var gcf atomic.Value
 
 type BrokerConfig struct {
-	Logger struct {
-		Level         string `mapstructure:"level"`
-		FilePath      string `mapstructure:"filepath"`
-		ListenAddress string `mapstructure:"listen_address"`
-	} `mapstructure:"logger"`
+	Logger LogConfig `mapstructure:"logger"`
 
 	LogicDealer struct {
 		Address string `mapstructure:"address"`
@@ -34,11 +30,7 @@ type BrokerConfig struct {
 }
 
 type LogicConfig struct {
-	Logger struct {
-		Level         string `mapstructure:"level"`
-		FilePath      string `mapstructure:"filepath"`
-		ListenAddress string `mapstructure:"listen_address"`
-	} `mapstructure:"logger"`
+	Logger LogConfig `mapstructure:"logger"`
 
 	LogicDealer struct {
 		ListenAddress string `mapstructure:"listen_address"`
@@ -53,6 +45,12 @@ type LogicConfig struct {
 		// 若开启则会打印具体的执行SQL
 		Debug bool `mapstructure:"debug"`
 	} `mapstructure:"mysql"`
+}
+
+type LogConfig struct {
+	Level         string `mapstructure:"level"`
+	FilePath      string `mapstructure:"filepath"`
+	ListenAddress string `mapstructure:"listen_address"`
 }
 
 func InitBrokerConfig() error {

@@ -23,16 +23,17 @@ func NewPingWorker() *PingWorker {
 }
 
 func (w *PingWorker) Start() {
-	zlog.Info("[start]PingWorker", zap.Duration("Interval", config.GetOpts().Ping.Interval),
-		zap.Duration("MaxWait", config.GetOpts().Ping.MaxWait))
-	ch := time.Tick(config.GetOpts().Ping.Interval)
+	pingConfig := config.GetBrokerOpts().Ping
+	zlog.Info("[start]PingWorker", zap.Duration("Interval", pingConfig.Interval),
+		zap.Duration("MaxWait", pingConfig.MaxWait))
+	ch := time.Tick(pingConfig.Interval)
 
 	for w.RunningFlag {
 		select {
 		case <-ch:
 			clients := resource.Hub.GetAllClient()
 			for _, client := range clients {
-				if time.Since(client.LastPong) > config.GetOpts().Ping.MaxWait {
+				if time.Since(client.LastPong) > pingConfig.MaxWait {
 					// client可能已经掉线
 					ExecuteLogout(client.AccountId)
 

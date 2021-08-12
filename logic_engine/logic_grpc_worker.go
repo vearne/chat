@@ -34,7 +34,7 @@ func NewLogicGrpcWorker() *LogicGrpcWorker {
 }
 
 func (w *LogicGrpcWorker) Start() {
-	listenAddr := config.GetOpts().LogicDealer.ListenAddress
+	listenAddr := config.GetLogicOpts().LogicDealer.ListenAddress
 	zlog.Info("[start]LogicGrpcWorker", zap.String("LogicDealer", listenAddr))
 	lis, err := net.Listen("tcp", listenAddr)
 	if err != nil {

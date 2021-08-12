@@ -9,10 +9,10 @@ import (
 
 var DefaultLogger *zap.Logger
 
-func InitLogger() {
+func InitLogger(logConfig *config.LogConfig) {
 	alevel := zap.NewAtomicLevel()
 	hook := lumberjack.Logger{
-		Filename:   config.GetOpts().Logger.FilePath,
+		Filename:   logConfig.FilePath,
 		MaxSize:    100, // megabytes
 		MaxBackups: 3,
 		MaxAge:     7,    //days
@@ -20,7 +20,7 @@ func InitLogger() {
 	}
 	w := zapcore.AddSync(&hook)
 
-	switch config.GetOpts().Logger.Level {
+	switch logConfig.Level {
 	case "debug":
 		alevel.SetLevel(zap.DebugLevel)
 	case "info":
