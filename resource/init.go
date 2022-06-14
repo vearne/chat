@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"fmt"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc/balancer/roundrobin"
 	"google.golang.org/grpc/keepalive"
@@ -108,8 +109,8 @@ func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration
 	dialOpts := []grpc.DialOption{
 		grpc.WithInsecure(),
 		// 负载均衡策略
-		grpc.WithBalancerName(roundrobin.Name),
-		//grpc.WithBalancerName(balancerName),
+		grpc.WithDefaultServiceConfig(
+			fmt.Sprintf(`{"LoadBalancingPolicy": "%s"}`, roundrobin.Name)),
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{
 			Time:                time.Second * 10,
 			PermitWithoutStream: true}),
