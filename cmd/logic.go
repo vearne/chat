@@ -7,7 +7,7 @@ import (
 	zlog "github.com/vearne/chat/log"
 	lengine "github.com/vearne/chat/logic_engine"
 	"github.com/vearne/chat/resource"
-	manager "github.com/vearne/worker_manager"
+	wm "github.com/vearne/worker_manager"
 )
 
 var logicCmd = &cobra.Command{
@@ -32,26 +32,11 @@ func RunLogic(cmd *cobra.Command, args []string) {
 	resource.InitLogicResource()
 
 	fmt.Println("logic starting ... ")
-	// 1. init some worker
-	wm := prepareLogicWorker()
 
-	// 2. start
-	wm.Start()
-
-	// 3. register grace exit
-	GracefulExit(wm)
-
-	// 4. block and wait
-	wm.Wait()
-}
-
-func prepareLogicWorker() *manager.WorkerManager {
-	wm := manager.NewWorkerManager()
-
-	wm.AddWorker(lengine.NewLogicGrpcWorker())
-	wm.AddWorker(lengine.NewPumpSignalLoopWorker())
-	wm.AddWorker(lengine.NewPumpDialogueLoopWorker(1, 5))
-	wm.AddWorker(lengine.NewBrokerChecker())
-
-	return wm
+	app := wm.NewApp()
+	app.AddWorker(lengine.NewLogicGrpcWorker())
+	app.AddWorker(lengine.NewPumpSignalLoopWorker())
+	app.AddWorker(lengine.NewPumpDialogueLoopWorker(1, 5))
+	app.AddWorker(lengine.NewBrokerChecker())
+	app.Run()
 }

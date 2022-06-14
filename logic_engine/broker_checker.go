@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const maxOffLine = 15 * time.Second
+const maxOffLine = 30 * time.Second
 
 /*
 	确保broker都在线
