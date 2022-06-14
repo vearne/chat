@@ -2,6 +2,7 @@ package logic_engine
 
 import (
 	"context"
+	"github.com/jinzhu/gorm"
 	"github.com/vearne/chat/config"
 	"github.com/vearne/chat/consts"
 	"github.com/vearne/chat/dao"
@@ -53,21 +54,22 @@ func (w *LogicGrpcWorker) Stop() {
 type LogicServer struct{}
 
 func (s *LogicServer) Reconnect(ctx context.Context, in *pb.ReConnectRequest) (*pb.ReConnectResponse, error) {
-	var size int
-	resource.MySQLClient.Model(&model.Account{}).Where("id = ? and token = ?",
-		in.AccountId, in.Token).Count(&size)
+	var account model.Account
+	err := resource.MySQLClient.Model(&model.Account{}).Where("id = ? and token = ?",
+		in.AccountId, in.Token).Take(&account).Error
 
 	out := &pb.ReConnectResponse{}
-	if size >= 0 {
-		// 确实存在的用户
-		resource.MySQLClient.Model(&model.Account{}).Where("id = ? and token = ?",
-			in.AccountId, in.Token).Updates(map[string]interface{}{
+	if err == gorm.ErrRecordNotFound {
+		out.Code = pb.CodeEnum_C004
+	} else {
+		resource.MySQLClient.Model(&model.Account{}).Where("id = ?",
+			in.AccountId).Updates(map[string]interface{}{
 			"status": consts.AccountStatusInUse,
 			"broker": in.Broker,
 		})
 		out.Code = pb.CodeEnum_C000
-	} else {
-		out.Code = pb.CodeEnum_C004
+		out.AccountId = in.AccountId
+		out.Nickname = account.NickName
 	}
 	return out, nil
 }
