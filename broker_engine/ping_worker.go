@@ -7,18 +7,24 @@ import (
 	zlog "github.com/vearne/chat/log"
 	"github.com/vearne/chat/model"
 	"github.com/vearne/chat/resource"
+	wm "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
 	"time"
 )
 
 type PingWorker struct {
-	RunningFlag bool // is running? true:running false:stoped
-	ExitedFlag  bool //  Exit Flag
+	RunningFlag *wm.BoolFlag
+	ExitedFlag  *wm.BoolFlag //  Exit Flag
 	ExitChan    chan struct{}
 }
 
 func NewPingWorker() *PingWorker {
-	worker := PingWorker{RunningFlag: true, ExitedFlag: false, ExitChan: make(chan struct{})}
+	//RunningFlag: true, ExitedFlag: false
+	worker := PingWorker{ExitChan: make(chan struct{})}
+	worker.RunningFlag = wm.NewBoolFlag()
+	wm.SetTrue(worker.RunningFlag)
+	worker.ExitedFlag = wm.NewBoolFlag()
+	wm.SetFalse(worker.ExitedFlag)
 	return &worker
 }
 
@@ -28,7 +34,7 @@ func (w *PingWorker) Start() {
 		zap.Duration("MaxWait", pingConfig.MaxWait))
 	ch := time.Tick(pingConfig.Interval)
 
-	for w.RunningFlag {
+	for wm.IsTrue(w.RunningFlag) {
 		select {
 		case <-ch:
 			clients := resource.Hub.GetAllClient()
@@ -48,14 +54,14 @@ func (w *PingWorker) Start() {
 			zlog.Info("PingWorker execute exit logic")
 		}
 	}
-	w.ExitedFlag = true
+	wm.SetTrue(w.ExitedFlag)
 }
 
 func (w *PingWorker) Stop() {
 	zlog.Info("PingWorker exit...")
-	w.RunningFlag = false
+	wm.SetFalse(w.RunningFlag)
 	close(w.ExitChan)
-	for !w.ExitedFlag {
+	for !wm.IsTrue(w.ExitedFlag) {
 		time.Sleep(50 * time.Millisecond)
 	}
 	zlog.Info("[end]PingWorker")

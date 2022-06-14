@@ -7,39 +7,45 @@ import (
 	zlog "github.com/vearne/chat/log"
 	pb "github.com/vearne/chat/proto"
 	"github.com/vearne/chat/resource"
+	wm "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
 	"time"
 )
 
 type PumpSignalLoopWorker struct {
-	RunningFlag bool // is running? true:running false:stoped
-	ExitedFlag  bool //  Exit Flag
+	RunningFlag *wm.BoolFlag // is running? true:running false:stoped
+	ExitedFlag  *wm.BoolFlag //  Exit Flag
 	ExitChan    chan struct{}
 }
 
 func NewPumpSignalLoopWorker() *PumpSignalLoopWorker {
-	worker := PumpSignalLoopWorker{RunningFlag: true, ExitedFlag: false, ExitChan: make(chan struct{})}
+	worker := PumpSignalLoopWorker{ExitChan: make(chan struct{})}
+	worker.RunningFlag = wm.NewBoolFlag()
+	wm.SetTrue(worker.RunningFlag)
+	worker.ExitedFlag = wm.NewBoolFlag()
+	wm.SetFalse(worker.ExitedFlag)
 	return &worker
 }
 
 func (w *PumpSignalLoopWorker) Start() {
 	zlog.Info("[start]PumpSignalLoopWorker")
 	w.PumpSignalLoop()
-	w.ExitedFlag = true
+	wm.SetTrue(w.ExitedFlag)
 }
 
 func (w *PumpSignalLoopWorker) Stop() {
 	zlog.Info("PumpSignalLoopWorker exit...")
-	w.RunningFlag = false
+	wm.SetFalse(w.RunningFlag)
 	close(w.ExitChan)
-	for !w.ExitedFlag {
+
+	for !wm.IsTrue(w.ExitedFlag) {
 		time.Sleep(50 * time.Millisecond)
 	}
 	zlog.Info("[end]PumpSignalLoopWorker")
 }
 
 func (w *PumpSignalLoopWorker) PumpSignalLoop() {
-	for w.RunningFlag {
+	for wm.IsTrue(w.RunningFlag) {
 		select {
 		case msg := <-resource.WaitToBrokerSignalChan:
 			pumpSignalToBroker(msg)
