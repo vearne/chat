@@ -143,9 +143,14 @@ func HandleReConnect(s *melody.Session, data []byte) {
 	var cmd model.CmdReConnectReq
 	json.Unmarshal(data, &cmd)
 	ctx := context.Background()
+
+	ip, _ := utils.GetIP()
+	broker := ip + config.GetBrokerOpts().Broker.GrpcAddress
+	
 	req := pb.ReConnectRequest{
 		AccountId: cmd.AccountId,
 		Token:     cmd.Token,
+		Broker:    broker,
 	}
 	resp, err := resource.LogicClient.Reconnect(ctx, &req)
 	if err != nil {

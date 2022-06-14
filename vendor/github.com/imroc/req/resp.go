@@ -43,7 +43,7 @@ func (r *Resp) Bytes() []byte {
 }
 
 // ToBytes returns response body as []byte,
-// return error if error happend when reading
+// return error if error happened when reading
 // the response body
 func (r *Resp) ToBytes() ([]byte, error) {
 	if r.err != nil {
@@ -69,7 +69,7 @@ func (r *Resp) String() string {
 }
 
 // ToString returns response body as string,
-// return error if error happend when reading
+// return error if error happened when reading
 // the response body
 func (r *Resp) ToString() (string, error) {
 	data, err := r.ToBytes()
@@ -124,6 +124,11 @@ func (r *Resp) download(file *os.File) error {
 	total := r.resp.ContentLength
 	var current int64
 	var lastTime time.Time
+
+	defer func() {
+		r.downloadProgress(current, total)
+	}()
+
 	for {
 		l, err := b.Read(p)
 		if l > 0 {
@@ -132,7 +137,7 @@ func (r *Resp) download(file *os.File) error {
 				return _err
 			}
 			current += int64(l)
-			if now := time.Now(); now.Sub(lastTime) > 200*time.Millisecond {
+			if now := time.Now(); now.Sub(lastTime) > r.r.progressInterval {
 				lastTime = now
 				r.downloadProgress(current, total)
 			}

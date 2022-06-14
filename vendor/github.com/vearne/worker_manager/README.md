@@ -1,98 +1,79 @@
-# 可以切换到工程目录下
-# 执行
+# worker_manager
+[![golang-ci](https://github.com/vearne/worker_manager/actions/workflows/golang-ci.yml/badge.svg)](https://github.com/vearne/worker_manager/actions/workflows/golang-ci.yml)
+
+---
+### Overview
+Use observer partern to easily manage the start and stop of workers.
+
+* [中文 README](https://github.com/vearne/worker_manager/blob/master/README_zh.md)
+
+### How to get
 ```
 go get github.com/vearne/worker_manager
 ```
-
+### Example
 ```
 package main
 
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	manager "github.com/vearne/worker_manager"
+	wm "github.com/vearne/worker_manager"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 )
 
 func main() {
-	// 1. init some worker
-	wm := prepareAllWorker()
-
-	// 2. start
-	wm.Start()
-
-	// 3. register grace exit
-	GracefulExit(wm)
-
-	// 4. block and wait
-	wm.Wait()
-}
-
-func GracefulExit(wm *manager.WorkerManager) {
-	ch := make(chan os.Signal)
-	signal.Notify(ch, syscall.SIGTERM)
-	switch <-ch {
-	case syscall.SIGTERM, syscall.SIGINT:
-		log.Println("got signal")
-		wm.Stop()
-		break
-	}
-}
-
-func prepareAllWorker() *manager.WorkerManager {
-	wm := manager.NewWorkerManager()
-	// load worker
-	WorkerCount := 2
-	for i := 0; i < WorkerCount; i++ {
-		wm.AddWorker(NewLoadWorker())
-	}
-	// web server
-	wm.AddWorker(NewWebServer())
-
-	return wm
+	app := wm.NewApp()
+	// add 2 load worker
+	app.AddWorker(NewLoadWorker())
+	app.AddWorker(NewLoadWorker())
+	// add 1 web worker
+	app.AddWorker(NewWebServer())
+	// If not set, the default value will be used
+	//app.SetSigs(syscall.SIGTERM, syscall.SIGQUIT)
+	app.Run()
 }
 
 // some worker
 
 type LoadWorker struct {
-	RunningFlag bool // is running? true:running false:stoped
-	ExitedFlag  bool //  Exit Flag
+	RunningFlag *wm.BoolFlag
+	ExitedFlag  *wm.BoolFlag
 	ExitChan    chan struct{}
 }
 
 func NewLoadWorker() *LoadWorker {
-	worker := &LoadWorker{RunningFlag: true, ExitedFlag: false}
+	worker := &LoadWorker{}
+	worker.RunningFlag = wm.NewBoolFlag()
+	worker.ExitedFlag = wm.NewBoolFlag()
+	wm.SetTrue(worker.RunningFlag)
+	wm.SetTrue(worker.ExitedFlag)
 	worker.ExitChan = make(chan struct{})
 	return worker
 }
 
 func (worker *LoadWorker) Start() {
 	log.Println("[start]LoadWorker")
-	for worker.RunningFlag {
+	for wm.IsTrue(worker.RunningFlag) {
 		select {
 		case <-time.After(1 * time.Minute):
 			//do some thing
 			log.Println("LoadWorker do something")
 			time.Sleep(time.Second * 3)
-
 		case <-worker.ExitChan:
 			log.Println("LoadWorker execute exit logic")
 		}
-
 	}
-	worker.ExitedFlag = true
+	wm.SetTrue(worker.ExitedFlag)
 }
 
 func (worker *LoadWorker) Stop() {
 	log.Println("LoadWorker exit...")
-	worker.RunningFlag = false
+	wm.SetFalse(worker.RunningFlag)
 	close(worker.ExitChan)
-	for !worker.ExitedFlag {
+	for !wm.IsTrue(worker.ExitedFlag) {
 		time.Sleep(50 * time.Millisecond)
 	}
 	log.Println("[end]LoadWorker")
@@ -139,31 +120,31 @@ func (worker *WebServer) Stop() {
 
 ```
 go build main.go
-# 启动服务
+# Start service
 ./main
-# 服务退出, 发出SIGTERM信号，服务优雅退出
-# 请求自行替换pid的值
+# Send a SIGTERM signal to make the service exit gracefully
+# Please replace pid by yourself
 kill -15 <pid> 
 ```
 output
 ```
-2019/08/23 14:28:41 [start]LoadWorker
-2019/08/23 14:28:41 [start]LoadWorker
-2019/08/23 14:28:41 [start]WebServer
+2022/06/14 11:08:44 [start]WebServer
 [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
 
 [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
  - using env:	export GIN_MODE=release
  - using code:	gin.SetMode(gin.ReleaseMode)
 
+2022/06/14 11:08:44 [start]LoadWorker
 [GIN-debug] GET    /                         --> main.(*WebServer).Start.func1 (3 handlers)
-2019/08/23 14:28:58 got signal
-2019/08/23 14:28:58 WebServer exit...
-2019/08/23 14:28:58 [end]WebServer exit
-2019/08/23 14:28:58 LoadWorker exit...
-2019/08/23 14:28:58 LoadWorker execute exit logic
-2019/08/23 14:28:58 LoadWorker exit...
-2019/08/23 14:28:58 LoadWorker execute exit logic
-2019/08/23 14:28:58 [end]LoadWorker
-2019/08/23 14:28:58 [end]LoadWorker
+2022/06/14 11:08:44 [start]LoadWorker
+[GIN] 2022/06/14 - 11:08:52 | 200 |       6.958µs |       127.0.0.1 | GET      "/"
+2022/06/14 11:09:08 WebServer exit...
+2022/06/14 11:09:08 LoadWorker exit...
+2022/06/14 11:09:08 [end]LoadWorker
+2022/06/14 11:09:08 LoadWorker execute exit logic
+2022/06/14 11:09:08 LoadWorker exit...
+2022/06/14 11:09:08 [end]LoadWorker
+2022/06/14 11:09:08 LoadWorker execute exit logic
+2022/06/14 11:09:08 [end]WebServer exit
 ```

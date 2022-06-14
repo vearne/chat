@@ -60,7 +60,11 @@ func (s *LogicServer) Reconnect(ctx context.Context, in *pb.ReConnectRequest) (*
 	out := &pb.ReConnectResponse{}
 	if size >= 0 {
 		// 确实存在的用户
-		resource.MySQLClient.Model(&model.Account{}).Update("status", consts.AccountStatusInUse)
+		resource.MySQLClient.Model(&model.Account{}).Where("id = ? and token = ?",
+			in.AccountId, in.Token).Updates(map[string]interface{}{
+			"status": consts.AccountStatusInUse,
+			"broker": in.Broker,
+		})
 		out.Code = pb.CodeEnum_C000
 	} else {
 		out.Code = pb.CodeEnum_C004

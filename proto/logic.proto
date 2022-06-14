@@ -101,6 +101,7 @@ message LogoutResponse {
 message ReConnectRequest {
     uint64 accountId = 1;
     string token = 2;
+    string broker = 3;
 }
 
 message ReConnectResponse {

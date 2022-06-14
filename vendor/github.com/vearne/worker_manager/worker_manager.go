@@ -2,7 +2,7 @@ package worker_manager
 
 import (
 	"fmt"
-	"runtime"
+	"runtime/debug"
 	"sync"
 )
 
@@ -13,14 +13,7 @@ type Worker interface {
 
 type WorkerManager struct {
 	sync.WaitGroup
-	// 保存所有worker
 	WorkerSlice []Worker
-}
-
-func Stack() []byte {
-	buf := make([]byte, 2048)
-	n := runtime.Stack(buf, false)
-	return buf[:n]
 }
 
 func NewWorkerManager() *WorkerManager {
@@ -38,10 +31,10 @@ func (wm *WorkerManager) Start() {
 	for _, worker := range wm.WorkerSlice {
 		go func(w Worker) {
 			defer func() {
-				err := recover()
-				if err != nil {
-					fmt.Printf("WorkerManager error, error:%v, stack:%v\n",
-						err, string(Stack()))
+				r := recover()
+				if r != nil {
+					fmt.Printf("WorkerManager error, recover:%v, stack:%v\n",
+						r, debug.Stack())
 					wm.Done()
 				}
 			}()
@@ -54,10 +47,10 @@ func (wm *WorkerManager) Stop() {
 	for _, worker := range wm.WorkerSlice {
 		go func(w Worker) {
 			defer func() {
-				err := recover()
-				if err != nil {
-					fmt.Printf("WorkerManager error, error:%v, stack:%v\n",
-						err, string(Stack()))
+				r := recover()
+				if r != nil {
+					fmt.Printf("WorkerManager error, recover:%v, stack:%v\n",
+						r, debug.Stack())
 				}
 			}()
 

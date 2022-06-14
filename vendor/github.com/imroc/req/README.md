@@ -67,7 +67,8 @@ Examples
 [Cookie](#Cookie)  
 [Set Timeout](#Set-Timeout)  
 [Set Proxy](#Set-Proxy)  
-[Customize Client](#Customize-Client)  
+[Customize Client](#Customize-Client)
+[Set context.Context](#Context)
 
 ## <a name="Basic">Basic</a>
 ``` go
@@ -80,7 +81,7 @@ param := req.Param{
 	"cmd":  "add",
 }
 // only url is required, others are optional.
-r, err = req.Post("http://foo.bar/api", header, param)
+r, err := req.Post("http://foo.bar/api", header, param)
 if err != nil {
 	log.Fatal(err)
 }
@@ -103,6 +104,25 @@ header := make(http.Header)
 header.Set("Accept", "application/json")
 req.Get("https://www.baidu.com", header)
 ```
+
+You can also set header from struct, use `HeaderFromStruct` func to parse your struct
+``` go
+type HeaderStruct struct {
+	UserAgent     string `json:"User-Agent"`
+	Authorization string `json:"Authorization"`
+}
+
+func main(){
+	h := HeaderStruct{
+		"V1.0.0",
+		"roc",
+	}
+
+	authHeader := req.HeaderFromStruct(h) 
+	req.Get("https://www.baidu.com", authHeader, req.Header{"User-Agent": "V1.1"})
+}
+```
+> Note: Please add tag 'json' to your argument in struct to let you customize the key name of your header
 
 ## <a name="Set-Param">Set Param</a>
 Use `req.Param` (it is actually a `map[string]interface{}`)
@@ -141,7 +161,7 @@ req.Post(url, req.BodyXML(&bar))
 ```
 
 ## <a name="Debug">Debug</a>
-Set global variable `req.Debug` to true, it will print detail infomation for every request.
+Set global variable `req.Debug` to true, it will print detail information for every request.
 ``` go
 req.Debug = true
 req.Post("http://localhost/test" "hi")
@@ -149,7 +169,7 @@ req.Post("http://localhost/test" "hi")
 ![post](doc/post.png)
 
 ## <a name="Format">Output Format</a>
-You can use different kind of output format to log the request and response infomation in your log file in defferent scenarios. For example, use `%+v` output format in the development phase, it allows you to observe the details. Use `%v` or `%-v` output format in production phase, just log the information necessarily.  
+You can use different kind of output format to log the request and response information in your log file in defferent scenarios. For example, use `%+v` output format in the development phase, it allows you to observe the details. Use `%v` or `%-v` output format in production phase, just log the information necessarily.  
 
 ### `%+v` or `%+s`
 Output in detail
@@ -163,7 +183,7 @@ Output in simple way (default format)
 ``` go
 r, _ := req.Get(url, param)
 log.Printf("%v\n", r) // GET http://foo.bar/api?name=roc&cmd=add {"code":"0","msg":"success"}
-log.Prinln(r)         // smae as above
+log.Prinln(r)         // same as above
 ```
 
 ### `%-v` or `%-s`
@@ -279,6 +299,12 @@ req.SetProxy(func(r *http.Request) (*url.URL, error) {
 Set a simple proxy (use fixed proxy url for every request)
 ``` go
 req.SetProxyUrl("http://my.proxy.com:23456")
+```
+
+## <a name="Context">Set context.Context</a>
+You can pass context.Context in simple way:
+```go
+r, _ := req.Get(url, context.Background())
 ```
 
 ## <a name="Customize-Client">Customize Client</a>
