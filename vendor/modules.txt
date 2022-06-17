@@ -140,7 +140,7 @@ github.com/subosito/gotenv
 # github.com/ugorji/go/codec v1.2.7
 ## explicit; go 1.11
 github.com/ugorji/go/codec
-# github.com/vearne/worker_manager v0.0.0-20220614031903-e6c0d82282ee
+# github.com/vearne/worker_manager v0.0.0-20220617074412-2d2f2e40bfd3
 ## explicit; go 1.17
 github.com/vearne/worker_manager
 # go.uber.org/atomic v1.7.0

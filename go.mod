@@ -11,7 +11,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.12.0
-	github.com/vearne/worker_manager v0.0.0-20220614031903-e6c0d82282ee
+	github.com/vearne/worker_manager v0.0.0-20220617074412-2d2f2e40bfd3
 	go.uber.org/zap v1.21.0
 	google.golang.org/grpc v1.47.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

@@ -398,6 +398,8 @@ github.com/vearne/worker_manager v0.0.0-20190904102932-94bcbdb15e7b h1:TN8u7w+dS
 github.com/vearne/worker_manager v0.0.0-20190904102932-94bcbdb15e7b/go.mod h1:/xasDez8KynSmCjBQgBXR1+wIjGrId3u6a+39I1TBRo=
 github.com/vearne/worker_manager v0.0.0-20220614031903-e6c0d82282ee h1:s9s/RSEp1zEpF6/LyGQTJ+iBkMPfFeWe57+l+ReWDMs=
 github.com/vearne/worker_manager v0.0.0-20220614031903-e6c0d82282ee/go.mod h1:QnxQkZrEFGOssSGCQ9Y1xCny82k1gJocx5zaUhC6Sfw=
+github.com/vearne/worker_manager v0.0.0-20220617074412-2d2f2e40bfd3 h1:cJ+95wytLmTompvqrRPZ4rEMslKb6BHScoSbvG6hrJU=
+github.com/vearne/worker_manager v0.0.0-20220617074412-2d2f2e40bfd3/go.mod h1:P/HAMhf38k6TBamdUtToLUIm8bzCJTrMb1yGmzTn9i0=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

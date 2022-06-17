@@ -11,9 +11,14 @@ const (
 
 type BoolFlag uint32
 
-func NewBoolFlag() *BoolFlag {
-	flag := BoolFlag(True)
-	return &flag
+func NewBoolFlag(flag bool) *BoolFlag {
+	var result BoolFlag
+	if flag {
+		result = BoolFlag(True)
+	} else {
+		result = BoolFlag(False)
+	}
+	return &result
 }
 
 func IsTrue(f *BoolFlag) bool {

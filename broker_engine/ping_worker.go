@@ -21,10 +21,8 @@ type PingWorker struct {
 func NewPingWorker() *PingWorker {
 	//RunningFlag: true, ExitedFlag: false
 	worker := PingWorker{ExitChan: make(chan struct{})}
-	worker.RunningFlag = wm.NewBoolFlag()
-	wm.SetTrue(worker.RunningFlag)
-	worker.ExitedFlag = wm.NewBoolFlag()
-	wm.SetFalse(worker.ExitedFlag)
+	worker.RunningFlag = wm.NewBoolFlag(true)
+	worker.ExitedFlag = wm.NewBoolFlag(false)
 	return &worker
 }
 

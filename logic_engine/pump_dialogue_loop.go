@@ -8,13 +8,14 @@ import (
 	pb "github.com/vearne/chat/proto"
 	"github.com/vearne/chat/resource"
 	"github.com/vearne/chat/utils"
+	wm "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
 	"time"
 )
 
 type PumpDialogueLoopWorker struct {
 	//RunningFlag bool // is running? true:running false:stoped
-	ExitedFlag bool //  Exit Flag
+	ExitedFlag *wm.BoolFlag //  Exit Flag
 	ExitChan   chan struct{}
 	minCount   int
 	maxCount   int
@@ -23,7 +24,8 @@ type PumpDialogueLoopWorker struct {
 }
 
 func NewPumpDialogueLoopWorker(minCount, maxCount int) *PumpDialogueLoopWorker {
-	worker := PumpDialogueLoopWorker{ExitedFlag: false, ExitChan: make(chan struct{})}
+	worker := PumpDialogueLoopWorker{ExitChan: make(chan struct{})}
+	worker.ExitedFlag = wm.NewBoolFlag(false)
 	if minCount <= 1 {
 		minCount = 1
 	}
@@ -38,13 +40,14 @@ func NewPumpDialogueLoopWorker(minCount, maxCount int) *PumpDialogueLoopWorker {
 func (w *PumpDialogueLoopWorker) Start() {
 	zlog.Info("[start]PumpDialogueLoopWorker")
 	w.PumpDialogueLoop()
-	w.ExitedFlag = true
+	wm.SetTrue(w.ExitedFlag)
 }
 
 func (w *PumpDialogueLoopWorker) Stop() {
 	zlog.Info("PumpDialogueLoopWorker exit...")
 	close(w.ExitChan)
-	for !w.ExitedFlag {
+
+	for !wm.IsTrue(w.ExitedFlag) {
 		time.Sleep(50 * time.Millisecond)
 	}
 	zlog.Info("[end]PumpDialogueLoopWorker")
@@ -93,7 +96,7 @@ exit:
 	close(closeCh)
 	refreshTicker.Stop()
 	w.waitGroup.Wait()
-	w.ExitedFlag = true
+	wm.SetTrue(w.ExitedFlag)
 }
 
 // 参考nsq动态协程池的实现
