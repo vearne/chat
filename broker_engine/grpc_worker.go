@@ -62,7 +62,10 @@ func (w *GrpcWorker) ReceiveMsgDialogue(ctx context.Context, in *pb.PushDialogue
 		session.Write(data)
 	} else {
 		zlog.Info("Receiver offline", zap.Uint64("receiverId", in.ReceiverId))
-		req := pb.LogoutRequest{AccountId: in.ReceiverId}
+		req := pb.LogoutRequest{
+			AccountId: in.ReceiverId,
+			Broker:    config.GetBrokerOpts().BrokerGrpcAddr,
+		}
 		_, err := resource.LogicClient.Logout(context.Background(), &req)
 		if err != nil {
 			zlog.Error("LogicClient.Logout", zap.Error(err))

@@ -228,100 +228,6 @@ func (m *ViewedAckResponse) GetMsg() string {
 	return ""
 }
 
-type OnlineRequest struct {
-	Broker               string   `protobuf:"bytes,1,opt,name=broker,proto3" json:"broker,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *OnlineRequest) Reset()         { *m = OnlineRequest{} }
-func (m *OnlineRequest) String() string { return proto.CompactTextString(m) }
-func (*OnlineRequest) ProtoMessage()    {}
-func (*OnlineRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{2}
-}
-func (m *OnlineRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *OnlineRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_OnlineRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *OnlineRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OnlineRequest.Merge(m, src)
-}
-func (m *OnlineRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *OnlineRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_OnlineRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_OnlineRequest proto.InternalMessageInfo
-
-func (m *OnlineRequest) GetBroker() string {
-	if m != nil {
-		return m.Broker
-	}
-	return ""
-}
-
-type OnlineResponse struct {
-	Code                 CodeEnum `protobuf:"varint,1,opt,name=code,proto3,enum=proto.CodeEnum" json:"code,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *OnlineResponse) Reset()         { *m = OnlineResponse{} }
-func (m *OnlineResponse) String() string { return proto.CompactTextString(m) }
-func (*OnlineResponse) ProtoMessage()    {}
-func (*OnlineResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{3}
-}
-func (m *OnlineResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *OnlineResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_OnlineResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *OnlineResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OnlineResponse.Merge(m, src)
-}
-func (m *OnlineResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *OnlineResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_OnlineResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_OnlineResponse proto.InternalMessageInfo
-
-func (m *OnlineResponse) GetCode() CodeEnum {
-	if m != nil {
-		return m.Code
-	}
-	return CodeEnum_C000
-}
-
 type CreateAccountRequest struct {
 	Nickname             string   `protobuf:"bytes,1,opt,name=nickname,proto3" json:"nickname,omitempty"`
 	Broker               string   `protobuf:"bytes,2,opt,name=broker,proto3" json:"broker,omitempty"`
@@ -334,7 +240,7 @@ func (m *CreateAccountRequest) Reset()         { *m = CreateAccountRequest{} }
 func (m *CreateAccountRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateAccountRequest) ProtoMessage()    {}
 func (*CreateAccountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{4}
+	return fileDescriptor_60207fea82c31ca8, []int{2}
 }
 func (m *CreateAccountRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -391,7 +297,7 @@ func (m *CreateAccountResponse) Reset()         { *m = CreateAccountResponse{} }
 func (m *CreateAccountResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateAccountResponse) ProtoMessage()    {}
 func (*CreateAccountResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{5}
+	return fileDescriptor_60207fea82c31ca8, []int{3}
 }
 func (m *CreateAccountResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -459,7 +365,7 @@ func (m *MatchRequest) Reset()         { *m = MatchRequest{} }
 func (m *MatchRequest) String() string { return proto.CompactTextString(m) }
 func (*MatchRequest) ProtoMessage()    {}
 func (*MatchRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{6}
+	return fileDescriptor_60207fea82c31ca8, []int{4}
 }
 func (m *MatchRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -510,7 +416,7 @@ func (m *MatchResponse) Reset()         { *m = MatchResponse{} }
 func (m *MatchResponse) String() string { return proto.CompactTextString(m) }
 func (*MatchResponse) ProtoMessage()    {}
 func (*MatchResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{7}
+	return fileDescriptor_60207fea82c31ca8, []int{5}
 }
 func (m *MatchResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -588,7 +494,7 @@ func (m *SendMsgRequest) Reset()         { *m = SendMsgRequest{} }
 func (m *SendMsgRequest) String() string { return proto.CompactTextString(m) }
 func (*SendMsgRequest) ProtoMessage()    {}
 func (*SendMsgRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{8}
+	return fileDescriptor_60207fea82c31ca8, []int{6}
 }
 func (m *SendMsgRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -658,7 +564,7 @@ func (m *SendMsgResponse) Reset()         { *m = SendMsgResponse{} }
 func (m *SendMsgResponse) String() string { return proto.CompactTextString(m) }
 func (*SendMsgResponse) ProtoMessage()    {}
 func (*SendMsgResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{9}
+	return fileDescriptor_60207fea82c31ca8, []int{7}
 }
 func (m *SendMsgResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -710,6 +616,7 @@ func (m *SendMsgResponse) GetMsgId() uint64 {
 
 type LogoutRequest struct {
 	AccountId            uint64   `protobuf:"varint,1,opt,name=accountId,proto3" json:"accountId,omitempty"`
+	Broker               string   `protobuf:"bytes,2,opt,name=broker,proto3" json:"broker,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -719,7 +626,7 @@ func (m *LogoutRequest) Reset()         { *m = LogoutRequest{} }
 func (m *LogoutRequest) String() string { return proto.CompactTextString(m) }
 func (*LogoutRequest) ProtoMessage()    {}
 func (*LogoutRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{10}
+	return fileDescriptor_60207fea82c31ca8, []int{8}
 }
 func (m *LogoutRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -755,6 +662,13 @@ func (m *LogoutRequest) GetAccountId() uint64 {
 	return 0
 }
 
+func (m *LogoutRequest) GetBroker() string {
+	if m != nil {
+		return m.Broker
+	}
+	return ""
+}
+
 type LogoutResponse struct {
 	Code                 CodeEnum `protobuf:"varint,1,opt,name=code,proto3,enum=proto.CodeEnum" json:"code,omitempty"`
 	Msg                  string   `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
@@ -767,7 +681,7 @@ func (m *LogoutResponse) Reset()         { *m = LogoutResponse{} }
 func (m *LogoutResponse) String() string { return proto.CompactTextString(m) }
 func (*LogoutResponse) ProtoMessage()    {}
 func (*LogoutResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{11}
+	return fileDescriptor_60207fea82c31ca8, []int{9}
 }
 func (m *LogoutResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -823,7 +737,7 @@ func (m *ReConnectRequest) Reset()         { *m = ReConnectRequest{} }
 func (m *ReConnectRequest) String() string { return proto.CompactTextString(m) }
 func (*ReConnectRequest) ProtoMessage()    {}
 func (*ReConnectRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{12}
+	return fileDescriptor_60207fea82c31ca8, []int{10}
 }
 func (m *ReConnectRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -887,7 +801,7 @@ func (m *ReConnectResponse) Reset()         { *m = ReConnectResponse{} }
 func (m *ReConnectResponse) String() string { return proto.CompactTextString(m) }
 func (*ReConnectResponse) ProtoMessage()    {}
 func (*ReConnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60207fea82c31ca8, []int{13}
+	return fileDescriptor_60207fea82c31ca8, []int{11}
 }
 func (m *ReConnectResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -950,8 +864,6 @@ func init() {
 	proto.RegisterEnum("proto.MsgTypeEnum", MsgTypeEnum_name, MsgTypeEnum_value)
 	proto.RegisterType((*ViewedAckRequest)(nil), "proto.ViewedAckRequest")
 	proto.RegisterType((*ViewedAckResponse)(nil), "proto.ViewedAckResponse")
-	proto.RegisterType((*OnlineRequest)(nil), "proto.OnlineRequest")
-	proto.RegisterType((*OnlineResponse)(nil), "proto.OnlineResponse")
 	proto.RegisterType((*CreateAccountRequest)(nil), "proto.CreateAccountRequest")
 	proto.RegisterType((*CreateAccountResponse)(nil), "proto.CreateAccountResponse")
 	proto.RegisterType((*MatchRequest)(nil), "proto.MatchRequest")
@@ -967,50 +879,48 @@ func init() {
 func init() { proto.RegisterFile("logic.proto", fileDescriptor_60207fea82c31ca8) }
 
 var fileDescriptor_60207fea82c31ca8 = []byte{
-	// 687 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0xdd, 0x4a, 0x1b, 0x4f,
-	0x14, 0x77, 0xb3, 0xf9, 0x3c, 0x31, 0x71, 0x9d, 0xbf, 0xfa, 0x0f, 0xa9, 0x04, 0xd9, 0x52, 0x2c,
-	0x62, 0xc5, 0xc6, 0x0a, 0x85, 0x16, 0x41, 0x63, 0x29, 0x8a, 0x5a, 0x58, 0x4b, 0x2f, 0x85, 0x75,
-	0xf7, 0xb0, 0x5d, 0x92, 0xcc, 0xa4, 0x3b, 0x13, 0x8a, 0xb7, 0xa5, 0x4f, 0xd0, 0xab, 0x3e, 0x40,
-	0xdf, 0xa2, 0x2f, 0xd0, 0xcb, 0x3e, 0x42, 0xb1, 0x2f, 0x52, 0x32, 0x33, 0xbb, 0xd9, 0x5d, 0x73,
-	0x61, 0x09, 0xbd, 0xda, 0x39, 0x9f, 0xbf, 0x33, 0x67, 0x7f, 0x67, 0x0e, 0xd4, 0x07, 0x2c, 0x08,
-	0xbd, 0x9d, 0x51, 0xc4, 0x04, 0x23, 0x25, 0xf9, 0xb1, 0x7d, 0xb0, 0xde, 0x85, 0xf8, 0x11, 0xfd,
-	0x43, 0xaf, 0xef, 0xe0, 0x87, 0x31, 0x72, 0x41, 0xd6, 0xa1, 0xc6, 0x91, 0xf3, 0x90, 0xd1, 0x13,
-	0xbf, 0x65, 0x6c, 0x18, 0x8f, 0x8b, 0xce, 0x54, 0x31, 0xb1, 0xba, 0x9e, 0xc7, 0xc6, 0x54, 0x9c,
-	0xf8, 0xad, 0x82, 0xb2, 0x26, 0x0a, 0xb2, 0x02, 0xa5, 0x21, 0x0f, 0x4e, 0xfc, 0x96, 0x29, 0x2d,
-	0x4a, 0xb0, 0x4f, 0x61, 0x39, 0x85, 0xc2, 0x47, 0x8c, 0x72, 0x24, 0x0f, 0xa1, 0xe8, 0x31, 0x1f,
-	0x25, 0x42, 0xb3, 0xbb, 0xa4, 0xea, 0xda, 0xe9, 0x31, 0x1f, 0x5f, 0xd1, 0xf1, 0xd0, 0x91, 0x46,
-	0x62, 0x81, 0x39, 0xe4, 0x81, 0xc4, 0xa9, 0x39, 0x93, 0xa3, 0xbd, 0x09, 0x8d, 0x37, 0x74, 0x10,
-	0x52, 0x8c, 0xcb, 0x5d, 0x83, 0xf2, 0x75, 0xc4, 0xfa, 0x18, 0xc9, 0x4c, 0x35, 0x47, 0x4b, 0xf6,
-	0x3e, 0x34, 0x63, 0xc7, 0xbf, 0x40, 0xb4, 0x4f, 0x61, 0xa5, 0x17, 0xa1, 0x2b, 0xf0, 0x50, 0x5d,
-	0x2a, 0x86, 0x69, 0x43, 0x95, 0x86, 0x5e, 0x9f, 0xba, 0x43, 0xd4, 0x40, 0x89, 0x9c, 0x2a, 0xa1,
-	0x90, 0x29, 0xe1, 0x93, 0x01, 0xab, 0xb9, 0x64, 0x73, 0x5d, 0x3e, 0xdb, 0x7c, 0x73, 0x46, 0xf3,
-	0x05, 0xeb, 0x23, 0x6d, 0x15, 0x65, 0x84, 0x12, 0xec, 0x6d, 0x58, 0x3c, 0x77, 0x85, 0xf7, 0x3e,
-	0xf5, 0x7b, 0xa7, 0x39, 0x8c, 0x5c, 0x0e, 0xfb, 0x9b, 0x01, 0x0d, 0xed, 0x3e, 0x77, 0xa9, 0x23,
-	0x37, 0x12, 0x14, 0xa3, 0x69, 0xa9, 0x89, 0x82, 0x6c, 0x40, 0x5d, 0x0b, 0x17, 0x93, 0x86, 0xaa,
-	0x82, 0xd3, 0xaa, 0x2c, 0x0b, 0x4b, 0x39, 0x16, 0xda, 0x5f, 0x0c, 0x68, 0x5e, 0x22, 0xf5, 0xcf,
-	0x79, 0x90, 0xfa, 0x41, 0x1c, 0xa9, 0x2f, 0xf1, 0x14, 0x2f, 0x13, 0x39, 0x9b, 0xcc, 0xcc, 0x53,
-	0x7a, 0x1b, 0x2a, 0x43, 0x1e, 0x88, 0x9b, 0x91, 0x2a, 0xa4, 0xd9, 0x25, 0xfa, 0x92, 0xe7, 0x3c,
-	0x78, 0x7b, 0x33, 0x52, 0xf7, 0x8c, 0x5d, 0x48, 0x0b, 0x2a, 0x1e, 0xa3, 0x02, 0xa9, 0x90, 0x65,
-	0xd5, 0x9c, 0x58, 0xb4, 0xaf, 0x60, 0x29, 0xa9, 0x69, 0xbe, 0xe6, 0xcd, 0x1e, 0xa3, 0x27, 0xd0,
-	0x38, 0x63, 0x01, 0x1b, 0x8b, 0xfb, 0xfd, 0xca, 0xd7, 0xd0, 0x8c, 0xdd, 0xe7, 0x1b, 0xb9, 0x2b,
-	0xb0, 0x1c, 0xec, 0x31, 0x4a, 0xd1, 0xbb, 0x1f, 0xf4, 0x94, 0x89, 0x85, 0x14, 0x13, 0x53, 0x63,
-	0x62, 0x66, 0xc6, 0xe4, 0xb3, 0x01, 0xcb, 0x29, 0x80, 0x7f, 0x39, 0x22, 0xe9, 0x29, 0x2e, 0x66,
-	0xa7, 0x78, 0xeb, 0x25, 0x54, 0xe3, 0xec, 0xa4, 0x0a, 0xc5, 0xde, 0xee, 0xee, 0xae, 0xb5, 0xa0,
-	0x4f, 0x4f, 0x2d, 0x43, 0x9f, 0xba, 0x56, 0x41, 0x9f, 0xf6, 0x2c, 0x53, 0x9f, 0x9e, 0x59, 0xc5,
-	0xad, 0x47, 0x00, 0x97, 0xc2, 0x15, 0x63, 0x2e, 0xe3, 0xeb, 0x50, 0x39, 0xc6, 0x01, 0x0a, 0xf4,
-	0xad, 0x05, 0x02, 0x50, 0xbe, 0x60, 0xd1, 0xd0, 0x1d, 0x58, 0xc6, 0xd6, 0x26, 0xd4, 0x53, 0xac,
-	0x22, 0x8b, 0x50, 0x3d, 0x0e, 0xdd, 0x01, 0x0b, 0xc6, 0xa8, 0x1c, 0x2f, 0xc3, 0x80, 0x4e, 0x1c,
-	0xbb, 0xdf, 0x4d, 0xa8, 0x9f, 0x4d, 0x1e, 0xec, 0x63, 0x74, 0x07, 0x18, 0x91, 0x53, 0x68, 0x64,
-	0x9e, 0x12, 0xf2, 0x20, 0xee, 0xc8, 0x8c, 0xd7, 0xaa, 0xbd, 0x3e, 0xdb, 0xa8, 0x5b, 0xdb, 0x85,
-	0x92, 0x9c, 0x71, 0xf2, 0x5f, 0x4c, 0xf4, 0xd4, 0x03, 0xd1, 0x5e, 0xc9, 0x2a, 0x75, 0xcc, 0x73,
-	0xa8, 0x68, 0x72, 0x93, 0x55, 0xed, 0x90, 0x1d, 0xc0, 0xf6, 0x5a, 0x5e, 0xad, 0x23, 0xf7, 0xa1,
-	0xac, 0x78, 0x48, 0xe2, 0xcc, 0x19, 0x16, 0xb7, 0x57, 0x73, 0x5a, 0x1d, 0x76, 0x00, 0xb5, 0x64,
-	0x69, 0x90, 0xff, 0xb5, 0x4f, 0x7e, 0x59, 0xb5, 0x5b, 0x77, 0x0d, 0x3a, 0xfe, 0x05, 0x2c, 0x1e,
-	0x49, 0x7e, 0xa9, 0x2d, 0x90, 0x80, 0x67, 0xb6, 0x47, 0x02, 0x9e, 0x5b, 0x15, 0x07, 0x50, 0x73,
-	0xd0, 0x53, 0x8c, 0x4c, 0xc0, 0xf3, 0x43, 0x90, 0x80, 0xdf, 0x21, 0xef, 0x91, 0xf5, 0xe3, 0xb6,
-	0x63, 0xfc, 0xbc, 0xed, 0x18, 0xbf, 0x6e, 0x3b, 0xc6, 0xd7, 0xdf, 0x9d, 0x85, 0xeb, 0xb2, 0x74,
-	0xdd, 0xfb, 0x13, 0x00, 0x00, 0xff, 0xff, 0x26, 0x21, 0x29, 0x3d, 0x86, 0x07, 0x00, 0x00,
+	// 645 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0xdd, 0x6a, 0xd4, 0x4e,
+	0x14, 0xef, 0xec, 0xf7, 0x9e, 0x6d, 0xb7, 0xe9, 0xfc, 0xdb, 0xfe, 0x97, 0x58, 0x96, 0x12, 0x11,
+	0xa5, 0x94, 0x52, 0xb7, 0x0a, 0x5e, 0x88, 0x50, 0xb7, 0x45, 0x5a, 0xda, 0x5e, 0xa4, 0xe2, 0x65,
+	0x21, 0x4d, 0x0e, 0x31, 0xec, 0x66, 0x66, 0xcd, 0x4c, 0x90, 0xde, 0x8a, 0x4f, 0xe0, 0x95, 0x0f,
+	0xe0, 0xc3, 0x78, 0xe9, 0x23, 0x48, 0x7d, 0x0f, 0x91, 0xcd, 0x4c, 0xb2, 0x49, 0xba, 0x42, 0x61,
+	0xf1, 0x6a, 0xcf, 0xf7, 0xf9, 0xe5, 0xcc, 0xef, 0x9c, 0x85, 0xce, 0x98, 0xfb, 0x81, 0xbb, 0x37,
+	0x89, 0xb8, 0xe4, 0xb4, 0x9e, 0xfc, 0x58, 0x1e, 0x18, 0xef, 0x02, 0xfc, 0x88, 0xde, 0xa1, 0x3b,
+	0xb2, 0xf1, 0x43, 0x8c, 0x42, 0xd2, 0x2d, 0x68, 0x0b, 0x14, 0x22, 0xe0, 0xec, 0xc4, 0xeb, 0x91,
+	0x6d, 0xf2, 0xa4, 0x66, 0xcf, 0x0c, 0x53, 0xaf, 0xe3, 0xba, 0x3c, 0x66, 0xf2, 0xc4, 0xeb, 0x55,
+	0x94, 0x37, 0x33, 0xd0, 0x75, 0xa8, 0x87, 0xc2, 0x3f, 0xf1, 0x7a, 0xd5, 0xc4, 0xa3, 0x14, 0xeb,
+	0x14, 0xd6, 0x72, 0x5d, 0xc4, 0x84, 0x33, 0x81, 0xf4, 0x21, 0xd4, 0x5c, 0xee, 0x61, 0xd2, 0xa1,
+	0x3b, 0x58, 0x55, 0xb8, 0xf6, 0x86, 0xdc, 0xc3, 0x63, 0x16, 0x87, 0x76, 0xe2, 0xa4, 0x06, 0x54,
+	0x43, 0xe1, 0x27, 0x7d, 0xda, 0xf6, 0x54, 0xb4, 0x4e, 0x61, 0x7d, 0x18, 0xa1, 0x23, 0xf1, 0x50,
+	0x35, 0x4d, 0x51, 0x9b, 0xd0, 0x62, 0x81, 0x3b, 0x62, 0x4e, 0xa8, 0x4a, 0xb6, 0xed, 0x4c, 0xa7,
+	0x9b, 0xd0, 0xb8, 0x8e, 0xf8, 0x08, 0x23, 0x5d, 0x48, 0x6b, 0xd6, 0x27, 0x02, 0x1b, 0xa5, 0x62,
+	0x0b, 0x81, 0x2b, 0x0e, 0xa7, 0x3a, 0x67, 0x38, 0x92, 0x8f, 0x90, 0xf5, 0x6a, 0x49, 0x86, 0x52,
+	0xac, 0x5d, 0x58, 0x3e, 0x77, 0xa4, 0xfb, 0x3e, 0x37, 0xfe, 0x59, 0x0d, 0x52, 0xaa, 0x61, 0x7d,
+	0x23, 0xb0, 0xa2, 0xc3, 0x17, 0x86, 0x3a, 0x71, 0x22, 0xc9, 0x30, 0x9a, 0x41, 0xcd, 0x0c, 0x74,
+	0x1b, 0x3a, 0x5a, 0xb9, 0x98, 0x0e, 0x54, 0x01, 0xce, 0x9b, 0x8a, 0x2c, 0xa9, 0x97, 0x58, 0x62,
+	0x7d, 0x21, 0xd0, 0xbd, 0x44, 0xe6, 0x9d, 0x0b, 0x3f, 0xf7, 0x40, 0x02, 0x99, 0x97, 0xf4, 0x53,
+	0xbc, 0xc9, 0xf4, 0x62, 0xb1, 0x6a, 0x99, 0x72, 0xbb, 0xd0, 0x0c, 0x85, 0x2f, 0x6f, 0x26, 0x0a,
+	0x48, 0x77, 0x40, 0xf5, 0x47, 0x9e, 0x0b, 0xff, 0xed, 0xcd, 0x44, 0x7d, 0x67, 0x1a, 0x42, 0x7b,
+	0xd0, 0x74, 0x39, 0x93, 0xc8, 0x64, 0x02, 0xab, 0x6d, 0xa7, 0xaa, 0x75, 0x05, 0xab, 0x19, 0xa6,
+	0xc5, 0x86, 0x37, 0x9f, 0xe6, 0xc7, 0xb0, 0x72, 0xc6, 0x7d, 0x1e, 0xcb, 0x7b, 0x3d, 0xe5, 0x5f,
+	0x59, 0xf9, 0x06, 0xba, 0x69, 0x99, 0xc5, 0x56, 0xe5, 0x0a, 0x0c, 0x1b, 0x87, 0x9c, 0x31, 0x74,
+	0xef, 0x09, 0x29, 0x63, 0x68, 0x25, 0xc7, 0xd0, 0x1c, 0xd0, 0x6a, 0x01, 0xe8, 0x67, 0x02, 0x6b,
+	0xb9, 0x06, 0xff, 0x72, 0x75, 0xf2, 0xdb, 0x5d, 0x2b, 0x6e, 0xf7, 0xce, 0x4b, 0x68, 0xa5, 0xd5,
+	0x69, 0x0b, 0x6a, 0xc3, 0xfd, 0xfd, 0x7d, 0x63, 0x49, 0x4b, 0x4f, 0x0d, 0xa2, 0xa5, 0x81, 0x51,
+	0xd1, 0xd2, 0x81, 0x51, 0xd5, 0xd2, 0x33, 0xa3, 0xb6, 0xf3, 0x08, 0xe0, 0x52, 0x3a, 0x32, 0x16,
+	0x49, 0x7e, 0x07, 0x9a, 0x47, 0x38, 0x46, 0x89, 0x9e, 0xb1, 0x44, 0x01, 0x1a, 0x17, 0x3c, 0x0a,
+	0x9d, 0xb1, 0x41, 0x76, 0x1e, 0x43, 0x27, 0xc7, 0x36, 0xba, 0x0c, 0xad, 0xa3, 0xc0, 0x19, 0x73,
+	0x3f, 0x46, 0x15, 0x78, 0x19, 0xf8, 0x6c, 0x1a, 0x38, 0xf8, 0x5d, 0x81, 0xce, 0xd9, 0xf4, 0xd0,
+	0x1e, 0xa1, 0x33, 0xc6, 0x88, 0x9e, 0xc2, 0x4a, 0xe1, 0xc4, 0xd0, 0x07, 0xe9, 0x44, 0xe6, 0x5c,
+	0x31, 0x73, 0x6b, 0xbe, 0x53, 0x8f, 0x76, 0x00, 0xf5, 0x64, 0xf7, 0xe9, 0x7f, 0xe9, 0x02, 0xe4,
+	0x0e, 0x87, 0xb9, 0x5e, 0x34, 0xea, 0x9c, 0x17, 0xd0, 0xd4, 0xa4, 0xa7, 0x1b, 0x3a, 0xa0, 0xb8,
+	0x98, 0xe6, 0x66, 0xd9, 0xac, 0x33, 0x9f, 0x43, 0x43, 0xf1, 0x90, 0xa6, 0x95, 0x0b, 0xec, 0x36,
+	0x37, 0x4a, 0x56, 0x9d, 0xf6, 0x0a, 0xda, 0xd9, 0xb1, 0xa7, 0xff, 0xeb, 0x98, 0xf2, 0x9f, 0x8c,
+	0xd9, 0xbb, 0xeb, 0x98, 0xe5, 0xdb, 0xe8, 0x2a, 0x52, 0x65, 0xf9, 0x65, 0x1e, 0x67, 0xf9, 0x77,
+	0xf8, 0xf7, 0xda, 0xf8, 0x7e, 0xdb, 0x27, 0x3f, 0x6e, 0xfb, 0xe4, 0xe7, 0x6d, 0x9f, 0x7c, 0xfd,
+	0xd5, 0x5f, 0xba, 0x6e, 0x24, 0xa1, 0x07, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x2c, 0x9b, 0x2f,
+	0x98, 0x01, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1030,7 +940,6 @@ type LogicDealerClient interface {
 	SendMsg(ctx context.Context, in *SendMsgRequest, opts ...grpc.CallOption) (*SendMsgResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	ViewedAck(ctx context.Context, in *ViewedAckRequest, opts ...grpc.CallOption) (*ViewedAckResponse, error)
-	BrokerOnline(ctx context.Context, in *OnlineRequest, opts ...grpc.CallOption) (*OnlineResponse, error)
 	Reconnect(ctx context.Context, in *ReConnectRequest, opts ...grpc.CallOption) (*ReConnectResponse, error)
 }
 
@@ -1087,15 +996,6 @@ func (c *logicDealerClient) ViewedAck(ctx context.Context, in *ViewedAckRequest,
 	return out, nil
 }
 
-func (c *logicDealerClient) BrokerOnline(ctx context.Context, in *OnlineRequest, opts ...grpc.CallOption) (*OnlineResponse, error) {
-	out := new(OnlineResponse)
-	err := c.cc.Invoke(ctx, "/proto.LogicDealer/BrokerOnline", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *logicDealerClient) Reconnect(ctx context.Context, in *ReConnectRequest, opts ...grpc.CallOption) (*ReConnectResponse, error) {
 	out := new(ReConnectResponse)
 	err := c.cc.Invoke(ctx, "/proto.LogicDealer/Reconnect", in, out, opts...)
@@ -1112,7 +1012,6 @@ type LogicDealerServer interface {
 	SendMsg(context.Context, *SendMsgRequest) (*SendMsgResponse, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	ViewedAck(context.Context, *ViewedAckRequest) (*ViewedAckResponse, error)
-	BrokerOnline(context.Context, *OnlineRequest) (*OnlineResponse, error)
 	Reconnect(context.Context, *ReConnectRequest) (*ReConnectResponse, error)
 }
 
@@ -1134,9 +1033,6 @@ func (*UnimplementedLogicDealerServer) Logout(ctx context.Context, req *LogoutRe
 }
 func (*UnimplementedLogicDealerServer) ViewedAck(ctx context.Context, req *ViewedAckRequest) (*ViewedAckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ViewedAck not implemented")
-}
-func (*UnimplementedLogicDealerServer) BrokerOnline(ctx context.Context, req *OnlineRequest) (*OnlineResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BrokerOnline not implemented")
 }
 func (*UnimplementedLogicDealerServer) Reconnect(ctx context.Context, req *ReConnectRequest) (*ReConnectResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reconnect not implemented")
@@ -1236,24 +1132,6 @@ func _LogicDealer_ViewedAck_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LogicDealer_BrokerOnline_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OnlineRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LogicDealerServer).BrokerOnline(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/proto.LogicDealer/BrokerOnline",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LogicDealerServer).BrokerOnline(ctx, req.(*OnlineRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _LogicDealer_Reconnect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReConnectRequest)
 	if err := dec(in); err != nil {
@@ -1295,10 +1173,6 @@ var _LogicDealer_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ViewedAck",
 			Handler:    _LogicDealer_ViewedAck_Handler,
-		},
-		{
-			MethodName: "BrokerOnline",
-			Handler:    _LogicDealer_BrokerOnline_Handler,
 		},
 		{
 			MethodName: "Reconnect",
@@ -1381,72 +1255,6 @@ func (m *ViewedAckResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintLogic(dAtA, i, uint64(len(m.Msg)))
 		i--
 		dAtA[i] = 0x12
-	}
-	if m.Code != 0 {
-		i = encodeVarintLogic(dAtA, i, uint64(m.Code))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *OnlineRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *OnlineRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *OnlineRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	if len(m.Broker) > 0 {
-		i -= len(m.Broker)
-		copy(dAtA[i:], m.Broker)
-		i = encodeVarintLogic(dAtA, i, uint64(len(m.Broker)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *OnlineResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *OnlineResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *OnlineResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	if m.Code != 0 {
 		i = encodeVarintLogic(dAtA, i, uint64(m.Code))
@@ -1753,6 +1561,13 @@ func (m *LogoutRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
+	if len(m.Broker) > 0 {
+		i -= len(m.Broker)
+		copy(dAtA[i:], m.Broker)
+		i = encodeVarintLogic(dAtA, i, uint64(len(m.Broker)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if m.AccountId != 0 {
 		i = encodeVarintLogic(dAtA, i, uint64(m.AccountId))
 		i--
@@ -1948,37 +1763,6 @@ func (m *ViewedAckResponse) Size() (n int) {
 	return n
 }
 
-func (m *OnlineRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Broker)
-	if l > 0 {
-		n += 1 + l + sovLogic(uint64(l))
-	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *OnlineResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Code != 0 {
-		n += 1 + sovLogic(uint64(m.Code))
-	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
 func (m *CreateAccountRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -2124,6 +1908,10 @@ func (m *LogoutRequest) Size() (n int) {
 	_ = l
 	if m.AccountId != 0 {
 		n += 1 + sovLogic(uint64(m.AccountId))
+	}
+	l = len(m.Broker)
+	if l > 0 {
+		n += 1 + l + sovLogic(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -2393,159 +2181,6 @@ func (m *ViewedAckResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Msg = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipLogic(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthLogic
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *OnlineRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowLogic
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: OnlineRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: OnlineRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Broker", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLogic
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthLogic
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthLogic
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Broker = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipLogic(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthLogic
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *OnlineResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowLogic
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: OnlineResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: OnlineResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Code", wireType)
-			}
-			m.Code = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLogic
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Code |= CodeEnum(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipLogic(dAtA[iNdEx:])
@@ -3387,6 +3022,38 @@ func (m *LogoutRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Broker", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLogic
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLogic
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLogic
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Broker = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipLogic(dAtA[iNdEx:])

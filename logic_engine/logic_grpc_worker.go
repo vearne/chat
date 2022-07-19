@@ -74,14 +74,6 @@ func (s *LogicServer) Reconnect(ctx context.Context, in *pb.ReConnectRequest) (*
 	return out, nil
 }
 
-func (s *LogicServer) BrokerOnline(cxt context.Context, in *pb.OnlineRequest) (*pb.OnlineResponse, error) {
-	//in.Broker
-	ClearUserStatus(in.Broker)
-	var resp pb.OnlineResponse
-	resp.Code = pb.CodeEnum_C000
-	return &resp, nil
-}
-
 func (s *LogicServer) ViewedAck(ctx context.Context, req *pb.ViewedAckRequest) (*pb.ViewedAckResponse, error) {
 	// 在数据库中做记录
 	dao.CreatOrUpdateViewedAck(req.SessionId, req.AccountId, req.MsgId)
@@ -181,7 +173,7 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 }
 
 func (s *LogicServer) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
-	handlerLogout(req.AccountId)
+	handlerLogout(req.AccountId, req.Broker)
 	var resp pb.LogoutResponse
 	resp.Code = pb.CodeEnum_C000
 	return &resp, nil
@@ -261,28 +253,37 @@ func SendPartnerMsg(msgId, senderId, receiverId, sessionId uint64, content strin
 }
 
 func ClearUserStatus(broker string) {
+	// 清理某个broker上的所有账号
+	// 让他们都下线(登出)
 	accounts := make([]model.Account, 0)
 	resource.MySQLClient.Model(&model.Account{}).Where("broker = ?", broker).Find(&accounts)
 	for _, item := range accounts {
 		zlog.Info("logout", zap.Uint64("AccountId", item.ID))
-		handlerLogout(item.ID)
+		handlerLogout(item.ID, broker)
 	}
 }
 
-func handlerLogout(accountId uint64) {
+func handlerLogout(accountId uint64, broker string) bool {
 	// 1, 把账号置为退出
-	resource.MySQLClient.Model(&model.Account{}).Where("id = ?", accountId).Updates(map[string]interface{}{
+	result := resource.MySQLClient.Model(&model.Account{}).Where("id = ? AND broker = ? AND status = ?",
+		accountId, broker, consts.AccountStatusInUse).Updates(map[string]interface{}{
 		"status":      consts.AccountStatusDestroyed,
 		"modified_at": time.Now()})
+
+	if result.RowsAffected <= 0 {
+		return false
+	}
 
 	var itemList []model.SessionAccount
 	resource.MySQLClient.Where("account_id = ?", accountId).Find(&itemList)
 	for _, item := range itemList {
 		// update session
 		// 2. 将账号关联的所有会话都退出
-		resource.MySQLClient.Model(&model.Session{}).Where("id = ?", item.SessionId).Updates(map[string]interface{}{
+		resource.MySQLClient.Model(&model.Session{}).Where("id = ?",
+			item.SessionId).Updates(map[string]interface{}{
 			"status":      consts.SessionStatusDestroyed,
-			"modified_at": time.Now()})
+			"modified_at": time.Now(),
+		})
 
 		// notify parnter
 		// 通知这些会话的参与者，会话即将销毁
@@ -291,5 +292,5 @@ func handlerLogout(accountId uint64) {
 			accountId).First(&sa)
 		notifyPartnerExit(sa.AccountId, item.SessionId, accountId)
 	}
-
+	return true
 }

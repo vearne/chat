@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/spf13/viper"
+	"github.com/vearne/chat/utils"
 	"log"
 	"sync"
 	"sync/atomic"
@@ -27,6 +28,8 @@ type BrokerConfig struct {
 		Interval time.Duration `mapstructure:"interval"`
 		MaxWait  time.Duration `mapstructure:"maxWait"`
 	} `mapstructure:"ping"`
+
+	BrokerGrpcAddr string
 }
 
 type LogicConfig struct {
@@ -58,6 +61,9 @@ func InitBrokerConfig() error {
 	initOnce.Do(func() {
 		var cf = BrokerConfig{}
 		viper.Unmarshal(&cf)
+		// Grpc地址
+		ip, _ := utils.GetIP()
+		cf.BrokerGrpcAddr = ip + cf.Broker.GrpcAddress
 		gcf.Store(&cf)
 	})
 	return nil

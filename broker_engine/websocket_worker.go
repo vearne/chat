@@ -10,7 +10,6 @@ import (
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
 	"github.com/vearne/chat/resource"
-	"github.com/vearne/chat/utils"
 	"go.uber.org/zap"
 	"gopkg.in/olahol/melody.v1"
 	"net/http"
@@ -31,6 +30,7 @@ func NewWebsocketWorker() *WebsocketWorker {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+
 	return worker
 }
 
@@ -38,7 +38,6 @@ func (worker *WebsocketWorker) Start() {
 	zlog.Info("[start]WebsocketWorker")
 	// 将之前连接在此broker上的用户，都置为离线
 	zlog.Info("WebsocketWorker-ClearUserStatus")
-	ClearUserStatus()
 
 	worker.Server.ListenAndServe()
 }
@@ -48,10 +47,6 @@ func createGinEngine() *gin.Engine {
 	m := melody.New()
 	m.Config.MaxMessageSize = 1024 * 10
 	m.Config.MessageBufferSize = 4 * 1024
-
-	//r.GET("/", func(c *gin.Context) {
-	//	http.ServeFile(c.Writer, c.Request, "index.html")
-	//})
 
 	r.GET("/ws", func(c *gin.Context) {
 		m.HandleRequest(c.Writer, c.Request)
@@ -70,8 +65,6 @@ func (worker *WebsocketWorker) Stop() {
 	//defer Conn.Close()
 	// 将之前连接在此broker上的用户，都置为离线
 	zlog.Info("WebsocketWorker-ClearUserStatus")
-	ClearUserStatus()
-
 	cxt, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -144,13 +137,10 @@ func HandleReConnect(s *melody.Session, data []byte) {
 	json.Unmarshal(data, &cmd)
 	ctx := context.Background()
 
-	ip, _ := utils.GetIP()
-	broker := ip + config.GetBrokerOpts().Broker.GrpcAddress
-	
 	req := pb.ReConnectRequest{
 		AccountId: cmd.AccountId,
 		Token:     cmd.Token,
-		Broker:    broker,
+		Broker:    config.GetBrokerOpts().BrokerGrpcAddr,
 	}
 	resp, err := resource.LogicClient.Reconnect(ctx, &req)
 	if err != nil {
@@ -248,10 +238,8 @@ func HandleCrtAccount(s *melody.Session, data []byte) {
 	json.Unmarshal(data, &cmd)
 
 	// 1. 请求
-	ip, _ := utils.GetIP()
-	broker := ip + config.GetBrokerOpts().Broker.GrpcAddress
 	ctx := context.Background()
-	req := pb.CreateAccountRequest{Nickname: cmd.NickName, Broker: broker}
+	req := pb.CreateAccountRequest{Nickname: cmd.NickName, Broker: config.GetBrokerOpts().BrokerGrpcAddr}
 	resp, err := resource.LogicClient.CreateAccount(ctx, &req)
 	if err != nil {
 		zlog.Error("LogicClient.CreateAccount", zap.Error(err))
@@ -280,7 +268,10 @@ func ExecuteLogout(accountId uint64) {
 	resource.Hub.RemoveClient(accountId)
 
 	// 2. 通知其他人
-	req := pb.LogoutRequest{AccountId: accountId}
+	req := pb.LogoutRequest{
+		AccountId: accountId,
+		Broker:    config.GetBrokerOpts().BrokerGrpcAddr,
+	}
 	resp, err := resource.LogicClient.Logout(context.Background(), &req)
 	if err != nil {
 		zlog.Error("LogicClient.Logout", zap.Error(err))
@@ -289,16 +280,4 @@ func ExecuteLogout(accountId uint64) {
 	zlog.Info("LogicClient.Logout", zap.Uint64("accountId", accountId),
 		zap.Int32("code", int32(resp.Code)))
 
-}
-
-func ClearUserStatus() {
-	ctx := context.Background()
-	ip, _ := utils.GetIP()
-	broker := ip + config.GetBrokerOpts().Broker.GrpcAddress
-	in := &pb.OnlineRequest{Broker: broker}
-	_, err := resource.LogicClient.BrokerOnline(ctx, in)
-	if err != nil {
-		zlog.Error("LogicClient.BrokerOnline", zap.Error(err))
-		return
-	}
 }

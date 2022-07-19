@@ -9,7 +9,6 @@ service LogicDealer {
     rpc SendMsg (SendMsgRequest) returns (SendMsgResponse);
     rpc Logout (LogoutRequest) returns (LogoutResponse);
     rpc ViewedAck(ViewedAckRequest) returns(ViewedAckResponse);
-    rpc BrokerOnline(OnlineRequest) returns(OnlineResponse);
     rpc Reconnect(ReConnectRequest) returns(ReConnectResponse);
 }
 
@@ -41,14 +40,6 @@ enum StatusEnum {
 enum MsgTypeEnum {
     Dialogue = 0;
     Signal = 1;
-}
-
-message OnlineRequest {
-    string broker = 1;
-}
-
-message OnlineResponse{
-    CodeEnum code = 1;
 }
 
 message CreateAccountRequest {
@@ -91,6 +82,7 @@ message SendMsgResponse {
 
 message LogoutRequest {
     uint64 accountId = 1;
+    string broker = 2;
 }
 
 message LogoutResponse {

@@ -36,6 +36,8 @@ func NewBrokerChecker() *BrokerChecker {
 
 func (worker *BrokerChecker) Start() {
 	ticker := time.NewTicker(time.Second * 5)
+	defer ticker.Stop()
+
 	zlog.Info("[start]BrokerChecker")
 	for wm.IsTrue(worker.RunningFlag) {
 		select {
