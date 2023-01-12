@@ -18,19 +18,61 @@
 **架构图**![架构图](https://raw.githubusercontent.com/vearne/chat/master/img/arch.png)
 
 客户与接入层的通讯采用websocket + 自定义的文本协议实现。
+
+
+```
+    client                      broker
+
+# 请求创建一个临时账号
+CRT_ACCOUNT_REQ       -->
+                      <--     CRT_ACCOUNT_RESP
+# 请求匹配一个聊天对象                    
+MATCH_REQ             -->
+                      <--     MATCH_RESP
+# 发出一条对话消息
+DIALOGUE_REQ          -->     
+                      <--     DIALOGUE_RESP
+
+# 收到一条对话消息                   
+                      <--     PUSH_DIALOGUE_REQ
+PUSH_DIALOGUE_RESP    -->     
+                    
+# 收到一条系统消息(聊天对象下线等等)
+                      <--     PUSH_SIGNAL_REQ
+PUSH_SIGNAL_RESP      -->     
+
+# Ping
+PING_REQ              -->     
+                      <--     PING_RESP
+
+# 告知对方消息已经被已方阅读                    
+VIEWED_ACK_REQ        -->
+                      <--     VIEWED_ACK_RESP
+  
+# 收到已方消息已经被对方阅读               
+                      <--     PUSH_VIEWED_ACK_REQ
+PUSH_VIEWED_ACK_RESP  -->     
+
+# 连接意外断开后，尝试重新连接
+RECONNECT_REQ         -->     
+                      <--     RECONNECT_RESP          
+
+```
+
+
 自定义的协议其实都是携带着各种命令的JSON字符串，很容易看懂
 比如 创建一个新的账号(由客户端发出)
 ##### request
 ```
 {
-	"cmd": "CRT_ACCOUNT",
+	"cmd": "CRT_ACCOUNT_REQ",
 	"nickName": "XXXX"
 }
 ```
 ##### response
 ```
 {
-	"cmd": "CRT_ACCOUNT",
+	"cmd": "CRT_ACCOUNT_RESP",
 	"nickName": "XXXX",
 	"accountId": 1111
 }
@@ -39,14 +81,14 @@
 ##### request
 ```
 {
-	"cmd": "MATCH",
+	"cmd": "MATCH_REQ",
 	"accountId": 1111
 }
 ```
 ##### response
 ```
 {
-	"cmd": "MATCH",
+	"cmd": "MATCH_RESP",
 	"partnerId": 1111,
 	"partnerName": "xxxx",
 	"sessionId": 10000

@@ -1,9 +1,7 @@
 package broker_engine
 
 import (
-	"encoding/json"
 	"github.com/vearne/chat/config"
-	"github.com/vearne/chat/consts"
 	zlog "github.com/vearne/chat/log"
 	"github.com/vearne/chat/model"
 	"github.com/vearne/chat/resource"
