@@ -10,6 +10,7 @@ import (
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
 	"github.com/vearne/chat/resource"
+	"github.com/vearne/chat/utils"
 	"go.uber.org/zap"
 	"gopkg.in/olahol/melody.v1"
 	"net/http"
@@ -83,21 +84,19 @@ func HandleDisconnect(s *melody.Session) {
 	s.Close()
 }
 
-func HandlePing(s *melody.Session, data []byte) {
+func HandlePing(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdPing")
 	var cmd model.CmdPingReq
 	json.Unmarshal(data, &cmd)
 	resource.Hub.SetLastPong(cmd.AccountId, time.Now())
 
 	// 返回给客户端
-	var result model.CmdPingResp
-	result.Cmd = consts.CmdPong
+	result := model.NewCmdPingResp()
 	result.AccountId = cmd.AccountId
-	data, _ = json.Marshal(&result)
-	s.Write(data)
+	wrapper.Write(result)
 }
 
-func HandlePong(s *melody.Session, data []byte) {
+func HandlePong(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdPong")
 	var cmd model.CmdPingResp
 	json.Unmarshal(data, &cmd)
@@ -107,31 +106,33 @@ func HandlePong(s *melody.Session, data []byte) {
 func handlerMessage(s *melody.Session, data []byte) {
 	var cmd model.CommonCmd
 	json.Unmarshal(data, &cmd)
+
+	wrapper := model.NewSessionWrapper(s)
 	switch cmd.Cmd {
-	case consts.CmdCreateAccount:
+	case utils.AssembleCmdReq(consts.CmdCreateAccount):
 		zlog.Info("handlerMessage", zap.String("msg", string(data)))
-		HandleCrtAccount(s, data)
-	case consts.CmdMatch:
+		HandleCrtAccount(wrapper, data)
+	case utils.AssembleCmdReq(consts.CmdMatch):
 		zlog.Info("handlerMessage", zap.String("msg", string(data)))
-		HandleMatch(s, data)
-	case consts.CmdDialogue:
+		HandleMatch(wrapper, data)
+	case utils.AssembleCmdReq(consts.CmdDialogue):
 		zlog.Info("handlerMessage", zap.String("msg", string(data)))
-		HandleDialogue(s, data)
-	case consts.CmdPing:
-		HandlePing(s, data)
-	case consts.CmdPong:
-		HandlePong(s, data)
-	case consts.CmdViewedAck:
-		HandleViewedAck(s, data)
-	case consts.CmdReConnect:
-		HandleReConnect(s, data)
+		HandleDialogue(wrapper, data)
+	case utils.AssembleCmdReq(consts.CmdPing):
+		HandlePing(wrapper, data)
+	case utils.AssembleCmdResp(consts.CmdPing):
+		HandlePong(wrapper, data)
+	case utils.AssembleCmdReq(consts.CmdViewedAck):
+		HandleViewedAck(wrapper, data)
+	case utils.AssembleCmdReq(consts.CmdReConnect):
+		HandleReConnect(wrapper, data)
 	default:
 		zlog.Debug("unknow cmd", zap.String("cmd", cmd.Cmd))
 	}
 
 }
 
-func HandleReConnect(s *melody.Session, data []byte) {
+func HandleReConnect(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdReConnect")
 	var cmd model.CmdReConnectReq
 	json.Unmarshal(data, &cmd)
@@ -151,17 +152,16 @@ func HandleReConnect(s *melody.Session, data []byte) {
 		zlog.Debug("LogicClient.Reconnect", zap.Any("resp", resp),
 			zap.Uint64("accountId", resp.AccountId))
 		// 2 记录accountId和session的对应关系
-		resource.Hub.SetClient(resp.Nickname, resp.AccountId, s)
-		s.Set("accountId", resp.AccountId)
+		resource.Hub.SetClient(resp.Nickname, resp.AccountId, wrapper.Session)
+		wrapper.Session.Set("accountId", resp.AccountId)
 	}
-	var result model.CmdReConnectResp
-	result.Cmd = cmd.Cmd
+
+	result := model.NewCmdReConnectResp()
 	result.Code = int32(resp.Code)
-	data, _ = json.Marshal(&result)
-	s.Write(data)
+	wrapper.Write(result)
 }
 
-func HandleViewedAck(s *melody.Session, data []byte) {
+func HandleViewedAck(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdViewedAck")
 	var cmd model.CmdViewedAckReq
 	json.Unmarshal(data, &cmd)
@@ -176,15 +176,14 @@ func HandleViewedAck(s *melody.Session, data []byte) {
 	if err != nil {
 		zlog.Error("LogicClient.ViewedAck", zap.Error(err))
 	}
-	var result model.CmdViewedAckResp
-	result.Cmd = cmd.Cmd
+
+	result := model.NewCmdViewedAckResp()
 	result.Code = int32(resp.Code)
-	data, _ = json.Marshal(&result)
-	s.Write(data)
+	wrapper.Write(result)
 
 }
 
-func HandleDialogue(s *melody.Session, data []byte) {
+func HandleDialogue(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdDialogue")
 	var cmd model.CmdDialogueReq
 	json.Unmarshal(data, &cmd)
@@ -198,16 +197,14 @@ func HandleDialogue(s *melody.Session, data []byte) {
 	if err != nil {
 		zlog.Error("LogicClient.HandleDialogue", zap.Error(err))
 	}
-	var result model.CmdDialogueResp
-	result.Cmd = cmd.Cmd
+	result := model.NewCmdDialogueResp()
 	result.Code = int32(resp.Code)
 	result.MsgId = resp.MsgId
 	result.RequestId = cmd.RequestId
-	data, _ = json.Marshal(&result)
-	s.Write(data)
+	wrapper.Write(result)
 }
 
-func HandleMatch(s *melody.Session, data []byte) {
+func HandleMatch(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdMatch")
 	var cmd model.CmdMatchReq
 	json.Unmarshal(data, &cmd)
@@ -219,20 +216,17 @@ func HandleMatch(s *melody.Session, data []byte) {
 	if err != nil {
 		zlog.Error("LogicClient.Match", zap.Error(err))
 	}
-	var result model.CmdMatchResp
+	result := model.NewCmdMatchResp()
 	result.Code = int32(resp.Code)
-	result.Cmd = cmd.Cmd
 	if resp.Code == pb.CodeEnum_C000 {
-		result.Cmd = consts.CmdMatch
 		result.PartnerId = resp.PartnerId
 		result.PartnerName = resp.PartnerName
 		result.SessionId = resp.SessionId
 	}
-	data, _ = json.Marshal(&result)
-	s.Write(data)
+	wrapper.Write(result)
 }
 
-func HandleCrtAccount(s *melody.Session, data []byte) {
+func HandleCrtAccount(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdCreateAccount")
 	var cmd model.CmdCreateAccountReq
 	json.Unmarshal(data, &cmd)
@@ -248,17 +242,15 @@ func HandleCrtAccount(s *melody.Session, data []byte) {
 	zlog.Debug("LogicClient.CreateAccount", zap.Any("resp", resp),
 		zap.Uint64("accountId", resp.AccountId))
 	// 2 记录accountId和session的对应关系
-	resource.Hub.SetClient(req.Nickname, resp.AccountId, s)
-	s.Set("accountId", resp.AccountId)
+	resource.Hub.SetClient(req.Nickname, resp.AccountId, wrapper.Session)
+	wrapper.Session.Set("accountId", resp.AccountId)
 
 	// 3. 返回给客户端
-	var result model.CmdCreateAccountResp
+	result := model.NewCmdCreateAccountResp()
 	result.AccountId = resp.AccountId
 	result.NickName = req.Nickname
-	result.Cmd = cmd.Cmd
 	result.Token = resp.Token
-	data, _ = json.Marshal(&result)
-	s.Write(data)
+	wrapper.Write(result)
 }
 
 func ExecuteLogout(accountId uint64) {

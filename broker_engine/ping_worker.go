@@ -1,9 +1,7 @@
 package broker_engine
 
 import (
-	"encoding/json"
 	"github.com/vearne/chat/config"
-	"github.com/vearne/chat/consts"
 	zlog "github.com/vearne/chat/log"
 	"github.com/vearne/chat/model"
 	"github.com/vearne/chat/resource"
@@ -43,9 +41,9 @@ func (w *PingWorker) Start() {
 
 				} else {
 					// 执行一次Ping
-					cmd := model.CmdPingReq{Cmd: consts.CmdPing, AccountId: client.AccountId}
-					buff, _ := json.Marshal(&cmd)
-					client.Session.Write(buff)
+					cmd := model.NewCmdPingReq()
+					cmd.AccountId = client.AccountId
+					client.Write(&cmd)
 				}
 			}
 		case <-w.ExitChan:

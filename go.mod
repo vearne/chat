@@ -1,6 +1,6 @@
 module github.com/vearne/chat
 
-go 1.17
+go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.8.1
@@ -13,6 +13,7 @@ require (
 	github.com/spf13/viper v1.12.0
 	github.com/vearne/worker_manager v0.0.0-20220617074412-2d2f2e40bfd3
 	go.uber.org/zap v1.21.0
+	golang.org/x/time v0.0.0-20220722155302-e5dcc9cfc0b9
 	google.golang.org/grpc v1.47.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
