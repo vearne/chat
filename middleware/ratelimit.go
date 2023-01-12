@@ -1,6 +1,8 @@
 package middleware
 
-import "golang.org/x/time/rate"
+import (
+	"golang.org/x/time/rate"
+)
 
 // 用漏桶实现
 type TokenBucketLimiter struct {
@@ -13,6 +15,5 @@ func NewTokenBucketLimiter(r rate.Limit, b int) *TokenBucketLimiter {
 	return &t
 }
 func (t *TokenBucketLimiter) Limit() bool {
-	t.Wait()
-	return t.Allow()
+	return !t.Allow()
 }
