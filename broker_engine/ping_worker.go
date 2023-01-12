@@ -43,9 +43,9 @@ func (w *PingWorker) Start() {
 
 				} else {
 					// 执行一次Ping
-					cmd := model.CmdPingReq{Cmd: consts.CmdPing, AccountId: client.AccountId}
-					buff, _ := json.Marshal(&cmd)
-					client.Session.Write(buff)
+					cmd := model.NewCmdPingReq()
+					cmd.AccountId = client.AccountId
+					client.Write(&cmd)
 				}
 			}
 		case <-w.ExitChan:

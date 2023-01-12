@@ -2,11 +2,14 @@ package logic_engine
 
 import (
 	"context"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
 	"github.com/jinzhu/gorm"
 	"github.com/vearne/chat/config"
 	"github.com/vearne/chat/consts"
 	"github.com/vearne/chat/dao"
 	zlog "github.com/vearne/chat/log"
+	"github.com/vearne/chat/middleware"
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
 	"github.com/vearne/chat/resource"
@@ -26,7 +29,17 @@ type LogicGrpcWorker struct {
 func NewLogicGrpcWorker() *LogicGrpcWorker {
 	worker := LogicGrpcWorker{}
 
-	worker.server = grpc.NewServer()
+	limiter := middleware.NewTokenBucketLimiter(10, 2)
+
+	worker.server = grpc.NewServer(
+		grpc_middleware.WithUnaryServerChain(
+			ratelimit.UnaryServerInterceptor(limiter),
+		),
+		grpc_middleware.WithStreamServerChain(
+			ratelimit.StreamServerInterceptor(limiter),
+		),
+	)
+
 	pb.RegisterLogicDealerServer(worker.server, &LogicServer{})
 	// Register reflection service on gRPC server.
 	reflection.Register(worker.server)

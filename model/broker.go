@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"gopkg.in/olahol/melody.v1"
 	"sync"
 	"time"
@@ -32,15 +33,11 @@ func (h *BizHub) RemoveClient(accountId uint64) {
 	}
 }
 
-func (h *BizHub) GetSession(accountId uint64) (*melody.Session, bool) {
+func (h *BizHub) GetClient(accountId uint64) (*Client, bool) {
 	h.RLock()
 	defer h.RUnlock()
 	client, ok := h.clientMap[accountId]
-	if ok {
-		return client.Session, true
-	} else {
-		return nil, false
-	}
+	return client, ok
 }
 
 func (h *BizHub) SetLastPong(accountId uint64, t time.Time) {
@@ -73,4 +70,28 @@ func NewClient(nickName string, accountId uint64, session *melody.Session) *Clie
 	c := Client{NickName: nickName, AccountId: accountId, Session: session}
 	c.LastPong = time.Now()
 	return &c
+}
+
+func (s *Client) Write(obj any) error {
+	bt, err := json.Marshal(obj)
+	if err != nil {
+		return err
+	}
+	return s.Session.Write(bt)
+}
+
+type SessionWrapper struct {
+	Session *melody.Session `json:"-"`
+}
+
+func NewSessionWrapper(s *melody.Session) *SessionWrapper {
+	return &SessionWrapper{Session: s}
+}
+
+func (s *SessionWrapper) Write(obj any) error {
+	bt, err := json.Marshal(obj)
+	if err != nil {
+		return err
+	}
+	return s.Session.Write(bt)
 }
