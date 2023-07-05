@@ -14,7 +14,7 @@ require (
 	github.com/vearne/worker_manager v0.0.0-20220617074412-2d2f2e40bfd3
 	go.uber.org/zap v1.21.0
 	golang.org/x/time v0.0.0-20220722155302-e5dcc9cfc0b9
-	google.golang.org/grpc v1.47.0
+	google.golang.org/grpc v1.53.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
 )
@@ -57,7 +57,7 @@ require (
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
-	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
+	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
