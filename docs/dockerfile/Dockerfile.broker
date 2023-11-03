@@ -1,0 +1,8 @@
+FROM docker-registry.qiyi.virtual/tv/simple-base-image:v0.1.6
+
+WORKDIR /data
+
+COPY dist/chat-broker /data/chat-broker
+RUN chmod +x /data/chat-broker
+
+CMD ["/data/chat-broker", "--config", "/data/config.broker.yaml"]
