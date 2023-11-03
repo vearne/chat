@@ -2,36 +2,19 @@ package resource
 
 import (
 	"fmt"
-	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"google.golang.org/grpc/balancer/roundrobin"
-	"google.golang.org/grpc/keepalive"
-
-	"github.com/grpc-ecosystem/go-grpc-middleware/retry"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"github.com/vearne/chat/config"
 	zlog "github.com/vearne/chat/log"
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
-	_ "github.com/vearne/chat/resolver"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/balancer/roundrobin"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 	"time"
-)
-
-// -------logic-------
-var (
-	MySQLClient *gorm.DB
-)
-
-var (
-	WaitToBrokerDialogueChan chan *pb.PushDialogue
-	WaitToBrokerSignalChan   chan *pb.PushSignal
-)
-
-var (
-	BrokerHub *model.BrokerHub
 )
 
 // ------broker-------
@@ -40,39 +23,7 @@ var (
 	Hub         *model.BizHub
 )
 
-func InitMySQL() {
-	zlog.Info("Init MySQL")
-	mysqlConf := config.GetLogicOpts().MySQLConf
-	mysqldb, err := gorm.Open("mysql", mysqlConf.DSN)
-	if err != nil {
-		zlog.Error("initialize_db error", zap.Error(err))
-		panic(err)
-	}
-	if mysqlConf.Debug {
-		mysqldb = mysqldb.Debug()
-	}
-	mysqldb.DB().SetMaxIdleConns(mysqlConf.MaxIdleConn)
-	mysqldb.DB().SetMaxOpenConns(mysqlConf.MaxOpenConn)
-	mysqldb.DB().SetConnMaxLifetime(time.Duration(mysqlConf.ConnMaxLifeSecs) * time.Second)
-	// 赋值给全局变量
-	MySQLClient = mysqldb
-}
-
-func InitLogicChan() {
-	WaitToBrokerDialogueChan = make(chan *pb.PushDialogue, 100)
-	WaitToBrokerSignalChan = make(chan *pb.PushSignal, 100)
-}
-
-func InitLogicResource() {
-	InitLogicChan()
-	InitMySQL()
-	InitBrokerHub()
-}
-
-func InitBrokerHub() {
-	BrokerHub = model.NewBrokerHub()
-}
-
+// ################## init #################################
 func InitBrokerResource() {
 	// init Hub
 	Hub = model.NewBizHub()
@@ -107,8 +58,7 @@ func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration
 
 	interceptors = append(interceptors, r)
 	dialOpts := []grpc.DialOption{
-		grpc.WithInsecure(),
-		// 负载均衡策略
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultServiceConfig(
 			fmt.Sprintf(`{"LoadBalancingPolicy": "%s"}`, roundrobin.Name)),
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{

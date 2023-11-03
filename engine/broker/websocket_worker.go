@@ -1,4 +1,4 @@
-package broker_engine
+package broker
 
 import (
 	"context"
@@ -40,7 +40,7 @@ func (worker *WebsocketWorker) Start() {
 	// 将之前连接在此broker上的用户，都置为离线
 	zlog.Info("WebsocketWorker-ClearUserStatus")
 
-	worker.Server.ListenAndServe()
+	zlog.Error(worker.Server.ListenAndServe().Error())
 }
 
 func createGinEngine() *gin.Engine {
@@ -50,10 +50,12 @@ func createGinEngine() *gin.Engine {
 	m.Config.MessageBufferSize = 4 * 1024
 
 	r.GET("/ws", func(c *gin.Context) {
-		m.HandleRequest(c.Writer, c.Request)
+		err := m.HandleRequest(c.Writer, c.Request)
+		if err != nil {
+			zlog.Error("websocket", zap.Error(err))
+		}
 	})
 
-	//m.HandlePong(handlePong)
 	m.HandleConnect(func(s *melody.Session) {
 		zlog.Debug("HandleConnect")
 	})
@@ -81,31 +83,46 @@ func HandleDisconnect(s *melody.Session) {
 	zlog.Info("HandleDisconnect", zap.Uint64("accountId", accountId.(uint64)))
 
 	ExecuteLogout(accountId.(uint64))
-	s.Close()
+	err := s.Close()
+	if err != nil {
+		zlog.Error("Session close", zap.Error(err))
+	}
 }
 
 func HandlePing(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdPing")
 	var cmd model.CmdPingReq
-	json.Unmarshal(data, &cmd)
+	err := json.Unmarshal(data, &cmd)
+	if err != nil {
+		zlog.Error("HandlePing", zap.Error(err))
+		return
+	}
 	resource.Hub.SetLastPong(cmd.AccountId, time.Now())
 
 	// 返回给客户端
 	result := model.NewCmdPingResp()
 	result.AccountId = cmd.AccountId
-	wrapper.Write(result)
+	wrapperWrite(wrapper, result)
 }
 
 func HandlePong(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdPong")
 	var cmd model.CmdPingResp
-	json.Unmarshal(data, &cmd)
+	err := json.Unmarshal(data, &cmd)
+	if err != nil {
+		zlog.Error("HandlePong", zap.Error(err))
+		return
+	}
 	resource.Hub.SetLastPong(cmd.AccountId, time.Now())
 }
 
 func handlerMessage(s *melody.Session, data []byte) {
 	var cmd model.CommonCmd
-	json.Unmarshal(data, &cmd)
+	err := json.Unmarshal(data, &cmd)
+	if err != nil {
+		zlog.Error("handlerMessage", zap.Error(err))
+		return
+	}
 
 	wrapper := model.NewSessionWrapper(s)
 	switch cmd.Cmd {
@@ -135,7 +152,12 @@ func handlerMessage(s *melody.Session, data []byte) {
 func HandleReConnect(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdReConnect")
 	var cmd model.CmdReConnectReq
-	json.Unmarshal(data, &cmd)
+	err := json.Unmarshal(data, &cmd)
+	if err != nil {
+		zlog.Error("HandleReConnect", zap.Error(err))
+		return
+	}
+
 	ctx := context.Background()
 
 	req := pb.ReConnectRequest{
@@ -158,13 +180,17 @@ func HandleReConnect(wrapper *model.SessionWrapper, data []byte) {
 
 	result := model.NewCmdReConnectResp()
 	result.Code = int32(resp.Code)
-	wrapper.Write(result)
+	wrapperWrite(wrapper, result)
 }
 
 func HandleViewedAck(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdViewedAck")
 	var cmd model.CmdViewedAckReq
-	json.Unmarshal(data, &cmd)
+	err := json.Unmarshal(data, &cmd)
+	if err != nil {
+		zlog.Error("HandleViewedAck", zap.Error(err))
+		return
+	}
 
 	ctx := context.Background()
 	req := pb.ViewedAckRequest{
@@ -179,14 +205,17 @@ func HandleViewedAck(wrapper *model.SessionWrapper, data []byte) {
 
 	result := model.NewCmdViewedAckResp()
 	result.Code = int32(resp.Code)
-	wrapper.Write(result)
-
+	wrapperWrite(wrapper, result)
 }
 
 func HandleDialogue(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdDialogue")
 	var cmd model.CmdDialogueReq
-	json.Unmarshal(data, &cmd)
+	err := json.Unmarshal(data, &cmd)
+	if err != nil {
+		zlog.Error("HandleDialogue", zap.Error(err))
+		return
+	}
 
 	ctx := context.Background()
 	req := pb.SendMsgRequest{
@@ -201,13 +230,17 @@ func HandleDialogue(wrapper *model.SessionWrapper, data []byte) {
 	result.Code = int32(resp.Code)
 	result.MsgId = resp.MsgId
 	result.RequestId = cmd.RequestId
-	wrapper.Write(result)
+	wrapperWrite(wrapper, result)
 }
 
 func HandleMatch(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdMatch")
 	var cmd model.CmdMatchReq
-	json.Unmarshal(data, &cmd)
+	err := json.Unmarshal(data, &cmd)
+	if err != nil {
+		zlog.Error("HandleMatch", zap.Error(err))
+		return
+	}
 
 	// 1. 请求
 	ctx := context.Background()
@@ -223,13 +256,17 @@ func HandleMatch(wrapper *model.SessionWrapper, data []byte) {
 		result.PartnerName = resp.PartnerName
 		result.SessionId = resp.SessionId
 	}
-	wrapper.Write(result)
+	wrapperWrite(wrapper, result)
 }
 
 func HandleCrtAccount(wrapper *model.SessionWrapper, data []byte) {
 	zlog.Debug("CmdCreateAccount")
 	var cmd model.CmdCreateAccountReq
-	json.Unmarshal(data, &cmd)
+	err := json.Unmarshal(data, &cmd)
+	if err != nil {
+		zlog.Error("HandleCrtAccount", zap.Error(err))
+		return
+	}
 
 	// 1. 请求
 	ctx := context.Background()
@@ -250,7 +287,7 @@ func HandleCrtAccount(wrapper *model.SessionWrapper, data []byte) {
 	result.AccountId = resp.AccountId
 	result.NickName = req.Nickname
 	result.Token = resp.Token
-	wrapper.Write(result)
+	wrapperWrite(wrapper, result)
 }
 
 func ExecuteLogout(accountId uint64) {
@@ -271,5 +308,11 @@ func ExecuteLogout(accountId uint64) {
 	}
 	zlog.Info("LogicClient.Logout", zap.Uint64("accountId", accountId),
 		zap.Int32("code", int32(resp.Code)))
+}
 
+func wrapperWrite(wrapper *model.SessionWrapper, obj any) {
+	err := wrapper.Write(obj)
+	if err != nil {
+		zlog.Error("wrapperWrite", zap.Error(err))
+	}
 }

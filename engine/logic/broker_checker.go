@@ -1,4 +1,4 @@
-package logic_engine
+package logic
 
 import (
 	"context"
@@ -15,8 +15,8 @@ import (
 const maxOffLine = 30 * time.Second
 
 /*
-	确保broker都在线
-	如果broker已经掉线，就将与broker连接的用户全部下线
+确保broker都在线
+如果broker已经掉线，就将与broker连接的用户全部下线
 */
 type BrokerChecker struct {
 	RunningFlag *wm.BoolFlag // 是否运行 true:运行 false:停止
@@ -85,10 +85,8 @@ func (worker *BrokerChecker) checkBroker() {
 	// 清理已经掉线的broker，以及与这些broker关联的账号
 	for addr, t := range worker.brokerStatus {
 		if time.Since(t) > maxOffLine {
-			go func() {
-				ClearUserStatus(addr)
-				resource.BrokerHub.RemoveBroker(addr)
-			}()
+			ClearUserStatus(addr)
+			resource.BrokerHub.RemoveBroker(addr)
 		}
 	}
 

@@ -1,4 +1,4 @@
-package logic_engine
+package logic
 
 import "math/rand"
 

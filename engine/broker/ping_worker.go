@@ -1,4 +1,4 @@
-package broker_engine
+package broker
 
 import (
 	"github.com/vearne/chat/config"
@@ -12,7 +12,7 @@ import (
 
 type PingWorker struct {
 	RunningFlag *wm.BoolFlag
-	ExitedFlag  *wm.BoolFlag //  Exit Flag
+	ExitedFlag  chan struct{} //  已经退出的标识
 	ExitChan    chan struct{}
 }
 
@@ -20,7 +20,7 @@ func NewPingWorker() *PingWorker {
 	//RunningFlag: true, ExitedFlag: false
 	worker := PingWorker{ExitChan: make(chan struct{})}
 	worker.RunningFlag = wm.NewBoolFlag(true)
-	worker.ExitedFlag = wm.NewBoolFlag(false)
+	worker.ExitedFlag = make(chan struct{})
 	return &worker
 }
 
@@ -28,11 +28,13 @@ func (w *PingWorker) Start() {
 	pingConfig := config.GetBrokerOpts().Ping
 	zlog.Info("[start]PingWorker", zap.Duration("Interval", pingConfig.Interval),
 		zap.Duration("MaxWait", pingConfig.MaxWait))
-	ch := time.Tick(pingConfig.Interval)
+
+	ticker := time.NewTicker(pingConfig.Interval)
+	defer ticker.Stop()
 
 	for wm.IsTrue(w.RunningFlag) {
 		select {
-		case <-ch:
+		case <-ticker.C:
 			clients := resource.Hub.GetAllClient()
 			for _, client := range clients {
 				if time.Since(client.LastPong) > pingConfig.MaxWait {
@@ -43,22 +45,21 @@ func (w *PingWorker) Start() {
 					// 执行一次Ping
 					cmd := model.NewCmdPingReq()
 					cmd.AccountId = client.AccountId
-					client.Write(&cmd)
+					clientWrite(client, &cmd)
 				}
 			}
 		case <-w.ExitChan:
 			zlog.Info("PingWorker execute exit logic")
 		}
 	}
-	wm.SetTrue(w.ExitedFlag)
+	close(w.ExitedFlag)
 }
 
 func (w *PingWorker) Stop() {
 	zlog.Info("PingWorker exit...")
 	wm.SetFalse(w.RunningFlag)
 	close(w.ExitChan)
-	for !wm.IsTrue(w.ExitedFlag) {
-		time.Sleep(50 * time.Millisecond)
-	}
+
+	<-w.ExitedFlag
 	zlog.Info("[end]PingWorker")
 }

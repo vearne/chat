@@ -1,4 +1,4 @@
-package broker_engine
+package broker
 
 import (
 	"context"
@@ -58,7 +58,7 @@ func (w *GrpcWorker) ReceiveMsgDialogue(ctx context.Context, in *pb.PushDialogue
 		req.MsgId = in.MsgId
 		req.SessionId = in.SessionId
 		req.Content = in.Content
-		client.Write(req)
+		clientWrite(client, req)
 	} else {
 		zlog.Info("Receiver offline", zap.Uint64("receiverId", in.ReceiverId))
 		req := pb.LogoutRequest{
@@ -68,7 +68,6 @@ func (w *GrpcWorker) ReceiveMsgDialogue(ctx context.Context, in *pb.PushDialogue
 		_, err := resource.LogicClient.Logout(context.Background(), &req)
 		if err != nil {
 			zlog.Error("LogicClient.Logout", zap.Error(err))
-
 		}
 	}
 
@@ -81,9 +80,8 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 	zlog.Info("ReceiveMsgSignal", zap.Uint64("senderId", in.SenderId),
 		zap.Uint64("sessionId", in.SessionId), zap.String("signalType",
 			pb.SignalTypeEnum_name[int32(in.SignalType)]))
-	var resp *pb.PushResp
 	// result
-	resp = &pb.PushResp{Code: pb.CodeEnum_C000}
+	resp := &pb.PushResp{Code: pb.CodeEnum_C000}
 
 	switch in.SignalType {
 	case pb.SignalTypeEnum_NewSession:
@@ -98,7 +96,7 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 
 		client, ok := resource.Hub.GetClient(in.ReceiverId)
 		if ok {
-			client.Write(req)
+			clientWrite(client, req)
 		}
 
 	case pb.SignalTypeEnum_PartnerExit:
@@ -125,7 +123,7 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 
 		client, ok := resource.Hub.GetClient(in.ReceiverId)
 		if ok {
-			client.Write(req)
+			clientWrite(client, req)
 		}
 
 	case pb.SignalTypeEnum_DeleteMsg:
@@ -141,7 +139,7 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 
 		client, ok := resource.Hub.GetClient(in.ReceiverId)
 		if ok {
-			client.Write(req)
+			clientWrite(client, req)
 		}
 	default:
 		zlog.Error("unknow SignalType", zap.Int32("SignalType", int32(in.SignalType)))
@@ -149,4 +147,11 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 
 	// result
 	return resp, nil
+}
+
+func clientWrite(client *model.Client, obj any) {
+	err := client.Write(obj)
+	if err != nil {
+		zlog.Error("clientWrite", zap.Error(err))
+	}
 }

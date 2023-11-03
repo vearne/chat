@@ -30,8 +30,10 @@ func InitLogger(logConfig *config.LogConfig) {
 	default:
 		alevel.SetLevel(zap.InfoLevel)
 	}
+
 	encoderConfig := zap.NewProductionEncoderConfig()
-	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	encoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05")
+	encoderConfig.ConsoleSeparator = " | "
 
 	core := zapcore.NewCore(
 		zapcore.NewConsoleEncoder(encoderConfig),
@@ -40,6 +42,7 @@ func InitLogger(logConfig *config.LogConfig) {
 	)
 
 	DefaultLogger = zap.New(core)
+	DefaultLogger = DefaultLogger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(1))
 	DefaultLogger.Info("DefaultLogger init success")
 }
 

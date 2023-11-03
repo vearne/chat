@@ -45,7 +45,7 @@ type srvBuilder struct{}
 
 // Build creates and starts a DNS resolver that watches the name resolution of the target.
 func (b *srvBuilder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
-	host, port, err := parseTarget(target.Endpoint, "8080")
+	host, port, err := parseTarget(target.Endpoint(), "8080")
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +53,8 @@ func (b *srvBuilder) Build(target resolver.Target, cc resolver.ClientConn, opts 
 	// IP address.
 	if ipAddr, ok := formatIP(host); ok {
 		addr := []resolver.Address{{Addr: ipAddr + ":" + port}}
-		cc.UpdateState(resolver.State{Addresses: addr})
-		return deadResolver{}, nil
+		err = cc.UpdateState(resolver.State{Addresses: addr})
+		return deadResolver{}, err
 	}
 
 	// DNS address (non-IP).

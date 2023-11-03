@@ -12,7 +12,6 @@ logger:
   # 3. "error"
   level: "debug"
   filepath: "/var/log/chat_broker.log"
-#  listen_address: ":19093"
 
 # broker的配置
 broker:

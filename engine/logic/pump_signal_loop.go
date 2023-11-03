@@ -1,4 +1,4 @@
-package logic_engine
+package logic
 
 import (
 	"context"
@@ -9,26 +9,24 @@ import (
 	"github.com/vearne/chat/resource"
 	wm "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
-	"time"
 )
 
 type PumpSignalLoopWorker struct {
-	RunningFlag *wm.BoolFlag // is running? true:running false:stoped
-	ExitedFlag  *wm.BoolFlag //  Exit Flag
+	RunningFlag *wm.BoolFlag  // is running? true:running false:stoped
+	ExitedFlag  chan struct{} //  已经退出的标识
 	ExitChan    chan struct{}
 }
 
 func NewPumpSignalLoopWorker() *PumpSignalLoopWorker {
 	worker := PumpSignalLoopWorker{ExitChan: make(chan struct{})}
 	worker.RunningFlag = wm.NewBoolFlag(true)
-	worker.ExitedFlag = wm.NewBoolFlag(false)
+	worker.ExitedFlag = make(chan struct{})
 	return &worker
 }
 
 func (w *PumpSignalLoopWorker) Start() {
 	zlog.Info("[start]PumpSignalLoopWorker")
 	w.PumpSignalLoop()
-	wm.SetTrue(w.ExitedFlag)
 }
 
 func (w *PumpSignalLoopWorker) Stop() {
@@ -36,9 +34,7 @@ func (w *PumpSignalLoopWorker) Stop() {
 	wm.SetFalse(w.RunningFlag)
 	close(w.ExitChan)
 
-	for !wm.IsTrue(w.ExitedFlag) {
-		time.Sleep(50 * time.Millisecond)
-	}
+	<-w.ExitedFlag
 	zlog.Info("[end]PumpSignalLoopWorker")
 }
 
@@ -51,6 +47,7 @@ func (w *PumpSignalLoopWorker) PumpSignalLoop() {
 			break
 		}
 	}
+	close(w.ExitedFlag)
 }
 
 func pumpSignalToBroker(msg *pb.PushSignal) bool {

@@ -1,10 +1,9 @@
-package logic_engine
+package logic
 
 import (
 	"context"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
-	"github.com/jinzhu/gorm"
 	"github.com/vearne/chat/config"
 	"github.com/vearne/chat/consts"
 	"github.com/vearne/chat/dao"
@@ -16,6 +15,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"gorm.io/gorm"
 	"net"
 	"time"
 )
@@ -269,7 +269,12 @@ func ClearUserStatus(broker string) {
 	// 清理某个broker上的所有账号
 	// 让他们都下线(登出)
 	accounts := make([]model.Account, 0)
-	resource.MySQLClient.Model(&model.Account{}).Where("broker = ?", broker).Find(&accounts)
+	err := resource.MySQLClient.Model(&model.Account{}).Where("broker = ?", broker).Find(&accounts).Error
+	if err != nil {
+		zlog.Error("ClearUserStatus", zap.Error(err))
+		return
+	}
+
 	for _, item := range accounts {
 		zlog.Info("logout", zap.Uint64("AccountId", item.ID))
 		handlerLogout(item.ID, broker)
@@ -288,7 +293,12 @@ func handlerLogout(accountId uint64, broker string) bool {
 	}
 
 	var itemList []model.SessionAccount
-	resource.MySQLClient.Where("account_id = ?", accountId).Find(&itemList)
+	err := resource.MySQLClient.Where("account_id = ?", accountId).Find(&itemList).Error
+	if err != nil {
+		zlog.Error("handlerLogout", zap.Error(err))
+		return false
+	}
+	
 	for _, item := range itemList {
 		// update session
 		// 2. 将账号关联的所有会话都退出
