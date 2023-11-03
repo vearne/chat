@@ -1,5 +1,5 @@
 # chat
-
+[![golang-ci](https://github.com/vearne/chat/actions/workflows/golang-ci.yml/badge.svg)](https://github.com/vearne/chat/actions/workflows/golang-ci.yml)
 ### 1. 功能说明
 这个聊天系统被设计为陌生人自动匹配进行聊天，因此不需要注册。分为2个模块，在线体验地址 [chat.vearne.cc](http://chat.vearne.cc/)      
 
