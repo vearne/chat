@@ -3,11 +3,11 @@ package broker
 import (
 	"flag"
 	"fmt"
-	"github.com/vearne/chat/config"
 	"github.com/vearne/chat/consts"
-	"github.com/vearne/chat/engine/broker"
-	zlog "github.com/vearne/chat/log"
-	"github.com/vearne/chat/resource"
+	config2 "github.com/vearne/chat/internal/config"
+	broker2 "github.com/vearne/chat/internal/engine/broker"
+	zlog "github.com/vearne/chat/internal/log"
+	"github.com/vearne/chat/internal/resource"
 	wm "github.com/vearne/worker_manager"
 )
 
@@ -34,15 +34,15 @@ func main() {
 		return
 	}
 
-	config.ReadConfig("broker", cfgFile)
-	config.InitBrokerConfig()
+	config2.ReadConfig("broker", cfgFile)
+	config2.InitBrokerConfig()
 
-	zlog.InitLogger(&config.GetBrokerOpts().Logger)
+	zlog.InitLogger(&config2.GetBrokerOpts().Logger)
 	resource.InitBrokerResource()
 
 	app := wm.NewApp()
-	app.AddWorker(broker.NewWebsocketWorker())
-	app.AddWorker(broker.NewGrpcWorker())
-	app.AddWorker(broker.NewPingWorker())
+	app.AddWorker(broker2.NewWebsocketWorker())
+	app.AddWorker(broker2.NewGrpcWorker())
+	app.AddWorker(broker2.NewPingWorker())
 	app.Run()
 }

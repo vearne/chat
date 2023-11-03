@@ -2,8 +2,8 @@ package model
 
 import (
 	"github.com/vearne/chat/consts"
+	"github.com/vearne/chat/internal/utils"
 	pb "github.com/vearne/chat/proto"
-	"github.com/vearne/chat/utils"
 )
 
 type CommonCmd struct {

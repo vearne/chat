@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/vearne/chat/resource"
+	"github.com/vearne/chat/internal/resource"
 	"time"
 )
 

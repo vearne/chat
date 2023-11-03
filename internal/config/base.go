@@ -32,7 +32,7 @@ func ReadConfig(role string, cfgFile string) {
 		viper.SetConfigFile(cfgFile)
 
 	} else {
-		viper.AddConfigPath("config")
+		viper.AddConfigPath("config_files")
 		fname := fmt.Sprintf("config.%s", role)
 		viper.SetConfigName(fname)
 	}

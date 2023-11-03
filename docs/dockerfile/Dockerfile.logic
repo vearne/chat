@@ -1,0 +1,10 @@
+FROM docker-registry.qiyi.virtual/tv/simple-base-image:v0.1.6
+
+WORKDIR /data
+
+COPY dist/chat-logic /data/chat-logic
+RUN chmod +x /data/chat-logic
+
+CMD ["/data/chat-logic", "--config", "/data/config.logic.yaml"]
+
+

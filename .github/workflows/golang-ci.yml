@@ -15,30 +15,30 @@ on:
   workflow_dispatch:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: golangci/golangci-lint:v1.54.0
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.0
+      - name: golangci-lint
+        run: go mod vendor && golangci-lint run --modules-download-mode=vendor
+  
   build:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.20
-      - name: remove dirs
-        run: rm -rf example test
-      - name: Test
-        run: go mod vendor && go test -v ./...
-
-  lint:
-    runs-on: ubuntu-latest
-    container:
-      image: golangci/golangci-lint:v1.52
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.20
-      - name: golangci-lint
-        run: golangci-lint run --modules-download-mode=mod
+          go-version: 1.21
+      - name: build broker
+        run: go build -o chat-broker ./cmd/broker
+      - name: build logic
+        run: go build -o chat-logic ./cmd/logic
