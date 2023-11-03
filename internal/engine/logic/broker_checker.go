@@ -2,11 +2,11 @@ package logic
 
 import (
 	"context"
-	"github.com/vearne/chat/config"
-	zlog "github.com/vearne/chat/log"
+	"github.com/vearne/chat/internal/config"
+	zlog "github.com/vearne/chat/internal/log"
+	"github.com/vearne/chat/internal/resource"
+	"github.com/vearne/chat/internal/utils"
 	pb "github.com/vearne/chat/proto"
-	"github.com/vearne/chat/resource"
-	"github.com/vearne/chat/utils"
 	wm "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
 	"time"

@@ -3,11 +3,11 @@ package logic
 import (
 	"flag"
 	"fmt"
-	"github.com/vearne/chat/config"
 	"github.com/vearne/chat/consts"
-	"github.com/vearne/chat/engine/logic"
-	zlog "github.com/vearne/chat/log"
-	"github.com/vearne/chat/resource"
+	config2 "github.com/vearne/chat/internal/config"
+	logic2 "github.com/vearne/chat/internal/engine/logic"
+	zlog "github.com/vearne/chat/internal/log"
+	"github.com/vearne/chat/internal/resource"
 	wm "github.com/vearne/worker_manager"
 )
 
@@ -34,18 +34,18 @@ func main() {
 		return
 	}
 
-	config.ReadConfig("logic", cfgFile)
-	config.InitLogicConfig()
+	config2.ReadConfig("logic", cfgFile)
+	config2.InitLogicConfig()
 
-	zlog.InitLogger(&config.GetLogicOpts().Logger)
+	zlog.InitLogger(&config2.GetLogicOpts().Logger)
 	resource.InitLogicResource()
 
 	fmt.Println("logic starting ... ")
 
 	app := wm.NewApp()
-	app.AddWorker(logic.NewLogicGrpcWorker())
-	app.AddWorker(logic.NewPumpSignalLoopWorker())
-	app.AddWorker(logic.NewPumpDialogueLoopWorker(1, 5))
-	app.AddWorker(logic.NewBrokerChecker())
+	app.AddWorker(logic2.NewLogicGrpcWorker())
+	app.AddWorker(logic2.NewPumpSignalLoopWorker())
+	app.AddWorker(logic2.NewPumpDialogueLoopWorker(1, 5))
+	app.AddWorker(logic2.NewBrokerChecker())
 	app.Run()
 }

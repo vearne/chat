@@ -3,10 +3,10 @@ package logic
 import (
 	"context"
 	"github.com/json-iterator/go"
-	"github.com/vearne/chat/dao"
-	zlog "github.com/vearne/chat/log"
+	"github.com/vearne/chat/internal/dao"
+	zlog "github.com/vearne/chat/internal/log"
+	"github.com/vearne/chat/internal/resource"
 	pb "github.com/vearne/chat/proto"
-	"github.com/vearne/chat/resource"
 	wm "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
 )

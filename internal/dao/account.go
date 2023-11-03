@@ -2,9 +2,9 @@ package dao
 
 import (
 	"github.com/vearne/chat/consts"
+	"github.com/vearne/chat/internal/resource"
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
-	"github.com/vearne/chat/resource"
 	"time"
 )
 

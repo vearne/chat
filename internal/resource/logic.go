@@ -1,8 +1,8 @@
 package resource
 
 import (
-	"github.com/vearne/chat/config"
-	zlog "github.com/vearne/chat/log"
+	config2 "github.com/vearne/chat/internal/config"
+	zlog "github.com/vearne/chat/internal/log"
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
 	"go.uber.org/zap"
@@ -46,13 +46,13 @@ func initLogicChan() {
 func initMySQL() {
 	zlog.Info("initMySQL")
 	var err error
-	MySQLClient, err = initMySQLClientError(config.GetLogicOpts().MySQLConf)
+	MySQLClient, err = initMySQLClientError(config2.GetLogicOpts().MySQLConf)
 	if err != nil {
 		zlog.Fatal("Init MySQL error", zap.Error(err))
 	}
 }
 
-func initMySQLClientError(cf config.MySQLConf) (*gorm.DB, error) {
+func initMySQLClientError(cf config2.MySQLConf) (*gorm.DB, error) {
 	mysqldb, err := gorm.Open(mysql.Open(cf.DSN), &gorm.Config{})
 	if err != nil {
 		return nil, err

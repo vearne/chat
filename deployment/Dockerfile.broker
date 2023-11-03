@@ -1,0 +1,11 @@
+FROM docker-registry.qiyi.virtual/tv/simple-base-image:v0.1.6
+
+WORKDIR /data
+
+COPY config/keys/* /data/config/keys/
+COPY dist/sdk-api /data/sdk-api
+RUN chmod +x /data/sdk-api
+COPY supervisor_sync.conf /etc/supervisor/conf.d/sdk-api-sync.conf
+
+WORKDIR /data
+CMD ["", "--nodaemon", "--configuration", "/etc/supervisor/supervisord.conf"]

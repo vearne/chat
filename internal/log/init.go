@@ -1,7 +1,7 @@
 package log
 
 import (
-	"github.com/vearne/chat/config"
+	"github.com/vearne/chat/internal/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"

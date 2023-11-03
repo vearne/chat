@@ -2,11 +2,11 @@ package broker
 
 import (
 	"context"
-	"github.com/vearne/chat/config"
-	zlog "github.com/vearne/chat/log"
+	"github.com/vearne/chat/internal/config"
+	zlog "github.com/vearne/chat/internal/log"
+	"github.com/vearne/chat/internal/resource"
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
-	"github.com/vearne/chat/resource"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

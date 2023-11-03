@@ -4,14 +4,14 @@ import (
 	"context"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
-	"github.com/vearne/chat/config"
 	"github.com/vearne/chat/consts"
-	"github.com/vearne/chat/dao"
-	zlog "github.com/vearne/chat/log"
-	"github.com/vearne/chat/middleware"
+	"github.com/vearne/chat/internal/config"
+	dao2 "github.com/vearne/chat/internal/dao"
+	zlog "github.com/vearne/chat/internal/log"
+	"github.com/vearne/chat/internal/middleware"
+	"github.com/vearne/chat/internal/resource"
 	"github.com/vearne/chat/model"
 	pb "github.com/vearne/chat/proto"
-	"github.com/vearne/chat/resource"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -89,7 +89,7 @@ func (s *LogicServer) Reconnect(ctx context.Context, in *pb.ReConnectRequest) (*
 
 func (s *LogicServer) ViewedAck(ctx context.Context, req *pb.ViewedAckRequest) (*pb.ViewedAckResponse, error) {
 	// 在数据库中做记录
-	dao.CreatOrUpdateViewedAck(req.SessionId, req.AccountId, req.MsgId)
+	dao2.CreatOrUpdateViewedAck(req.SessionId, req.AccountId, req.MsgId)
 
 	partner := model.SessionAccount{}
 	resource.MySQLClient.Where("session_id = ? and account_id != ?",
@@ -159,16 +159,16 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 	// 比如 1) 用户主动退出会话 2)用户掉线退出会话 3)删除某条消息
 
 	// 1. 存储在发件箱
-	outMsg := dao.CreateOutMsg(req.Msgtype, req.SenderId, req.SessionId, req.Content)
+	outMsg := dao2.CreateOutMsg(req.Msgtype, req.SenderId, req.SessionId, req.Content)
 
 	// 判断一下会话的状态，收件人是否退出等情况
-	session := dao.GetSession(req.SessionId)
+	session := dao2.GetSession(req.SessionId)
 	// 2. 存储在收件箱
 	if session.Status == consts.SessionStatusInUse {
 		partner := model.SessionAccount{}
 		resource.MySQLClient.Where("session_id = ? and account_id != ?",
 			outMsg.SessionId, req.SenderId).First(&partner)
-		dao.CreateInMsg(req.SenderId, outMsg.ID, partner.AccountId)
+		dao2.CreateInMsg(req.SenderId, outMsg.ID, partner.AccountId)
 		SendPartnerMsg(outMsg.ID, req.SenderId, partner.AccountId, req.SessionId, req.Content)
 
 	} else {
@@ -203,11 +203,11 @@ func notifyPartnerExit(receiverId, sessionId uint64, exiterId uint64) {
 	zlog.Debug("notifyPartnerExit, 1.send signal to broker")
 	// 存入数据库
 	// outbox
-	outMsg := dao.CreateOutMsg(pb.MsgTypeEnum_Signal, consts.SystemSender, sessionId,
+	outMsg := dao2.CreateOutMsg(pb.MsgTypeEnum_Signal, consts.SystemSender, sessionId,
 		pb.SignalTypeEnum_name[int32(pb.SignalTypeEnum_PartnerExit)])
 
 	// inbox
-	dao.CreateInMsg(consts.SystemSender, outMsg.ID, receiverId)
+	dao2.CreateInMsg(consts.SystemSender, outMsg.ID, receiverId)
 	zlog.Debug("notifyPartnerExit, 2.save to database")
 }
 
@@ -232,11 +232,11 @@ func notifyPartnerNewSession(senderId, receiverId, sessionId uint64) {
 
 	// 存入数据库
 	// outbox
-	outMsg := dao.CreateOutMsg(pb.MsgTypeEnum_Signal, senderId, sessionId,
+	outMsg := dao2.CreateOutMsg(pb.MsgTypeEnum_Signal, senderId, sessionId,
 		pb.SignalTypeEnum_name[int32(pb.SignalTypeEnum_NewSession)])
 
 	// inbox
-	dao.CreateInMsg(senderId, outMsg.ID, receiverId)
+	dao2.CreateInMsg(senderId, outMsg.ID, receiverId)
 	zlog.Debug("notifyPartnerNewSession, 2.save to database")
 }
 
@@ -298,7 +298,7 @@ func handlerLogout(accountId uint64, broker string) bool {
 		zlog.Error("handlerLogout", zap.Error(err))
 		return false
 	}
-	
+
 	for _, item := range itemList {
 		// update session
 		// 2. 将账号关联的所有会话都退出

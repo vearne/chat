@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/spf13/viper"
-	"github.com/vearne/chat/utils"
+	"github.com/vearne/chat/internal/utils"
 	"log"
 	"time"
 )

@@ -3,11 +3,11 @@ package logic
 import (
 	"context"
 	"fmt"
-	"github.com/vearne/chat/dao"
-	zlog "github.com/vearne/chat/log"
+	"github.com/vearne/chat/internal/dao"
+	zlog "github.com/vearne/chat/internal/log"
+	resource2 "github.com/vearne/chat/internal/resource"
+	"github.com/vearne/chat/internal/utils"
 	pb "github.com/vearne/chat/proto"
-	"github.com/vearne/chat/resource"
-	"github.com/vearne/chat/utils"
 	"go.uber.org/zap"
 	"time"
 )
@@ -72,17 +72,17 @@ func (w *PumpDialogueLoopWorker) PumpDialogueLoop() {
 	// 用于结束worker
 	closeCh := make(chan int, 1)
 
-	brokerCount := resource.BrokerHub.Size()
+	brokerCount := resource2.BrokerHub.Size()
 	// 期望是处理的协程数 与 broker的数量相等
-	w.resizePool(brokerCount, resource.WaitToBrokerDialogueChan, responseCh, closeCh)
+	w.resizePool(brokerCount, resource2.WaitToBrokerDialogueChan, responseCh, closeCh)
 
 	refreshTicker := time.NewTicker(time.Second * 1)
 
 	for {
 		select {
 		case <-refreshTicker.C:
-			brokerCount = resource.BrokerHub.Size()
-			w.resizePool(brokerCount, resource.WaitToBrokerDialogueChan, responseCh, closeCh)
+			brokerCount = resource2.BrokerHub.Size()
+			w.resizePool(brokerCount, resource2.WaitToBrokerDialogueChan, responseCh, closeCh)
 			continue
 		case <-w.ExitChan:
 			goto exit
@@ -140,13 +140,13 @@ func pumpDialogueToBroker(msg *pb.PushDialogue) bool {
 	var ok bool
 	// 先获取目标所在的broker
 	account := dao.GetAccount(msg.ReceiverId)
-	if client, ok = resource.BrokerHub.GetBroker(account.Broker); !ok {
+	if client, ok = resource2.BrokerHub.GetBroker(account.Broker); !ok {
 		client, err = CreateBrokerClient(account.Broker)
 		if err != nil {
 			zlog.Error("CreateBrokerClient fail", zap.Error(err))
 			return false
 		}
-		resource.BrokerHub.SetBroker(account.Broker, client)
+		resource2.BrokerHub.SetBroker(account.Broker, client)
 	}
 	resp, err := client.ReceiveMsgDialogue(context.Background(), msg)
 	if err != nil {
@@ -159,7 +159,7 @@ func pumpDialogueToBroker(msg *pb.PushDialogue) bool {
 	return true
 }
 func CreateBrokerClient(broker string) (pb.BrokerClient, error) {
-	conn, err := resource.CreateGrpcClientConn(broker, 3, time.Second*3)
+	conn, err := resource2.CreateGrpcClientConn(broker, 3, time.Second*3)
 	if err != nil {
 		zlog.Error("can't connect to logic", zap.String("broker", broker))
 		return nil, fmt.Errorf("con't connect to logic:%v", broker)

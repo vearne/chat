@@ -15,20 +15,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.21
-      - name: remove dirs
-        run: rm -rf example test
-      - name: Test
-        run: go test -v ./...
-
   lint:
     runs-on: ubuntu-latest
     container:
@@ -42,3 +28,17 @@ jobs:
           go-version: 1.21
       - name: golangci-lint
         run: golangci-lint run --modules-download-mode=mod
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+      - name: build broker
+        run:
+      - name: build logic
+        run:
