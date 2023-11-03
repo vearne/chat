@@ -28,9 +28,8 @@ func (h *BizHub) SetClient(nickName string, accountId uint64, session *melody.Se
 func (h *BizHub) RemoveClient(accountId uint64) {
 	h.Lock()
 	defer h.Unlock()
-	if _, ok := h.clientMap[accountId]; ok {
-		delete(h.clientMap, accountId)
-	}
+
+	delete(h.clientMap, accountId)
 }
 
 func (h *BizHub) GetClient(accountId uint64) (*Client, bool) {

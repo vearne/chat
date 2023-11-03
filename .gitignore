@@ -87,3 +87,5 @@ cover*.html
 *.swp
 
 chat
+dist
+vendor
