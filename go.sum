@@ -247,8 +247,10 @@ github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/ugorji/go/codec v1.2.11 h1:BMaWp1Bb6fHwEtbplGBGJ498wD+LKlNSl25MjdZY4dU=
 github.com/ugorji/go/codec v1.2.11/go.mod h1:UNopzCgEMSXjBc6AOMqYvWC1ktqTAfzJZUZgYf6w6lg=
-github.com/vearne/worker_manager v0.0.0-20220617074412-2d2f2e40bfd3 h1:cJ+95wytLmTompvqrRPZ4rEMslKb6BHScoSbvG6hrJU=
-github.com/vearne/worker_manager v0.0.0-20220617074412-2d2f2e40bfd3/go.mod h1:P/HAMhf38k6TBamdUtToLUIm8bzCJTrMb1yGmzTn9i0=
+github.com/vearne/simplelog v0.0.1 h1:N/nQ1cLpJIVIRfWn4Ccv2nhETxq1lMC1u79yy714dUg=
+github.com/vearne/simplelog v0.0.1/go.mod h1:W7Ip7PHWs8c0X+7b8hSj9zH7WxKB3oQ1pkr3tAtxqSo=
+github.com/vearne/worker_manager v0.0.9 h1:z5C/5NzslHszJ7wx/Ubbg/nO+b4s6nWXW9KCaaHHby4=
+github.com/vearne/worker_manager v0.0.9/go.mod h1:1rLGJkGy6g6ifMtRe2YcNPqVG2a1AF8XBYE70GK1Yfs=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

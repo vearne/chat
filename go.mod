@@ -8,7 +8,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/json-iterator/go v1.1.12
 	github.com/spf13/viper v1.12.0
-	github.com/vearne/worker_manager v0.0.0-20220617074412-2d2f2e40bfd3
+	github.com/vearne/worker_manager v0.0.9
 	go.uber.org/zap v1.21.0
 	golang.org/x/time v0.0.0-20220722155302-e5dcc9cfc0b9
 	google.golang.org/grpc v1.59.0
@@ -49,6 +49,7 @@ require (
 	github.com/subosito/gotenv v1.3.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
+	github.com/vearne/simplelog v0.0.1 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
