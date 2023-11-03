@@ -12,14 +12,14 @@ import (
 )
 
 type PumpSignalLoopWorker struct {
-	RunningFlag *wm.BoolFlag  // is running? true:running false:stoped
-	ExitedFlag  chan struct{} //  已经退出的标识
+	RunningFlag *wm.AtomicBool // is running? true:running false:stoped
+	ExitedFlag  chan struct{}  //  已经退出的标识
 	ExitChan    chan struct{}
 }
 
 func NewPumpSignalLoopWorker() *PumpSignalLoopWorker {
 	worker := PumpSignalLoopWorker{ExitChan: make(chan struct{})}
-	worker.RunningFlag = wm.NewBoolFlag(true)
+	worker.RunningFlag = wm.NewAtomicBool(true)
 	worker.ExitedFlag = make(chan struct{})
 	return &worker
 }
@@ -31,7 +31,7 @@ func (w *PumpSignalLoopWorker) Start() {
 
 func (w *PumpSignalLoopWorker) Stop() {
 	zlog.Info("PumpSignalLoopWorker exit...")
-	wm.SetFalse(w.RunningFlag)
+	w.RunningFlag.Set(false)
 	close(w.ExitChan)
 
 	<-w.ExitedFlag
@@ -39,7 +39,7 @@ func (w *PumpSignalLoopWorker) Stop() {
 }
 
 func (w *PumpSignalLoopWorker) PumpSignalLoop() {
-	for wm.IsTrue(w.RunningFlag) {
+	for w.RunningFlag.IsTrue() {
 		select {
 		case msg := <-resource.WaitToBrokerSignalChan:
 			pumpSignalToBroker(msg)

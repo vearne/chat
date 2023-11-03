@@ -11,7 +11,7 @@ import (
 )
 
 type PingWorker struct {
-	RunningFlag *wm.BoolFlag
+	RunningFlag *wm.AtomicBool
 	ExitedFlag  chan struct{} //  已经退出的标识
 	ExitChan    chan struct{}
 }
@@ -19,7 +19,7 @@ type PingWorker struct {
 func NewPingWorker() *PingWorker {
 	//RunningFlag: true, ExitedFlag: false
 	worker := PingWorker{ExitChan: make(chan struct{})}
-	worker.RunningFlag = wm.NewBoolFlag(true)
+	worker.RunningFlag = wm.NewAtomicBool(true)
 	worker.ExitedFlag = make(chan struct{})
 	return &worker
 }
@@ -32,7 +32,7 @@ func (w *PingWorker) Start() {
 	ticker := time.NewTicker(pingConfig.Interval)
 	defer ticker.Stop()
 
-	for wm.IsTrue(w.RunningFlag) {
+	for w.RunningFlag.IsTrue() {
 		select {
 		case <-ticker.C:
 			clients := resource.Hub.GetAllClient()
@@ -57,7 +57,7 @@ func (w *PingWorker) Start() {
 
 func (w *PingWorker) Stop() {
 	zlog.Info("PingWorker exit...")
-	wm.SetFalse(w.RunningFlag)
+	w.RunningFlag.Set(false)
 	close(w.ExitChan)
 
 	<-w.ExitedFlag
