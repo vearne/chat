@@ -24,13 +24,14 @@ build-dirs: clean
 build: build-dirs
 	env GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o ${RELEASE_DIR}/chat-broker ./cmd/broker
 	env GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o ${RELEASE_DIR}/chat-logic ./cmd/logic
+	chmod +x ${RELEASE_DIR}/*
 
 .PHONY: image
 image: build
 	# broker
-	docker build -f ./docs/dockerfile/Dockerfile.broker --rm --no-cache -t ${IMAGE_BROKER} .
+	docker build -f ./dockerfile/Dockerfile.broker --rm --no-cache -t ${IMAGE_BROKER} .
 	docker push ${IMAGE_BROKER}
 	# logic
-	docker build -f ./docs/dockerfile/Dockerfile.logic --rm --no-cache -t ${IMAGE_LOGIC} .
+	docker build -f ./dockerfile/Dockerfile.logic --rm --no-cache -t ${IMAGE_LOGIC} .
 	docker push ${IMAGE_LOGIC}
 
