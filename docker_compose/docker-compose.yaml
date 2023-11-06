@@ -8,14 +8,14 @@ services:
       MYSQL_ROOT_PASSWORD: happy-chat
 
   logic:
-    image: woshiaotian/chat-logic:v0.1.1-20231106153838-9cf387f
+    image: woshiaotian/chat-logic:v0.1.1-20231106165019-2d3ae85
     depends_on:
       - mysql
     volumes:
       - ./config.logic.yaml:/data/config.logic.yaml
       
   broker:
-    image: woshiaotian/chat-broker:v0.1.1-20231106153838-9cf387f
+    image: woshiaotian/chat-broker:v0.1.1-20231106165019-2d3ae85
     ports:
       - 18224:18224
     depends_on:

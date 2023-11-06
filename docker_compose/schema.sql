@@ -1,5 +1,7 @@
 create database chat;
 
+use chat;
+
 CREATE TABLE `account` (
    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
    `nickname` varchar(30) DEFAULT NULL,
