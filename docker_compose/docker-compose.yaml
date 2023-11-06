@@ -1,0 +1,24 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: happy-chat
+
+  logic:
+    image: woshiaotian/chat-logic:v0.1.1-20231106153838-9cf387f
+    depends_on:
+      - mysql
+    volumes:
+      - ./config.logic.yaml:/data/config.logic.yaml
+      
+  broker:
+    image: woshiaotian/chat-broker:v0.1.1-20231106153838-9cf387f
+    ports:
+      - 18224:18224
+    depends_on:
+      - logic
+    volumes:
+      - ./config.broker.yaml:/data/config.broker.yaml
