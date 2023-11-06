@@ -1,0 +1,20 @@
+logic_dealer:
+  address: logic:18223
+  
+logger:
+  # 1. "info"
+  # 2. "debug"
+  # 3. "error"
+  level: "debug"
+  filepath: "/var/log/chat_broker.log"
+
+# broker的配置
+broker:
+  ws_address: ":18224"
+  grpc_address: ":18225"
+
+# 用Ping检查Client是否退出或者掉线
+# 超过maxWait就认为Client已经掉线
+ping:
+  interval: "3s"
+  maxWait: "20s"

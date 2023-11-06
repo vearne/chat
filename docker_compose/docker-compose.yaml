@@ -1,0 +1,30 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: happy-chat
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s  # 健康检查的间隔，这里设置为30秒
+      timeout: 3s
+      retries: 5
+
+  logic:
+    image: woshiaotian/chat-logic:v0.1.1-20231106175750-eec3a59
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./config.logic.yaml:/data/config.logic.yaml
+      
+  broker:
+    image: woshiaotian/chat-broker:v0.1.1-20231106175750-eec3a59
+    ports:
+      - 18224:18224
+    depends_on:
+      - logic
+    volumes:
+      - ./config.broker.yaml:/data/config.broker.yaml
