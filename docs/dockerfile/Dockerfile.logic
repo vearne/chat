@@ -1,4 +1,4 @@
-FROM docker-registry.qiyi.virtual/tv/simple-base-image:v0.1.6
+FROM woshiaotian/simple-base-image:v0.1.6
 
 WORKDIR /data
 
