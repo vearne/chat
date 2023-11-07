@@ -1,8 +1,20 @@
+# build
+FROM golang:1.21 as builder
+ADD . $GOPATH/src/github.com/vearne/chat
+WORKDIR $GOPATH/src/github.com/vearne/chat/cmd/broker
+
+ARG BUILD_VERSION=""
+ARG BUILD_TIME=""
+ARG BUILD_COMMIT=""
+ARG IMPORT_PATH="github.com/vearne/chat"
+
+RUN env CGO_ENABLED=0 go build -o /bin/chat-broker\
+        -ldflags "-s -w -X ${IMPORT_PATH}/consts.GitTag=${BUILD_COMMIT} -X ${IMPORT_PATH}/consts.BuildTime=${BUILD_TIME} -X ${IMPORT_PATH}/consts.Version=${BUILD_VERSION}"
+
+
 FROM woshiaotian/simple-base-image:v0.1.6
 
 WORKDIR /data
-
-COPY dist/chat-broker /data/chat-broker
-RUN chmod +x /data/chat-broker
+COPY --from=builder /bin/chat-broker /data/chat-broker
 
 CMD ["/data/chat-broker", "--config", "/data/config.broker.yaml"]
