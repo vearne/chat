@@ -1,4 +1,4 @@
-VERSION :=v0.1.2
+VERSION :=v0.1.3
 
 RELEASE_DIR = dist
 IMPORT_PATH = github.com/vearne/chat
