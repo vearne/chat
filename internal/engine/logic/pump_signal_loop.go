@@ -55,7 +55,11 @@ func pumpSignalToBroker(msg *pb.PushSignal) bool {
 	var err error
 	var ok bool
 	// 先获取目标所在的broker
-	account := dao.GetAccount(msg.ReceiverId)
+	account, err := dao.GetAccount(msg.ReceiverId)
+	if err != nil {
+		zlog.Error("dao.GetAccount", zap.Error(err))
+		return false
+	}
 	if client, ok = resource.BrokerHub.GetBroker(account.Broker); !ok {
 		client, err = CreateBrokerClient(account.Broker)
 		if err != nil {

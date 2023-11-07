@@ -13,7 +13,7 @@ services:
       retries: 5
   
   logic:
-    image: woshiaotian/chat-logic:v0.1.1-20231106175750-eec3a59
+    image: woshiaotian/chat-logic:v0.1.2
     depends_on:
       mysql:
         condition: service_healthy
@@ -21,7 +21,7 @@ services:
       - ./config.logic.yaml:/data/config.logic.yaml
   
   broker:
-    image: woshiaotian/chat-broker:v0.1.1-20231106175750-eec3a59
+    image: woshiaotian/chat-broker:v0.1.2
     depends_on:
       - logic
     volumes:

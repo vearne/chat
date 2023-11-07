@@ -89,7 +89,11 @@ func (s *LogicServer) Reconnect(ctx context.Context, in *pb.ReConnectRequest) (*
 
 func (s *LogicServer) ViewedAck(ctx context.Context, req *pb.ViewedAckRequest) (*pb.ViewedAckResponse, error) {
 	// 在数据库中做记录
-	dao2.CreatOrUpdateViewedAck(req.SessionId, req.AccountId, req.MsgId)
+	err := dao2.CreatOrUpdateViewedAck(req.SessionId, req.AccountId, req.MsgId)
+	if err != nil {
+		zlog.Error("dao2.CreatOrUpdateViewedAck", zap.Error(err))
+		return nil, err
+	}
 
 	partner := model.SessionAccount{}
 	resource.MySQLClient.Where("session_id = ? and account_id != ?",
@@ -159,24 +163,41 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 	// 比如 1) 用户主动退出会话 2)用户掉线退出会话 3)删除某条消息
 
 	// 1. 存储在发件箱
-	outMsg := dao2.CreateOutMsg(req.Msgtype, req.SenderId, req.SessionId, req.Content)
+	outMsg, err := dao2.CreateOutMsg(req.Msgtype, req.SenderId, req.SessionId, req.Content)
+	if err != nil {
+		zlog.Error("dao2.CreateOutMsg", zap.Error(err))
+		return nil, err
+	}
 
 	// 判断一下会话的状态，收件人是否退出等情况
-	session := dao2.GetSession(req.SessionId)
+	session, err := dao2.GetSession(req.SessionId)
+	if err != nil {
+		zlog.Error("dao2.GetSession", zap.Error(err))
+		return nil, err
+	}
 	// 2. 存储在收件箱
 	if session.Status == consts.SessionStatusInUse {
-		partner := model.SessionAccount{}
-		resource.MySQLClient.Where("session_id = ? and account_id != ?",
-			outMsg.SessionId, req.SenderId).First(&partner)
-		dao2.CreateInMsg(req.SenderId, outMsg.ID, partner.AccountId)
+		partner, err := dao2.GetSessionPartner(outMsg.SessionId, req.SenderId)
+		if err != nil {
+			zlog.Error("dao2.GetSessionPartner", zap.Error(err))
+			return nil, err
+		}
+
+		_, err = dao2.CreateInMsg(req.SenderId, outMsg.ID, partner.AccountId)
+		if err != nil {
+			zlog.Error("dao2.CreateInMsg", zap.Error(err))
+			return nil, err
+		}
 		SendPartnerMsg(outMsg.ID, req.SenderId, partner.AccountId, req.SessionId, req.Content)
 
 	} else {
 		// 由系统产生一条消息，来替代用户发出的消息
 		// 消息的接收人已经退出了
-		partner := model.SessionAccount{}
-		resource.MySQLClient.Where("session_id = ? and account_id != ?",
-			req.SessionId, req.SenderId).First(&partner)
+		partner, err := dao2.GetSessionPartner(req.SessionId, req.SenderId)
+		if err != nil {
+			zlog.Error("dao2.GetSessionPartner", zap.Error(err))
+			return nil, err
+		}
 		notifyPartnerExit(req.SenderId, partner.SessionId, partner.AccountId)
 	}
 
@@ -203,11 +224,19 @@ func notifyPartnerExit(receiverId, sessionId uint64, exiterId uint64) {
 	zlog.Debug("notifyPartnerExit, 1.send signal to broker")
 	// 存入数据库
 	// outbox
-	outMsg := dao2.CreateOutMsg(pb.MsgTypeEnum_Signal, consts.SystemSender, sessionId,
+	outMsg, err := dao2.CreateOutMsg(pb.MsgTypeEnum_Signal, consts.SystemSender, sessionId,
 		pb.SignalTypeEnum_name[int32(pb.SignalTypeEnum_PartnerExit)])
+	if err != nil {
+		zlog.Error("dao2.CreateOutMsg", zap.Error(err))
+		return
+	}
 
 	// inbox
-	dao2.CreateInMsg(consts.SystemSender, outMsg.ID, receiverId)
+	_, err = dao2.CreateInMsg(consts.SystemSender, outMsg.ID, receiverId)
+	if err != nil {
+		zlog.Error("dao2.CreateInMsg", zap.Error(err))
+		return
+	}
 	zlog.Debug("notifyPartnerExit, 2.save to database")
 }
 
@@ -220,8 +249,11 @@ func notifyPartnerNewSession(senderId, receiverId, sessionId uint64) {
 		ReceiverId: receiverId,
 	}
 
-	var sender model.Account
-	resource.MySQLClient.Where("id = ?", senderId).First(&sender)
+	sender, err := dao2.GetAccount(senderId)
+	if err != nil {
+		zlog.Error("dao2.GetAccount", zap.Error(err))
+		return
+	}
 
 	msg.Data = &pb.PushSignal_Partner{Partner: &pb.AccountInfo{
 		AccountId: sender.ID,
@@ -232,11 +264,20 @@ func notifyPartnerNewSession(senderId, receiverId, sessionId uint64) {
 
 	// 存入数据库
 	// outbox
-	outMsg := dao2.CreateOutMsg(pb.MsgTypeEnum_Signal, senderId, sessionId,
+	outMsg, err := dao2.CreateOutMsg(pb.MsgTypeEnum_Signal, senderId, sessionId,
 		pb.SignalTypeEnum_name[int32(pb.SignalTypeEnum_NewSession)])
+	if err != nil {
+		zlog.Error("dao2.CreateOutMsg", zap.Error(err))
+		return
+	}
 
 	// inbox
-	dao2.CreateInMsg(senderId, outMsg.ID, receiverId)
+	_, err = dao2.CreateInMsg(senderId, outMsg.ID, receiverId)
+	if err != nil {
+		zlog.Error("dao2.CreateInMsg", zap.Error(err))
+		return
+	}
+
 	zlog.Debug("notifyPartnerNewSession, 2.save to database")
 }
 
