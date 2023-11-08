@@ -1,4 +1,3 @@
-version: '3'
 services:
   mysql:
     image: mysql:8
@@ -8,12 +7,13 @@ services:
       MYSQL_ROOT_PASSWORD: happy-chat
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      interval: 5s  # 健康检查的间隔，这里设置为30秒
+      interval: 3s  # 健康检查的间隔
       timeout: 3s
-      retries: 5
+      retries: 3
+      start_period: 5s
   
   logic:
-    image: woshiaotian/chat-logic:v0.1.2
+    image: woshiaotian/chat-logic:v0.1.5
     depends_on:
       mysql:
         condition: service_healthy
@@ -21,7 +21,7 @@ services:
       - ./config.logic.yaml:/data/config.logic.yaml
   
   broker:
-    image: woshiaotian/chat-broker:v0.1.2
+    image: woshiaotian/chat-broker:v0.1.5
     depends_on:
       - logic
     volumes:
