@@ -21,7 +21,8 @@ docker-compose up -d
 ```
 docker-compose down
 ```
-
+Then you can open a browser and visit
+http://localhost/
 
 ### Interface
 ![chat](./img/chat_window.jpg)
