@@ -117,7 +117,12 @@ func (s *LogicServer) CreateAccount(ctx context.Context,
 	account.Token = token
 	account.CreatedAt = time.Now()
 	account.ModifiedAt = account.CreatedAt
-	resource.MySQLClient.Create(&account)
+
+	err := resource.MySQLClient.Create(&account).Error
+	if err != nil {
+		zlog.Error("CreateAccount", zap.Error(err))
+		return nil, err
+	}
 
 	var resp pb.CreateAccountResponse
 	resp.Code = pb.CodeEnum_C000
@@ -125,6 +130,7 @@ func (s *LogicServer) CreateAccount(ctx context.Context,
 	resp.Token = token
 	return &resp, nil
 }
+
 func (s *LogicServer) Match(ctx context.Context, req *pb.MatchRequest) (*pb.MatchResponse, error) {
 	var partner model.Account
 	var session model.Session

@@ -26,9 +26,9 @@ message ViewedAckResponse {
 
 enum CodeEnum {
     C000 = 0; // success
-    C001 = 1; //
-    C002 = 2; //
-    C003 = 3; //
+    C001 = 1; // parameter error
+    C002 = 2; // internal error
+    C003 = 3; // unknown error
     C004 = 4; // No data found
 }
 
