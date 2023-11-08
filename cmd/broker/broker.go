@@ -22,7 +22,6 @@ func init() {
 	flag.BoolVar(&versionFlag, "version", false, "Show version")
 }
 
-// nolint: all
 func main() {
 	flag.Parse()
 

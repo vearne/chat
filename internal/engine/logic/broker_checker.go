@@ -75,7 +75,7 @@ func (worker *BrokerChecker) checkBroker() {
 			zlog.Info("check broker", zap.String("broker", broker.Addr), zap.Error(err))
 			continue
 		}
-		if resp.Code == pb.CodeEnum_C000 {
+		if resp.Code == pb.CodeEnum_Success {
 			worker.brokerStatus[broker.Addr] = time.Now()
 		}
 	}

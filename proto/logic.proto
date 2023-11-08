@@ -25,11 +25,11 @@ message ViewedAckResponse {
 }
 
 enum CodeEnum {
-    C000 = 0; // success
-    C001 = 1; //
-    C002 = 2; //
-    C003 = 3; //
-    C004 = 4; // No data found
+    Success = 0; // success
+    ParamErr = 1; // parameter error
+    InternalErr = 2; // internal error
+    UnknowErr = 3; // unknown error
+    NoDataFound = 4; // No data found
 }
 
 enum StatusEnum {
