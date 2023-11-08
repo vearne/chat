@@ -149,7 +149,7 @@ func (m *HealthCheckResp) GetCode() CodeEnum {
 	if m != nil {
 		return m.Code
 	}
-	return CodeEnum_C000
+	return CodeEnum_Success
 }
 
 func (m *HealthCheckResp) GetMsg() string {
@@ -251,7 +251,7 @@ func (m *PushResp) GetCode() CodeEnum {
 	if m != nil {
 		return m.Code
 	}
-	return CodeEnum_C000
+	return CodeEnum_Success
 }
 
 func (m *PushResp) GetMsg() string {
@@ -590,7 +590,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type BrokerClient interface {
-	// 接收logic推送过来的数据
+	// Receive data pushed by logic
 	ReceiveMsgDialogue(ctx context.Context, in *PushDialogue, opts ...grpc.CallOption) (*PushResp, error)
 	ReceiveMsgSignal(ctx context.Context, in *PushSignal, opts ...grpc.CallOption) (*PushResp, error)
 	HealthCheck(ctx context.Context, in *HealthCheckReq, opts ...grpc.CallOption) (*HealthCheckResp, error)
@@ -633,7 +633,7 @@ func (c *brokerClient) HealthCheck(ctx context.Context, in *HealthCheckReq, opts
 
 // BrokerServer is the server API for Broker service.
 type BrokerServer interface {
-	// 接收logic推送过来的数据
+	// Receive data pushed by logic
 	ReceiveMsgDialogue(context.Context, *PushDialogue) (*PushResp, error)
 	ReceiveMsgSignal(context.Context, *PushSignal) (*PushResp, error)
 	HealthCheck(context.Context, *HealthCheckReq) (*HealthCheckResp, error)

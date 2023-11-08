@@ -43,7 +43,7 @@ func (w *GrpcWorker) Stop() {
 }
 
 func (w *GrpcWorker) HealthCheck(ctx context.Context, req *pb.HealthCheckReq) (*pb.HealthCheckResp, error) {
-	ans := &pb.HealthCheckResp{Code: pb.CodeEnum_C000}
+	ans := &pb.HealthCheckResp{Code: pb.CodeEnum_Success}
 	return ans, nil
 }
 
@@ -72,7 +72,7 @@ func (w *GrpcWorker) ReceiveMsgDialogue(ctx context.Context, in *pb.PushDialogue
 	}
 
 	// result
-	resp := pb.PushResp{Code: pb.CodeEnum_C000}
+	resp := pb.PushResp{Code: pb.CodeEnum_Success}
 	return &resp, nil
 }
 
@@ -81,7 +81,7 @@ func (w *GrpcWorker) ReceiveMsgSignal(ctx context.Context, in *pb.PushSignal) (*
 		zap.Uint64("sessionId", in.SessionId), zap.String("signalType",
 			pb.SignalTypeEnum_name[int32(in.SignalType)]))
 	// result
-	resp := &pb.PushResp{Code: pb.CodeEnum_C000}
+	resp := &pb.PushResp{Code: pb.CodeEnum_Success}
 
 	switch in.SignalType {
 	case pb.SignalTypeEnum_NewSession:

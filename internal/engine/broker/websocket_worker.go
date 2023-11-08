@@ -170,7 +170,7 @@ func HandleReConnect(wrapper *model.SessionWrapper, data []byte) {
 		zlog.Error("LogicClient.Reconnect", zap.Error(err))
 	}
 	// 重新登录成功
-	if resp.Code == pb.CodeEnum_C000 {
+	if resp.Code == pb.CodeEnum_Success {
 		zlog.Debug("LogicClient.Reconnect", zap.Any("resp", resp),
 			zap.Uint64("accountId", resp.AccountId))
 		// 2 记录accountId和session的对应关系
@@ -251,7 +251,7 @@ func HandleMatch(wrapper *model.SessionWrapper, data []byte) {
 	}
 	result := model.NewCmdMatchResp()
 	result.Code = int32(resp.Code)
-	if resp.Code == pb.CodeEnum_C000 {
+	if resp.Code == pb.CodeEnum_Success {
 		result.PartnerId = resp.PartnerId
 		result.PartnerName = resp.PartnerName
 		result.SessionId = resp.SessionId

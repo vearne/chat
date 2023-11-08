@@ -4,7 +4,7 @@ package proto;
 
 // The Customer sercie definition
 service Broker {
-    // 接收logic推送过来的数据
+    // Receive data pushed by logic
     rpc ReceiveMsgDialogue (PushDialogue) returns (PushResp);
     rpc ReceiveMsgSignal (PushSignal) returns (PushResp);
     rpc HealthCheck (HealthCheckReq) returns (HealthCheckResp);
@@ -55,9 +55,9 @@ message AccountInfo{
 }
 
 enum SignalTypeEnum {
-    PartnerExit = 0; // 聊天的对象，掉线或者登出
-    NewSession = 1; // 创建会话
-    DeleteMsg = 2; // 删除消息
-    ViewedAck = 3; // 已读确认
+    PartnerExit = 0; // The person you were chatting with disconnected or logged out.
+    NewSession = 1; // Create session
+    DeleteMsg = 2; // Delete message
+    ViewedAck = 3; // Read confirmation
 }
 
