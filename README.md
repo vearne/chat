@@ -1,5 +1,6 @@
 # chat
 [![golang-ci](https://github.com/vearne/chat/actions/workflows/golang-ci.yml/badge.svg)](https://github.com/vearne/chat/actions/workflows/golang-ci.yml)
+
 This chat system is designed to automatically match strangers for chat, so no registration is required
 
 ## Online service
