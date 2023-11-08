@@ -23,7 +23,7 @@ docker-compose down
 
 
 ### Interface
-![chat](./img/chat_window.png)
+![chat](./img/chat_window.jpg)
 
 ### 3. Thanks
 >"If I have been able to see further, it was only because I stood on the shoulders of giants."   by Isaac Newton
