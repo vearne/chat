@@ -194,6 +194,7 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 	var resp pb.SendMsgResponse
 	var err error
 	var session *model.Session
+	var partner *model.SessionAccount
 
 	// 1. 存储在发件箱
 	outMsg, err := dao2.CreateOutMsg(req.Msgtype, req.SenderId, req.SessionId, req.Content)
@@ -210,7 +211,7 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 	}
 	// 2. 存储在收件箱
 	if session.Status == consts.SessionStatusInUse {
-		partner, err := dao2.GetSessionPartner(outMsg.SessionId, req.SenderId)
+		partner, err = dao2.GetSessionPartner(outMsg.SessionId, req.SenderId)
 		if err != nil {
 			zlog.Error("dao2.GetSessionPartner", zap.Error(err))
 			goto INTERNAL_ERROR
@@ -226,7 +227,7 @@ func (s *LogicServer) SendMsg(ctx context.Context, req *pb.SendMsgRequest) (*pb.
 	} else {
 		// 由系统产生一条消息，来替代用户发出的消息
 		// 消息的接收人已经退出了
-		partner, err := dao2.GetSessionPartner(req.SessionId, req.SenderId)
+		partner, err = dao2.GetSessionPartner(req.SessionId, req.SenderId)
 		if err != nil {
 			zlog.Error("dao2.GetSessionPartner", zap.Error(err))
 			goto INTERNAL_ERROR
@@ -378,6 +379,7 @@ func handlerLogout(accountId uint64, broker string) bool {
 		return false
 	}
 
+	var partner *model.SessionAccount
 	for _, item := range itemList {
 		// update session
 		// 2. 将账号关联的所有会话都退出
@@ -398,7 +400,7 @@ func handlerLogout(accountId uint64, broker string) bool {
 
 		// notify parnter
 		// 通知这些会话的参与者，会话即将销毁
-		partner, err := dao2.GetSessionPartner(item.SessionId, accountId)
+		partner, err = dao2.GetSessionPartner(item.SessionId, accountId)
 		if err != nil {
 			zlog.Error("handlerLogout-GetSessionPartner", zap.Error(err))
 			return false
