@@ -1,7 +1,7 @@
 version: '3'
 services:
   mysql:
-    image: mysql:5.7
+    image: mysql:8
     volumes:
       - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
