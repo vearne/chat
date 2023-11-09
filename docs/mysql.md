@@ -1,57 +1,58 @@
+#### account
 
-#### 用户 account
-|字段|类型|说明|备注|
+|field|type|illustrate|detail|
 |:---|:---|:---|:---|
-|id|int|主键||
-|nickname|string|昵称|可以重复|
-|status|int|状态|0:创建 1:使用中 2:销毁|
-|broker|string|用户登录的broker信息|消息投递时，需要|
-|token|string|用户唯一性标识|重连时需要|
-|created_at|date|创建时间||
-|modified_at|date|更新时间||
+|id|int|primary key||
+|nickname|string|nick name|nickname can be repeated|
+|status|int|status|0:created  1: in use 2: destroyed|
+|broker|string|broker that user is logged into|When delivering a message, it is required|
+|token|string|account unique identifier|Required when reconnecting|
+|created_at|date|create time||
+|modified_at|date|modify time||
 
+#### session
 
-#### 会话 session  
-|字段|类型|说明|备注|
+|field|type|illustrate|detail|
 |:---|:---|:---|:---|
-|id|int|会话ID||
-|status|int|状态|0:创建 1:使用中 2:销毁|
-|created_at|date|创建时间||
-|modified_at|date|更新时间||
+|id|int|primary key||
+|status|int|status|0:created  1: in use 2: destroyed|
+|created_at|date|create time||
+|modified_at|date|modify time||
 
 #### session_account
-|字段|类型|说明|备注|
+|field|type|illustrate|detail|
 |:---|:---|:---|:---|
-|id|int|主键||
-|session_id|int|会话ID||
-|account_id|int|账号ID||
+|id|int|primary key||
+|session_id|int|sender ID||
+|account_id|int|account ID||
 
 
 #### outbox
-|字段|类型|说明|备注|
+|field|type|illustrate|detail|
 |:---|:---|:---|:---|
-|id|int|主键||
-|sender_id|int|发出者ID||
-|session_id|int|会话ID||
-|status|int|状态|0:删除 1: 正常|
-|msg_type|int|类型| 0: dialogue 1: signal|
-|content|string|内容||
-|created_at|date|创建时间||
+|id|int|primary key||
+|sender_id|int|sender ID||
+|session_id|int|session ID||
+|status|int|status|0:deleted 1:  normal|
+|msg_type|int|message type| 0: dialogue 1: signal|
+|content|string|content||
+|created_at|date|create time||
 
-#### inbox (反向索引)
-|字段|类型|说明|备注|
+#### inbox
+
+|field|type|illustrate|detail|
 |:---|:---|:---|:---|
-|id|int|主键||
-|sender_id|int|发出者ID||
-|msg_id|int|消息ID||
-|receiver_id|int|接收者ID||
+|id|int|primary key||
+|sender_id|int|sender ID||
+|msg_id|int|message ID||
+|receiver_id|int|receiver ID||
 
 
 #### view ack
-|字段|类型|说明|备注|
+|field|type|illustrate|detail|
 |:---|:---|:---|:---|
-|id|int|主键||
-|session_id|int|会话ID||
-|account_id|int|账号ID||
-|msg_id|int|消息ID||
-|created_at|date|创建时间||
+|id|int|primary key||
+|session_id|int|session ID||
+|account_id|int|account ID||
+|msg_id|int|message ID||
+|created_at|date|create time||

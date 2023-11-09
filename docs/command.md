@@ -1,25 +1,25 @@
-# 设备与接入层交互协议
-websocket + 自定义协议(JSON)
+## The protocol for interaction between the device and broker.
+websocket + JSON
 
 
 ```
     client                      broker
 
-# 请求创建一个临时账号
+# Request to create a temporary account
 CRT_ACCOUNT_REQ       -->
                       <--     CRT_ACCOUNT_RESP
-# 请求匹配一个聊天对象                    
+# Request to match a chat partner                   
 MATCH_REQ             -->
                       <--     MATCH_RESP
-# 发出一条对话消息
+# Send a conversation message
 DIALOGUE_REQ          -->     
                       <--     DIALOGUE_RESP
 
-# 收到一条对话消息                   
+# Receive a conversation message                   
                       <--     PUSH_DIALOGUE_REQ
 PUSH_DIALOGUE_RESP    -->     
                     
-# 收到一条系统消息(聊天对象下线等等)
+# Receive a system message (chat partner offline, etc.)
                       <--     PUSH_SIGNAL_REQ
 PUSH_SIGNAL_RESP      -->     
 
@@ -27,16 +27,19 @@ PUSH_SIGNAL_RESP      -->
 PING_REQ              -->     
                       <--     PING_RESP
 
-# 告知对方消息已经被已方阅读                    
+# Inform the other party that the message has been read                 
 VIEWED_ACK_REQ        -->
                       <--     VIEWED_ACK_RESP
   
-# 收到已方消息已经被对方阅读               
+# Receive notification that the message from the sender has been read by the recipient              
                       <--     PUSH_VIEWED_ACK_REQ
 PUSH_VIEWED_ACK_RESP  -->     
 
-# 连接意外断开后，尝试重新连接
+# Attempt to reconnect after a sudden disconnection
 RECONNECT_REQ         -->     
                       <--     RECONNECT_RESP          
 
 ```
+
+## Sequence diagram
+![](../img/seq.jpeg)
