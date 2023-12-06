@@ -1,3 +1,6 @@
+
+<img src="" height="180px" align="right" />
+
 # chat
 [![golang-ci](https://github.com/vearne/chat/actions/workflows/golang-ci.yml/badge.svg)](https://github.com/vearne/chat/actions/workflows/golang-ci.yml)
 
