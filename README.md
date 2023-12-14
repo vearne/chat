@@ -52,3 +52,6 @@ you can open multiple windows and chat with yourself.
 ### Thanks
 >"If I have been able to see further, it was only because I stood on the shoulders of giants."   by Isaac Newton
 
+### Thanks to JetBrains
+[![jetbrains](img/jetbrains.svg)](https://www.jetbrains.com/community/opensource/#support)
+
