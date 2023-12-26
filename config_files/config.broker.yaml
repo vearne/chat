@@ -1,17 +1,37 @@
 logic_dealer:
-  # 自定义了resolver
+  # TCP 直连
+  # address: "127.0.0.1:18223"
+  
+  ##  支持多种resolver
+  # 1) SRV
   # dig @8.8.8.8 _grpclb._tcp.logic.vearne.cc srv
   # 在dns中 _grpclb._tcp.logic.vearne.cc -> 0 50 28223 logic1.vearne.cc
   #        _grpclb._tcp.logic.vearne.cc -> 0 50 28224 logic2.vearne.cc
-  # address: "127.0.0.1:18223"
-  address: "srv://8.8.8.8/logic.vearne.cc"
+  # address: "srv://8.8.8.8/logic.vearne.cc"
   
+  # 2) DNS
+  # address: "dns://8.8.8.8/example.grpc.com:18223"
+  
+  # 3) ETCD
+  # https://etcd.io/docs/v3.5/dev-guide/grpc_naming/
+  # logic is the name of the service
+  #
+  # NOTICE: To use etcd resolver, environment variables need to be given
+  #  ETCD_ENDPOINTS="192.168.2.101:2379;192.168.2.102:2379;192.168.2.103:2379"
+  #  ETCD_USERNAME=root
+  #  ETCD_PASSWORD=8323-01AmA004A509
+  # address: "etcd:///services/logic"
+  
+#  address: "127.0.0.1:18223"
+  address: "etcd:///services/logic"
+  
+
 logger:
   # 1. "info"
   # 2. "debug"
   # 3. "error"
   level: "debug"
-  filepath: "/var/log/chat_broker.log"
+  filepath: "/var/log/test/chat_broker.log"
 
 # broker的配置
 broker:
@@ -23,3 +43,10 @@ broker:
 ping:
   interval: "3s"
   maxWait: "20s"
+
+# debug log for grpc request
+service-debug: true
+
+
+
+  

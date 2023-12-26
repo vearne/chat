@@ -5,11 +5,11 @@ logger:
   # 1. "info"
   # 2. "debug"
   # 3. "error"
-  level: "debug"
-  filepath: "/var/log/chat_logic.log"
+  level: "info"
+  filepath: "/var/log/test/chat_logic.log"
 
 mysql:
-  dsn: "st_user:40OIEuqHeQbbFE@tcp(dev1:3306)/stranger_talk?charset=utf8&loc=Asia%2FShanghai&parseTime=true"
+  dsn: "root:9E68-2607F7855D7D@tcp(127.0.0.1:23406)/chat?charset=utf8&loc=Asia%2FShanghai&parseTime=true"
   max_idle_conn: 50
   max_open_conn: 100
   conn_max_life_secs: 600
@@ -17,3 +17,12 @@ mysql:
   # 若开启则会打印具体的执行SQL
   debug: true
 
+etcd:
+  register: true
+  endpoints:
+    - 127.0.0.1:2379
+  username: root
+  password: 8323-01AmA004A509
+  
+# debug log for grpc request
+service-debug: true

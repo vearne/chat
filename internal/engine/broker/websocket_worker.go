@@ -274,6 +274,7 @@ func HandleCrtAccount(wrapper *model.SessionWrapper, data []byte) {
 	resp, err := resource.LogicClient.CreateAccount(ctx, &req)
 	if err != nil {
 		zlog.Error("LogicClient.CreateAccount", zap.Error(err))
+		return
 	}
 
 	zlog.Debug("LogicClient.CreateAccount", zap.Any("resp", resp),

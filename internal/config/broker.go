@@ -25,6 +25,8 @@ type BrokerConfig struct {
 	} `mapstructure:"ping"`
 
 	BrokerGrpcAddr string
+	
+	ServiceDebug bool `mapstructure:"service-debug"`
 }
 
 func InitBrokerConfig() {
