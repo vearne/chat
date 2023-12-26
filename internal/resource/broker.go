@@ -87,7 +87,7 @@ func DebugInterceptor() grpc.UnaryClientInterceptor {
 		opts = append(opts, grpc.Peer(&p))
 		err := invoker(ctx, method, req, reply, cc, opts...)
 		fmt.Println("addr:", p.Addr)
-		color.Red("Call service: %s@%s (%s)", method, p.Addr, time.Now().Sub(start))
+		color.Red("Call service: %s@%s (%s)", method, p.Addr, time.Since(start))
 
 		data, _ := json.MarshalIndent(req, "", "    ")
 		color.Cyan("Request(%s): %s", method, data)
