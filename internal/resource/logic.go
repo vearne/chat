@@ -27,9 +27,12 @@ var (
 
 // ################## init #################################
 func InitLogicResource() {
+	ServiceDebug = config2.GetLogicOpts().ServiceDebug
+
 	initLogicChan()
 	initMySQL()
 	initBrokerHub()
+
 }
 
 func initBrokerHub() {

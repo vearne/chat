@@ -163,7 +163,8 @@ func pumpDialogueToBroker(msg *pb.PushDialogue) bool {
 	return true
 }
 func CreateBrokerClient(broker string) (pb.BrokerClient, error) {
-	conn, err := resource2.CreateGrpcClientConn(broker, 3, time.Second*3)
+	conn, err := resource2.CreateGrpcClientConn(broker, 3, time.Second*3, resource2.ServiceDebug)
+
 	if err != nil {
 		zlog.Error("can't connect to logic", zap.String("broker", broker))
 		return nil, fmt.Errorf("con't connect to logic:%v", broker)

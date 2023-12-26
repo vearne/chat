@@ -12,7 +12,9 @@ import (
 	"time"
 )
 
-const maxOffLine = 30 * time.Second
+var DefaultExpiredTime = time.Time{}
+
+const maxOffLine = 10 * time.Second
 
 /*
 确保broker都在线
@@ -31,18 +33,19 @@ func NewBrokerChecker() *BrokerChecker {
 	worker.RunningFlag = wm.NewAtomicBool(true)
 	worker.ExitedFlag = make(chan struct{})
 	worker.ExitChan = make(chan struct{})
+	worker.brokerStatus = make(map[string]time.Time)
 	return worker
 }
 
 func (worker *BrokerChecker) Start() {
-	ticker := time.NewTicker(time.Second * 5)
+	ticker := time.NewTicker(time.Second * 3)
 	defer ticker.Stop()
 
 	zlog.Info("[start]BrokerChecker")
 	for worker.RunningFlag.IsTrue() {
 		select {
 		case <-ticker.C:
-			zlog.Info("BrokerChecker-ticker trigger")
+			zlog.Debug("BrokerChecker-ticker trigger")
 			worker.checkBroker()
 		case <-worker.ExitChan:
 			zlog.Info("BrokerChecker-got exit signal from ExitChan")
@@ -64,29 +67,66 @@ func (worker *BrokerChecker) Stop() {
 
 func (worker *BrokerChecker) checkBroker() {
 	begin := time.Now()
-	zlog.Info("[start]checkBroker")
-	brokerList := resource.BrokerHub.GetBrokerList()
-	for _, broker := range brokerList {
-		ip, _ := utils.GetIP()
-		logicID := ip + config.GetLogicOpts().LogicDealer.ListenAddress
-		in := pb.HealthCheckReq{Asker: logicID}
-		resp, err := broker.Client.HealthCheck(context.Background(), &in)
-		if err != nil {
-			zlog.Info("check broker", zap.String("broker", broker.Addr), zap.Error(err))
-			continue
+	zlog.Debug("[start]checkBroker")
+
+	ip, _ := utils.GetIP()
+	logicID := ip + config.GetLogicOpts().LogicDealer.ListenAddress
+	in := pb.HealthCheckReq{Asker: logicID}
+
+	addrs := GetBrokerList()
+	var client pb.BrokerClient
+	var err error
+	var ok bool
+
+	for _, addr := range addrs {
+		client, ok = resource.BrokerHub.GetBroker(addr)
+		if !ok {
+			client, err = CreateBrokerClient(addr)
+			if err != nil {
+				zlog.Error("CreateBrokerClient", zap.Error(err))
+				if _, ok := worker.brokerStatus[addr]; !ok {
+					worker.brokerStatus[addr] = DefaultExpiredTime
+				}
+				continue
+			}
 		}
-		if resp.Code == pb.CodeEnum_Success {
-			worker.brokerStatus[broker.Addr] = time.Now()
+
+		_, err = client.HealthCheck(context.Background(), &in)
+		if err != nil {
+			zlog.Info("check broker", zap.String("broker", addr), zap.Error(err))
+		} else {
+			worker.brokerStatus[addr] = time.Now()
 		}
 	}
 
 	// 清理已经掉线的broker，以及与这些broker关联的账号
 	for addr, t := range worker.brokerStatus {
 		if time.Since(t) > maxOffLine {
+			zlog.Error("broker may have been offline", zap.String("broker", addr))
 			ClearUserStatus(addr)
 			resource.BrokerHub.RemoveBroker(addr)
+			delete(worker.brokerStatus, addr)
 		}
 	}
 
-	zlog.Info("[end]checkBroker", zap.Duration("cost", time.Since(begin)))
+	zlog.Debug("[end]checkBroker", zap.Duration("cost", time.Since(begin)))
+}
+
+type BrokerInfo struct {
+	Broker string `gorm:"column:broker" json:"broker"`
+}
+
+func GetBrokerList() []string {
+	brokerList := make([]BrokerInfo, 0)
+	err := resource.MySQLClient.Table("account").Distinct("broker").
+		Where("status = 1").Find(&brokerList).Error
+	if err != nil {
+		zlog.Error("GetBrokerList", zap.Error(err))
+		return nil
+	}
+	addrs := make([]string, 0)
+	for i := range brokerList {
+		addrs = append(addrs, brokerList[i].Broker)
+	}
+	return addrs
 }

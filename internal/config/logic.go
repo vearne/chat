@@ -13,6 +13,15 @@ type LogicConfig struct {
 	} `mapstructure:"logic_dealer"`
 
 	MySQLConf MySQLConf `mapstructure:"mysql"`
+
+	Ectd struct {
+		Register  bool     `mapstructure:"register"`
+		Endpoints []string `mapstructure:"endpoints"`
+		Username  string   `mapstructure:"username"`
+		Password  string   `mapstructure:"password"`
+	} `mapstructure:"etcd"`
+
+	ServiceDebug bool `mapstructure:"service-debug"`
 }
 
 func InitLogicConfig() {

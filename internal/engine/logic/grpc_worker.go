@@ -349,7 +349,8 @@ func ClearUserStatus(broker string) {
 	// 清理某个broker上的所有账号
 	// 让他们都下线(登出)
 	accounts := make([]model.Account, 0)
-	err := resource.MySQLClient.Model(&model.Account{}).Where("broker = ?", broker).Find(&accounts).Error
+	err := resource.MySQLClient.Model(&model.Account{}).
+		Where("status = ? AND broker = ?", consts.AccountStatusInUse, broker).Find(&accounts).Error
 	if err != nil {
 		zlog.Error("ClearUserStatus", zap.Error(err))
 		return

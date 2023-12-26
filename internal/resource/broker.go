@@ -1,7 +1,10 @@
 package resource
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"github.com/vearne/chat/internal/config"
@@ -14,6 +17,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/peer"
 	"time"
 )
 
@@ -29,12 +33,13 @@ func InitBrokerResource() {
 	Hub = model.NewBizHub()
 	var err error
 	var conn *grpc.ClientConn
+	ServiceDebug = config.GetBrokerOpts().ServiceDebug
 
 	// logicClient
 	addr := config.GetBrokerOpts().LogicDealer.Address
 	zlog.Info("logic addr", zap.String("addr", addr))
 
-	conn, err = CreateGrpcClientConn(addr, 3, time.Second*3)
+	conn, err = CreateGrpcClientConn(addr, 3, time.Second*3, ServiceDebug)
 	if err != nil {
 		zlog.Fatal("con't connect to logic", zap.Error(err))
 	}
@@ -42,7 +47,7 @@ func InitBrokerResource() {
 	LogicClient = pb.NewLogicDealerClient(conn)
 }
 
-func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration) (*grpc.ClientConn, error) {
+func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration, debug bool) (*grpc.ClientConn, error) {
 	interceptors := make([]grpc.UnaryClientInterceptor, 0)
 	r := grpc_retry.UnaryClientInterceptor(
 		grpc_retry.WithCodes(
@@ -57,6 +62,11 @@ func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration
 	)
 
 	interceptors = append(interceptors, r)
+
+	if debug {
+		interceptors = append(interceptors, DebugInterceptor())
+	}
+
 	dialOpts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultServiceConfig(
@@ -68,4 +78,27 @@ func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration
 		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(interceptors...)),
 	}
 	return grpc.Dial(addr, dialOpts...)
+}
+
+func DebugInterceptor() grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		start := time.Now()
+		p := peer.Peer{}
+		opts = append(opts, grpc.Peer(&p))
+		err := invoker(ctx, method, req, reply, cc, opts...)
+		fmt.Println("addr:", p.Addr)
+		color.Red("Call service: %s@%s (%s)", method, p.Addr, time.Now().Sub(start))
+
+		data, _ := json.MarshalIndent(req, "", "    ")
+		color.Cyan("Request(%s): %s", method, data)
+
+		if err == nil {
+			data, _ = json.MarshalIndent(reply, "", "    ")
+			color.Cyan("Response(%s): %s", method, data)
+		} else {
+			color.Cyan("Response(%s): error %v", method, err)
+		}
+
+		return err
+	}
 }
