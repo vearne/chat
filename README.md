@@ -8,6 +8,10 @@ This chat system is designed to automatically match strangers for chat, so no re
 
 [中文 README](./README_zh.md)
 
+## Feature
+* Supports service discovery through Etcd, so the entire system is easy to scale horizontally
+
+
 ## Online service
 [chat.vearne.cc](http://chat.vearne.cc/)
 
@@ -38,7 +42,7 @@ you can open multiple windows and chat with yourself.
 ![chat](./img/chat_window.jpg)
 
 ### Architecture
-![Architecture](./img/arch.png)
+![Architecture](./img/arch2.png)
 
 ### Database Table Design
 [database](./docs/mysql.md)

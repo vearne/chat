@@ -9,6 +9,9 @@ chat是一个对陌生人随机匹配的聊天系统。
 
 [English README](./README.md)
 
+## 特色
+* 支持通过Etcd进行服务发现，因此整个系统很容易进行水平扩展
+
 ## 在线服务
 [chat.vearne.cc](http://chat.vearne.cc/)
 
@@ -37,7 +40,7 @@ http://localhost/
 ![chat](./img/chat_window.jpg)
 
 ### 架构
-![Architecture](./img/arch.png)
+![Architecture](./img/arch2.png)
 
 ### 数据库表设计
 [database](./docs/mysql_zh.md)
