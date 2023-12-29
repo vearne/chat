@@ -20,6 +20,7 @@
 |modified_at|date|modify time||
 
 #### session_account
+
 |field|type|illustrate|detail|
 |:---|:---|:---|:---|
 |id|int|primary key||
@@ -28,6 +29,7 @@
 
 
 #### outbox
+
 |field|type|illustrate|detail|
 |:---|:---|:---|:---|
 |id|int|primary key||
