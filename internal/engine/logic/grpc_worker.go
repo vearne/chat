@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"errors"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
 	"github.com/vearne/chat/consts"
@@ -73,9 +74,8 @@ func (s *LogicServer) Reconnect(ctx context.Context, in *pb.ReConnectRequest) (*
 		in.AccountId, in.Token).Take(&account).Error
 
 	out := &pb.ReConnectResponse{}
-	if err == gorm.ErrRecordNotFound {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		out.Code = pb.CodeEnum_NoDataFound
-
 	} else {
 		err = resource.MySQLClient.Model(&model.Account{}).Where("id = ?",
 			in.AccountId).Updates(map[string]interface{}{
