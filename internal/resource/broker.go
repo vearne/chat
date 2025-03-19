@@ -77,7 +77,7 @@ func CreateGrpcClientConn(addr string, maxRetryCount uint, timeout time.Duration
 		//grpc.WithDefaultCallOptions(grpc.WaitForReady(true)),
 		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(interceptors...)),
 	}
-	return grpc.Dial(addr, dialOpts...)
+	return grpc.NewClient(addr, dialOpts...)
 }
 
 func DebugInterceptor() grpc.UnaryClientInterceptor {

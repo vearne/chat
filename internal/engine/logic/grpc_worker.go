@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 	"errors"
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
 	"github.com/vearne/chat/consts"
 	"github.com/vearne/chat/internal/biz"
@@ -34,10 +33,10 @@ func NewLogicGrpcWorker() *LogicGrpcWorker {
 	limiter := middleware.NewTokenBucketLimiter(10, 2)
 
 	worker.server = grpc.NewServer(
-		grpc_middleware.WithUnaryServerChain(
+		grpc.ChainUnaryInterceptor(
 			ratelimit.UnaryServerInterceptor(limiter),
 		),
-		grpc_middleware.WithStreamServerChain(
+		grpc.ChainStreamInterceptor(
 			ratelimit.StreamServerInterceptor(limiter),
 		),
 	)

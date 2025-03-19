@@ -4,7 +4,6 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// 用漏桶实现
 type TokenBucketLimiter struct {
 	*rate.Limiter
 }

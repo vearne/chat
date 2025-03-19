@@ -5,13 +5,13 @@ import (
 	zlog "github.com/vearne/chat/internal/log"
 	"github.com/vearne/chat/internal/resource"
 	"github.com/vearne/chat/model"
-	wm "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
+	"sync/atomic"
 	"time"
 )
 
 type PingWorker struct {
-	RunningFlag *wm.AtomicBool
+	RunningFlag atomic.Bool
 	ExitedFlag  chan struct{} //  已经退出的标识
 	ExitChan    chan struct{}
 }
@@ -19,7 +19,7 @@ type PingWorker struct {
 func NewPingWorker() *PingWorker {
 	//RunningFlag: true, ExitedFlag: false
 	worker := PingWorker{ExitChan: make(chan struct{})}
-	worker.RunningFlag = wm.NewAtomicBool(true)
+	worker.RunningFlag.Store(true)
 	worker.ExitedFlag = make(chan struct{})
 	return &worker
 }
@@ -32,7 +32,7 @@ func (w *PingWorker) Start() {
 	ticker := time.NewTicker(pingConfig.Interval)
 	defer ticker.Stop()
 
-	for w.RunningFlag.IsTrue() {
+	for w.RunningFlag.Load() {
 		select {
 		case <-ticker.C:
 			clients := resource.Hub.GetAllClient()
@@ -57,7 +57,7 @@ func (w *PingWorker) Start() {
 
 func (w *PingWorker) Stop() {
 	zlog.Info("PingWorker exit...")
-	w.RunningFlag.Set(false)
+	w.RunningFlag.Store(false)
 	close(w.ExitChan)
 
 	<-w.ExitedFlag

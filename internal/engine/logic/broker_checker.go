@@ -7,8 +7,8 @@ import (
 	"github.com/vearne/chat/internal/resource"
 	"github.com/vearne/chat/internal/utils"
 	pb "github.com/vearne/chat/proto"
-	wm "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
+	"sync/atomic"
 	"time"
 )
 
@@ -21,8 +21,8 @@ const maxOffLine = 10 * time.Second
 如果broker已经掉线，就将与broker连接的用户全部下线
 */
 type BrokerChecker struct {
-	RunningFlag *wm.AtomicBool // 是否运行 true:运行 false:停止
-	ExitedFlag  chan struct{}  //  已经退出的标识
+	RunningFlag atomic.Bool   // 是否运行 true:运行 false:停止
+	ExitedFlag  chan struct{} //  已经退出的标识
 	ExitChan    chan struct{}
 	// addr -> 上一次健康检查通过的时间
 	brokerStatus map[string]time.Time
@@ -30,7 +30,7 @@ type BrokerChecker struct {
 
 func NewBrokerChecker() *BrokerChecker {
 	worker := &BrokerChecker{}
-	worker.RunningFlag = wm.NewAtomicBool(true)
+	worker.RunningFlag.Store(true)
 	worker.ExitedFlag = make(chan struct{})
 	worker.ExitChan = make(chan struct{})
 	worker.brokerStatus = make(map[string]time.Time)
@@ -42,7 +42,7 @@ func (worker *BrokerChecker) Start() {
 	defer ticker.Stop()
 
 	zlog.Info("[start]BrokerChecker")
-	for worker.RunningFlag.IsTrue() {
+	for worker.RunningFlag.Load() {
 		select {
 		case <-ticker.C:
 			zlog.Debug("BrokerChecker-ticker trigger")
@@ -58,7 +58,7 @@ func (worker *BrokerChecker) Start() {
 }
 
 func (worker *BrokerChecker) Stop() {
-	worker.RunningFlag.Set(false)
+	worker.RunningFlag.Store(false)
 	close(worker.ExitChan)
 
 	<-worker.ExitedFlag
