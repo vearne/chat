@@ -22,9 +22,11 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+      - name: Set GOFLAGS
+        run: echo "GOFLAGS=-buildvcs=false" >> $GITHUB_ENV
       - name: golangci-lint
         run: golangci-lint run --modules-download-mode=mod
-  
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +35,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.23
       - name: build broker
         run: go build -o chat-broker ./cmd/broker
       - name: build logic
