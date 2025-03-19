@@ -7,19 +7,19 @@ import (
 	zlog "github.com/vearne/chat/internal/log"
 	"github.com/vearne/chat/internal/resource"
 	pb "github.com/vearne/chat/proto"
-	wm "github.com/vearne/worker_manager"
 	"go.uber.org/zap"
+	"sync/atomic"
 )
 
 type PumpSignalLoopWorker struct {
-	RunningFlag *wm.AtomicBool // is running? true:running false:stoped
-	ExitedFlag  chan struct{}  //  已经退出的标识
+	RunningFlag atomic.Bool   // is running? true:running false:stoped
+	ExitedFlag  chan struct{} //  已经退出的标识
 	ExitChan    chan struct{}
 }
 
 func NewPumpSignalLoopWorker() *PumpSignalLoopWorker {
 	worker := PumpSignalLoopWorker{ExitChan: make(chan struct{})}
-	worker.RunningFlag = wm.NewAtomicBool(true)
+	worker.RunningFlag.Store(true)
 	worker.ExitedFlag = make(chan struct{})
 	return &worker
 }
@@ -31,7 +31,7 @@ func (w *PumpSignalLoopWorker) Start() {
 
 func (w *PumpSignalLoopWorker) Stop() {
 	zlog.Info("PumpSignalLoopWorker exit...")
-	w.RunningFlag.Set(false)
+	w.RunningFlag.Store(false)
 	close(w.ExitChan)
 
 	<-w.ExitedFlag
@@ -39,7 +39,7 @@ func (w *PumpSignalLoopWorker) Stop() {
 }
 
 func (w *PumpSignalLoopWorker) PumpSignalLoop() {
-	for w.RunningFlag.IsTrue() {
+	for w.RunningFlag.Load() {
 		select {
 		case msg := <-resource.WaitToBrokerSignalChan:
 			pumpSignalToBroker(msg)
