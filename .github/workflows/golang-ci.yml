@@ -18,7 +18,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     container:
-      image: golangci/golangci-lint:v1.54.0
+      image: golangci/golangci-lint:v1.62.0
     steps:
       - name: checkout
         uses: actions/checkout@v4

@@ -1,25 +1,31 @@
 linters:
+  # https://golangci-lint.run/usage/linters
   disable-all: true  # 关闭其他linter
-  enable:            # 下面是开启的linter列表，之后的英文注释介绍了相应linter的功能
-    - errcheck      # Errcheck is a program for checking for unchecked errors in go programs. These unchecked errors can be critical bugs in some cases
-    - gosimple      # Linter for Go source code that specializes in simplifying a code
-    - govet         # Vet examines Go source code and reports suspicious constructs, such as Printf calls whose arguments do not align with the format string
-    - ineffassign   # Detects when assignments to existing variables are not used
-    - staticcheck   # Staticcheck is a go vet on steroids, applying a ton of static analysis checks
-    - typecheck     # Like the front-end of a Go compiler, parses and type-checks Go code
-    - unused        # Checks Go code for unused constants, variables, functions and types
-    - exportloopref
+  enable:
+    - errcheck      # Errcheck 是一个用于检查 Go 代码中未处理错误的程序。在某些情况下，这些未处理的错误可能会导致严重的漏洞。
+    - gosimple      # 专注于简化代码的 Go 源代码 Linter。
+    - govet         # Vet 检查 Go 源代码并报告可疑的结构。它大致等同于 go vet，并使用其检查项。
+    - ineffassign   # 检测对已存在变量的赋值是否未被使用
+    - staticcheck   # 一组静态检查规则
+    - unused        # 检查 Go 代码中未使用的常量、变量、函数和类型
+    - copyloopvar   # 检测循环变量是否被拷贝
+    - gocyclo       # 计算并检查函数的圈复杂度
+    - gocognit      # 计算并检查函数的认知复杂度
 
 linters-settings:
-  govet:            # 对于linter govet，我们手动开启了它的某些扫描规则
+  govet: # 对于linter govet，我们手动开启了它的某些扫描规则
     enable-all: true
-    check-shadowing: true
     disable:
       - fieldalignment
-    
-run:
-  skip-dirs:
+  gocyclo:
+    # Default: 30 (but we recommend 10-20)
+    min-complexity: 20
+  gocognit:
+    # Minimal code complexity to report.
+    # Default: 30 (but we recommend 10-20)
+    min-complexity: 30
+
+issues:
+  exclude-dirs:
     - scripts
     - test
-    - example
-    - cmd
